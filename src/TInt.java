@@ -5,6 +5,10 @@ import java.util.Vector;
  */
 public class TInt extends Tipo{
 
+    public static enum INT_METHODS {
+        ASIGNA, SUMA, RESTA, MULT, DIV, MAYOR, MENOR, MAYOR_IGUAL, MENOR_IGUAL, IGUAL, DISTINTO
+    }
+
     private static TInt T_INT = new TInt();
 
     private TInt() {
@@ -22,6 +26,7 @@ public class TInt extends Tipo{
         if (!(o instanceof Instancia))  errorYPara("Error de tipo, el objeto no es una instancia", p);
         if (((Instancia) o ).getTipoInstancia() != T_INT)    errorYPara("Error de tipo, el objto sí es una instancia pero no es un entero", p);
 
+        // LLegados hasta aquí, estamos seguros de que o es una instancia de tipo entero
         if (m.equals("asigna")) {
             if (p.size() == 1 && checkType(p.firstElement()) && o.getMutable()) {
                 Objeto valor = p.firstElement();
@@ -38,8 +43,12 @@ public class TInt extends Tipo{
         }
 
         if (m.equals("suma")) {
-            return sumaDosEnteros(o, p);
+            if (p.size() == 1)
+                errorYPara("La suma para el tipo entero solo se contempla para dos valores", p);
+            if (!checkType(p.firstElement()))
+                errorYPara("Los parámetros para la suma no son del tipo correcto (se necesitan enteros): " + p.toString(), p);
 
+            return sumaDosEnteros(o, p.firstElement());
         }
         errorYPara("Operación no contemplada para el tipo entero. La operación en cuestión es [".concat(m).concat("]"), p);
 
@@ -68,14 +77,12 @@ public class TInt extends Tipo{
      * @param p Objeto entero
      * @return Objeto dentro de la tabla de símbolos con el resultado de la operacion <a + b>
      */
-    private static Objeto sumaDosEnteros(Objeto o, Vector<Objeto> p) {
-        if (p.size() != 2) errorYPara("[Error]\tLa suma para el tipo entero solo se contempla para dos valores", p);
-        if (!checkType(p)) errorYPara("[Error]\tLos parámetros para la suma no son del tipo correcto (se necesitan enteros): " + p.toString(), p);
+    private static Objeto sumaDosEnteros(Objeto o, Objeto p) {
 
         // Obj contrndrá la etiqueta con el resultado de la suma dentro de la tabla de símbolos
         Objeto obj = new Instancia(Objeto.newNombreObjeto(), T_INT,TablaSimbolos.bloqueActual, false);
         /**/
-        System.out.println(obj.getNombre() + "=" + o.getNombre() + "+" + p.firstElement().getNombre() + ";");
+        System.out.println(obj.getNombre() + "=" + o.getNombre() + "+" + p.getNombre() + ";");
         return obj;
     }
 
@@ -88,7 +95,7 @@ public class TInt extends Tipo{
      * @param p Parámetro de tipo entero para la resta. Solo 1
      * @return Objeto dentro de la tabla de símbolos con el resultado de la operacion <a - b>
      */
-    private static Objeto restaDosEnteros(Objeto o, Vector<Objeto> p) {
+    private static Objeto restaDosEnteros(Objeto o, Objeto p) {
         return null;
     }
 
@@ -101,7 +108,7 @@ public class TInt extends Tipo{
      * @param p Parámetro de tipo entero para la división. Solo 1
      * @return Objeto dentro de la tabla de símbolos con el resultado de la operacion <a / b>
      */
-    private static Objeto divideDosEnteros(Objeto o, Vector<Objeto> p) {
+    private static Objeto divideDosEnteros(Objeto o, Objeto p) {
         return null;
     }
 
@@ -113,9 +120,105 @@ public class TInt extends Tipo{
      * @param p Parámetro de tipo entero para la multiplicación. Solo 1
      * @return Objeto dentro de la tabla de símbolos con el resultado de la operacion <a * b>
      */
-    private static Objeto multiplicaDosEnteros(Objeto o, Vector<Objeto> p) {
+    private static Objeto multiplicaDosEnteros(Objeto o, Objeto p) {
         return null;
     }
 
+    /**
+     * Genera el CTD necesario para realizar la comparación mayor que entre dos objetos de tipo entero. CTD para la comparación mayor que de dos valores:
+     *
+     *    result = 1
+     *    if b < a goto l;
+     *      result = 0;
+     *    l:
+     *
+     * @param a Objeto entero
+     * @param b Parámetro de tipo entero para la comparación.
+     * @return Objeto dentro de la tabla de símbolos con el resultado de la operacion <a > b>
+     */
+    private static Objeto mayorQueDosEnteros(Objeto a, Objeto b) {
+        return null;
+    }
+
+    /**
+     * Genera el CTD necesario para realizar la comparación menor que entre dos objetos de tipo entero. CTD para la comparación menor que de dos valores:
+     *
+     *    result = 1
+     *    if a < b goto l;
+     *      result = 0;
+     *    l:
+     *
+     * @param a Objeto entero
+     * @param b Parámetro de tipo entero para la comparación.
+     * @return Objeto dentro de la tabla de símbolos con el resultado de la operacion <a < b>
+     */
+    private static Objeto menorQueDosEnteros(Objeto a, Objeto b) {
+        return null;
+    }
+
+    /**
+     * Genera el CTD necesario para realizar la comparación mayor o igual que entre dos objetos de tipo entero. CTD para la comparación mayor o igual que de dos valores:
+     *
+     *    result = 1
+     *    if b < a goto l;
+     *    if a == b goto l;
+     *          result = 0;
+     *    l:
+     *
+     * @param a Objeto entero
+     * @param b Parámetro de tipo entero para la comparación.
+     * @return Objeto dentro de la tabla de símbolos con el resultado de la operacion <a >= b>
+     */
+    private static Objeto mayorIgualQueDosEnteros(Objeto a, Objeto b) {
+        return null;
+    }
+
+    /**
+     * Genera el CTD necesario para realizar la comparación menor o igual que entre dos objetos de tipo entero. CTD para la comparación menor o igual que de dos valores:
+     *
+     *    result = 1
+     *    if a < b goto l;
+     *    if a == b goto l;
+     *          result = 0;
+     *    l:
+     *
+     * @param a Objeto entero
+     * @param b Parámetro de tipo entero para la comparación.
+     * @return Objeto dentro de la tabla de símbolos con el resultado de la operacion <a <= b>
+     */
+    private static Objeto menorIgualQueDosEnteros(Objeto a, Objeto b) {
+        return null;
+    }
+
+    /**
+     * Genera el CTD necesario para realizar la comparación igual que entre dos objetos de tipo entero. CTD para la comparación igual que de dos valores:
+     *
+     *    result = 1
+     *    if a == b goto l;
+     *          result = 0;
+     *    l:
+     *
+     * @param a Objeto entero
+     * @param b Parámetro de tipo entero para la comparación.
+     * @return Objeto dentro de la tabla de símbolos con el resultado de la operacion <a == b>
+     */
+    private static Objeto igualQueDosEnteros(Objeto a, Objeto b) {
+        return null;
+    }
+
+    /**
+     * Genera el CTD necesario para realizar la comparación distinto que entre dos objetos de tipo entero. CTD para la comparación distinto que de dos valores:
+     *  result = 1
+     *  if a != b goto l;
+     *      result = 0;
+     *  l:
+     *
+     * @param a Objeto entero
+     * @param b Parámetro de tipo entero para la comparación.
+     * @return Objeto dentro de la tabla de símbolos con el resultado de la operacion <a != b>
+     */
+    private static Objeto distintoQueDosEnteros(Objeto a, Objeto b) {
+        return null;
+    }
 
 }

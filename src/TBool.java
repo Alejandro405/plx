@@ -3,6 +3,10 @@ import java.util.Vector;
 
 public class TBool extends Tipo{
 
+    public static enum BOOL_METHODS {
+        AND, OR, NOT
+    }
+
     private static final TBool T_BOOL = new TBool();
 
     public TBool() {
@@ -11,6 +15,7 @@ public class TBool extends Tipo{
 
     @Override
     public Objeto metodos(String metodo, Vector<Objeto> params) {
+        errorYPara("[ERROR]\tNo se puede ejecutar un método sobre un tipo, solo es posible sobre una instancia", params);
         return null;
     }
 

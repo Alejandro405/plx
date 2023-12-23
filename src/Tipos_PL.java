@@ -1,4 +1,4 @@
 
 public enum Tipos_PL {
-    INT, BOOL
+    INT, BOOL, CHAR, STRING, FLOAT
 }

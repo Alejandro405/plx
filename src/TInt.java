@@ -59,6 +59,15 @@ public class TInt extends Tipo{
         return p.stream().allMatch(TInt::checkType);
     }
 
+    /**
+     * Genera el CTD necesario para realizar la suma entre dos objetos de tipo entero. CTD para la suma de dos valores:
+     *
+     *    x = a + b;
+     *
+     * @param o Objeto entero
+     * @param p Objeto entero
+     * @return Objeto dentro de la tabla de símbolos con el resultado de la operacion <a + b>
+     */
     private static Objeto sumaDosEnteros(Objeto o, Vector<Objeto> p) {
         if (p.size() != 2) errorYPara("[Error]\tLa suma para el tipo entero solo se contempla para dos valores", p);
         if (!checkType(p)) errorYPara("[Error]\tLos parámetros para la suma no son del tipo correcto (se necesitan enteros): " + p.toString(), p);
@@ -68,6 +77,44 @@ public class TInt extends Tipo{
         /**/
         System.out.println(obj.getNombre() + "=" + o.getNombre() + "+" + p.firstElement().getNombre() + ";");
         return obj;
+    }
+
+    /**
+     * Genera el CTD necesario para realizar la resta entre dos objetos de tipo entero. CTD para la resta de entera de dos valores:
+     *
+     *   x = a - b;
+     *
+     * @param o Objeto entero
+     * @param p Parámetro de tipo entero para la resta. Solo 1
+     * @return Objeto dentro de la tabla de símbolos con el resultado de la operacion <a - b>
+     */
+    private static Objeto restaDosEnteros(Objeto o, Vector<Objeto> p) {
+        return null;
+    }
+
+    /**
+     * Genera el CTD necesario para realizar la división entre dos objetos de tipo entero. CTD para la división de entera de dos valores:
+     *
+     *   x = a / b;
+     *
+     * @param o Objeto entero
+     * @param p Parámetro de tipo entero para la división. Solo 1
+     * @return Objeto dentro de la tabla de símbolos con el resultado de la operacion <a / b>
+     */
+    private static Objeto divideDosEnteros(Objeto o, Vector<Objeto> p) {
+        return null;
+    }
+
+    /**
+     * Genera el CTD necesario para realizar la multiplicación entre dos objetos de tipo entero. CTD para la multiplicación de entera de dos valores:
+     *    x = a * b;
+     *
+     * @param o Objeto entero
+     * @param p Parámetro de tipo entero para la multiplicación. Solo 1
+     * @return Objeto dentro de la tabla de símbolos con el resultado de la operacion <a * b>
+     */
+    private static Objeto multiplicaDosEnteros(Objeto o, Vector<Objeto> p) {
+        return null;
     }
 
 

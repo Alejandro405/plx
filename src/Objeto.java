@@ -50,7 +50,7 @@ public abstract class Objeto implements Comparable<Objeto>{
      * @param params Parámetos soble los que se oriigina el error
      */
     public static void errorYPara(String msg, Vector<Objeto> params) {
-        throw new RuntimeException();
+        throw new RuntimeException(msg.concat(". Parámetros: " + params.toString()));
     }
 
     @Override

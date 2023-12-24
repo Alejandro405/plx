@@ -21,4 +21,9 @@ public class TFloat extends Tipo{
     public Objeto metodosInstancia(Objeto o, String m, Vector<Objeto> p) {
         return null;
     }
+
+    public static TFloat getInstance(){
+        return T_FLOAT;
+    }
+
 }

@@ -1,3 +1,4 @@
+import java.util.Objects;
 import java.util.Vector;
 
 public class TString extends Tipo{
@@ -20,5 +21,21 @@ public class TString extends Tipo{
     @Override
     public Objeto metodosInstancia(Objeto o, String m, Vector<Objeto> p) {
         return null;
+    }
+
+    public static TString getInstance(){
+        return T_STRING;
+    }
+
+    /**
+     * Genera el código de tres direccones para concatenar dos strings. Código de tres direcciones para la concatenación de dos strings.
+     *
+     *
+     * @param c1 Cadena 1
+     * @param c2 Cadena 2
+     * @return Variable en la que se referencia el resultado de la concatenación en el lenguaje de tres direcciones.
+     */
+    private static Objects concatDosStrings(Objeto c1, Objeto c2) {
+        return  null;
     }
 }

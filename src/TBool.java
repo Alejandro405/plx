@@ -47,7 +47,7 @@ public class TBool extends Tipo{
         }
 
         Objeto res = new Instancia(newNombreObjeto(), T_BOOL, TablaSimbolos.bloqueActual, false);
-        PLC.out.println(res.getNombre() + "=" + a.getNombre() + "*" + b.getNombre() + ";");
+        PLXC.out.println(res.getNombre() + "=" + a.getNombre() + "*" + b.getNombre() + ";");
 
 
         return res;

@@ -1,3 +1,4 @@
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -27,22 +28,24 @@ public class TInt extends Tipo{
         if (((Instancia) o ).getTipoInstancia() != T_INT)    errorYPara("Error de tipo, el objto sí es una instancia pero no es un entero", p);
 
         // LLegados hasta aquí, estamos seguros de que o es una instancia de tipo entero
-        if (m.equals("asigna")) {
-            if (p.size() == 1 && checkType(p.firstElement()) && o.getMutable()) {
-                Objeto valor = p.firstElement();
-                // Generar código de tres direcciones que ejecute la asignación
-                /*
-                 ID = expr
+        if (m.equals(INT_METHODS.ASIGNA.name())) {
+            if (p.size() == 1 && checkType(p.firstElement()))
+                errorYPara("La asignación solo opera con un argumento de tipo entero", p);
+            if (o.getMutable())
+                errorYPara("La variable sobre la que se realizó la asignación no es mutable", new Vector<>(List.of(o, p.firstElement())));
+            Objeto valor = p.firstElement();
+            // Generar código de tres direcciones que ejecute la asignación
+            /*
+             ID = expr
 
-                 $ti = $tk
-                 */
-                System.out.println(o.getNombre() + "=" + valor.getNombre() + ";");
+             $ti = $tk
+             */
+            System.out.println(o.getNombre() + "=" + valor.getNombre() + ";");
 
-                return o;
-            }
+            return o;
         }
 
-        if (m.equals("suma")) {
+        if (m.equals(INT_METHODS.SUMA.name())) {
             if (p.size() == 1)
                 errorYPara("La suma para el tipo entero solo se contempla para dos valores", p);
             if (!checkType(p.firstElement()))

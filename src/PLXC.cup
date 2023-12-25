@@ -1,5 +1,8 @@
 import java_cup.runtime.*;
 
+import java.util.List;
+import java.util.Vector;
+
 action code {:
 
 :}
@@ -20,7 +23,7 @@ parser code {:
 
 terminal ALL, CLL, AP, CP, AC, CC, PYC;
 terminal INT, FLOAT, CHAR, STRING;
-terminal StringID;
+terminal String ID;
 terminal Integer NUM_ENTERO;
 terminal Float NUM_REAL;
 terminal Character CARACTER;
@@ -28,33 +31,44 @@ terminal String CADENA;
 terminal MAS, MENOS, POR, DIV, EQ, NEQ, LT, GT, LE, GE, AND, OR, NOT, ASIGNA;
 terminal IF, ELSE, WHILE, FOR, DO, PRINT;
 
-nonterminal program, lista_sent, sent, valor, declr;
-nonterminal Objeto asig;
+nonterminal program, lista_sent, sent;
+nonterminal Objeto asig, valor, declr;
+
+precedence right        ASIGNA;
+precedence  left        IF, ELSE, DO, WHILE, FOR, PRINT;
+precedence  left        MAS, MENOS;
+precedence  left        POR, DIV;
+precedence  left        EQ, LE, GE;
+precedence  left        NEQ, LT, GT;
+precedence  left        NOT, AND, OR;
+precedence  left        ID, NUM_ENTERO, NUM_REAL;
+
 
 start with program;
 
 program ::= lista_sent;
 
 
-lista_sent ::= sent
+lista_sent ::= sent PYC
             | lista_sent sent PYC ;
 
-sent ::= declr
-        | asig
+sent ::= asig
         | PRINT AP valor CP ;
 
-declr ::= INT ID;
-
 asig ::= ID:id ASIGNA NUM_ENTERO:n {:
-                Objeto var = PLXC.tablaSimbolos.getObj(id);
-                if (var == null)
-                    Objeto.errorYPara("[ERROR]\tLa variable no ha sido declarada");
 
-                if (!(var instanceof Instancia))
-                    Objeto.2;
+                          Objeto variable = new Instancia(id, TInt.getTInt(), TablaSimbolos.bloqueActual, true);
+                          Objeto num = new Instancia(n.toString(), TInt.getTInt(), variable.getBloque(), false);
+                          if (variable == null)
+                              Objeto.errorYPara("[ERROR]\tLa variable no ha sido declarada", new Vector<>(List.of(variable)));
 
-                RESULT var.metodos("ASIGNA", new Vector<>(List.of(n)));
-            :};
+                          if (!(variable instanceof Instancia))
+                              Objeto.errorYPara("[ERROR]\tLa variable no es una instancia", new Vector<>(List.of(variable)));
+
+
+
+                          RESULT = variable.metodos("ASIGNA", new Vector<>(List.of(num)));
+                      :};
 
 
 /**

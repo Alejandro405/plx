@@ -1,4 +1,4 @@
-import java.io.PrintStream;
+import java.io.*;
 import java.util.List;
 import java.util.Vector;
 
@@ -8,14 +8,30 @@ public class PLXC {
     public static PrintStream out = System.out;
 
     public static void main(String[] args) {
+        try {
+            Reader in = new InputStreamReader(System.in);
+            out = System.out;
 
-        Instancia variable = new Instancia("variable", TInt.getTInt(), 0, true);
+            if(args.length > 0) {
+                in = new FileReader(args[0]);
+            }
 
-        tablaSimbolos.putObj(variable);
+            if(args.length > 1) {
+                out = new PrintStream(new FileOutputStream(args[1]));
+            }
 
-        Instancia b = new Instancia("b", TInt.getTInt(), 0, false);
 
-        variable.metodos(TInt.INT_METHODS.ASIGNA.name(), new Vector<>(List.of(b)));
+            Parser p = new Parser(new Lexer(in));
+            Object result = p.debug_parse().value;
 
+        } catch (RuntimeException e) {
+            System.err.println("[ERROR]\tFallo durante la compilación del fuente: " + e.getMessage());
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            System.err.println("[ERROR]\tFallo durante el acceso a ficheros" + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("[ERROR]\tFallo interno del parser: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

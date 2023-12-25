@@ -10,7 +10,7 @@ public class TablaSimbolos {
 
     private Integer numEtiq;
 
-    public static Integer bloqueActual;
+    public static Integer bloqueActual = 0;
 
     private static int contBloque;
 

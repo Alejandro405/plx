@@ -4,9 +4,9 @@ Parser:
 	cup -parser Parser PLXC.cup
 
 Lexer:
-	jflex PLC.flex
+	jflex PLXC.flex
 
-cleam:
+clean:
 	rm -f Parser.java sym.java Lexer.java
 
 plx:

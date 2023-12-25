@@ -29,9 +29,9 @@ public class TInt extends Tipo{
 
         // LLegados hasta aquí, estamos seguros de que o es una instancia de tipo entero
         if (m.equals(INT_METHODS.ASIGNA.name())) {
-            if (p.size() == 1 && sameType(p.firstElement()))
+            if (!(p.size() == 1 && sameType(p.firstElement())))
                 errorYPara("La asignación solo opera con un argumento de tipo entero", p);
-            if (o.getMutable())
+            if (!o.getMutable())
                 errorYPara("La variable sobre la que se realizó la asignación no es mutable", new Vector<>(List.of(o, p.firstElement())));
             Objeto valor = p.firstElement();
             // Generar código de tres direcciones que ejecute la asignación

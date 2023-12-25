@@ -1,13 +1,13 @@
-import java_cup.runetime.*;
+import java_cup.runtime.*;
 
 
 %%
 
+%unicode
 %cup
 %line
 %column
-%unicode
-%class Parser
+%class Lexer
 
 %{
   private Symbol symbol(int type) {
@@ -19,9 +19,9 @@ import java_cup.runetime.*;
   }
 %}
 
-id = [a-zA-Z$_] [a-zA-Z0-9$_]*
+id = [a-zA-Z_][a-zA-Z0-9_]*
 new_line = \r|\n|\r\n;
-wh = {new_line} | [ \t\f]
+wh = {new_line} | [\ \t\f]
 
 cadena = \"[^\"\r\n]*\"
 real = (([0-9]+\.[0-9]*) | ([0-9]*\.[0-9]+)) (e|E('+'|'-')?[0-9]+)?
@@ -61,11 +61,12 @@ char = \'(\\b|\\n|\\f|\\r|\\t|\\\"|\\\\|\\\'|[^\\\'\r\n])\'
 "char"    { return symbol(sym.CHAR);}
 "string"  { return symbol(sym.STRING);}
 
+{id}      { return symbol(sym.ID, yytext()); }
 {cadena}  { return symbol(sym.STRING, new String(yytext().substring(1,yytext().length()-1))); }
-{real}    { return symbol(sym.NUM_REAL, new Float(yytext())); }
-{entero}  { return symbol(sym.NUM_ENTERO, new Integer(yytext())); }
+{real}    { return symbol(sym.NUM_REAL, Float.valueOf(yytext())); }
+{entero}  { return symbol(sym.NUM_ENTERO, Integer.valueOf(yytext())); }
 {char}    { return symbol(sym.CHAR, new Character(yytext().charAt(1))); }
 
 {wh}      {;}
 
-[^]     { throw new RuntimeException("Error en el análisis léxico. Cadena no válida" + yytext);}
+[^]     { throw new RuntimeException("Error en el análisis léxico. Cadena no válida" + yytext());}

@@ -1,0 +1,74 @@
+import java_cup.runtime.*;
+
+action code {:
+
+:}
+
+parser code {:
+    // Redefinition of error functions
+    public void report_error(String message, Object info) {
+        System.err.print("ERROR: Syntax error");
+        if (info instanceof Symbol)
+            if (((Symbol)info).left != -1){
+                int line = (((Symbol)info).left);
+                int column = (((Symbol)info).right);
+                System.err.print(" (linea "+line+", colonna "+column+"): ");
+            } else System.err.print(": ");
+        else System.err.print(": ");
+    }
+:}
+
+terminal ALL, CLL, AP, CP, AC, CC, PYC;
+terminal INT, FLOAT, CHAR, STRING;
+terminal StringID;
+terminal Integer NUM_ENTERO;
+terminal Float NUM_REAL;
+terminal Character CARACTER;
+terminal String CADENA;
+terminal MAS, MENOS, POR, DIV, EQ, NEQ, LT, GT, LE, GE, AND, OR, NOT, ASIGNA;
+terminal IF, ELSE, WHILE, FOR, DO, PRINT;
+
+nonterminal program, lista_sent, sent, valor, declr;
+nonterminal Objeto asig;
+
+start with program;
+
+program ::= lista_sent;
+
+
+lista_sent ::= sent
+            | lista_sent sent PYC ;
+
+sent ::= declr
+        | asig
+        | PRINT AP valor CP ;
+
+declr ::= INT ID;
+
+asig ::= ID:id ASIGNA NUM_ENTERO:n {:
+                Objeto var = PLXC.tablaSimbolos.getObj(id);
+                if (var == null)
+                    Objeto.errorYPara("[ERROR]\tLa variable no ha sido declarada");
+
+                if (!(var instanceof Instancia))
+                    Objeto.2;
+
+                RESULT var.metodos("ASIGNA", new Vector<>(List.of(n)));
+            :};
+
+
+/**
+expresion ::= ID:id ASIGNA expresoion:val{: // La regla debe retornar el valor de la expresion: (a = 3) == 3
+    // Quiero asignar a la variable "id" el valor val
+    // Por el tipo de regla la variable ha de estar definida
+    if (!tabla.contains(id))
+        errorYPara("[ERROR]\tLa variable <"+id+"> no se encuentra definida dentro de la tabla", Vector.of(id, val));// NO EXISTE Vector.of(...)
+
+    // Sobrescribir el contenido de la variable dentro de la tabla
+    Objeto var = tabla.getObjeto(id);
+    if(!(id instanceof Instancia))
+        errorYPara("[ERROR]\tLa variable <"+id+"> se encuentra definida dentro de la tabla, pero no es una instancia ", Vector.of(var, id));// NO EXISTE Vector.of(...)
+
+    RESULT o.metodos("asigna", Vector.of(e));
+:}
+*/

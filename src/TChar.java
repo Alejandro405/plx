@@ -21,7 +21,7 @@ public class TChar extends Tipo{
         return null;
     }
 
-    public static TChar getInstance(){
+    public static TChar getTChar(){
         return T_CHAR;
     }
 
@@ -37,4 +37,5 @@ public class TChar extends Tipo{
     private static Objeto concatDosChars(Objeto c1, Objeto c2) {
         return  null;
     }
+
 }

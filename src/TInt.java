@@ -7,7 +7,7 @@ import java.util.Vector;
 public class TInt extends Tipo{
 
     public static enum INT_METHODS {
-        ASIGNA, SUMA, RESTA, MULT, DIV, MAYOR, MENOR, MAYOR_IGUAL, MENOR_IGUAL, IGUAL, DISTINTO
+        ASIGNA, UMENOS, SUMA, RESTA, MULT, DIV, MAYOR, MENOR, MAYOR_IGUAL, MENOR_IGUAL, IGUAL, DISTINTO
     }
 
     private static TInt T_INT = new TInt();
@@ -29,7 +29,7 @@ public class TInt extends Tipo{
 
         // LLegados hasta aquí, estamos seguros de que o es una instancia de tipo entero
         if (m.equals(INT_METHODS.ASIGNA.name())) {
-            if (p.size() == 1 && checkType(p.firstElement()))
+            if (p.size() == 1 && sameType(p.firstElement()))
                 errorYPara("La asignación solo opera con un argumento de tipo entero", p);
             if (o.getMutable())
                 errorYPara("La variable sobre la que se realizó la asignación no es mutable", new Vector<>(List.of(o, p.firstElement())));
@@ -48,7 +48,7 @@ public class TInt extends Tipo{
         if (m.equals(INT_METHODS.SUMA.name())) {
             if (p.size() == 1)
                 errorYPara("La suma para el tipo entero solo se contempla para dos valores", p);
-            if (!checkType(p.firstElement()))
+            if (!sameType(p.firstElement()))
                 errorYPara("Los parámetros para la suma no son del tipo correcto (se necesitan enteros): " + p.toString(), p);
 
             return sumaDosEnteros(o, p.firstElement());
@@ -58,17 +58,17 @@ public class TInt extends Tipo{
         return null;
     }
 
-    public static TInt gettInt() {
+    public static TInt getTInt() {
         return T_INT;
     }
 
-    private static boolean checkType(Objeto o ) {
+    private static boolean sameType(Objeto o ) {
         return ((Instancia)o).getTipoInstancia() == T_INT
                 && o.getClass() == Instancia.class;
     }
 
-    private static boolean checkType(Vector<Objeto> p ) {
-        return p.stream().allMatch(TInt::checkType);
+    private static boolean sameType(Vector<Objeto> p ) {
+        return p.stream().allMatch(TInt::sameType);
     }
 
     /**

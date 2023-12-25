@@ -9,11 +9,11 @@ public class PLXC {
 
     public static void main(String[] args) {
 
-        Instancia variable = new Instancia("variable", TInt.gettInt(), 0, true);
+        Instancia variable = new Instancia("variable", TInt.getTInt(), 0, true);
 
         tablaSimbolos.putObj(variable);
 
-        Instancia b = new Instancia("b", TInt.gettInt(), 0, false);
+        Instancia b = new Instancia("b", TInt.getTInt(), 0, false);
 
         variable.metodos(TInt.INT_METHODS.ASIGNA.name(), new Vector<>(List.of(b)));
 

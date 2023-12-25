@@ -83,4 +83,8 @@ public class TBool extends Tipo{
     private static Objeto not(Objeto a) {
         return null;
     }
+
+    public static TBool getTBool(){
+        return T_BOOL;
+    }
 }

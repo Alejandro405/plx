@@ -24,9 +24,12 @@ new_line = \r|\n|\r\n;
 wh = {new_line} | [ \t\f]
 
 cadena = \"[^\"\r\n]*\"
-real = [0-9]+[.][0-9]+
+real = (([0-9]+\.[0-9]*) | ([0-9]*\.[0-9]+)) (e|E('+'|'-')?[0-9]+)?
 entero = 0 | [1-9][0-9]*
-char = \'[^\']\'
+// Expresion regular para reconocer un caracter con las siguientes condiciones: Para las constantes se emplea la misma
+                                                                                //sintaxis que en Java, usando comillas simples, (por ejemplo ‘a’) y pudiendo usar las secuencias de escape
+                                                                                //al igual que en Java para los caracteres especiales (‘\b’,’\n’,’\f’,’\r’,’\t’,’\”’,’\\’,’\’’)
+char = \'(\\b|\\n|\\f|\\r|\\t|\\\"|\\\\|\\\'|[^\\\'\r\n])\'
 
 %%
 

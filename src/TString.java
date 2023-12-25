@@ -1,8 +1,7 @@
 import java.util.Objects;
 import java.util.Vector;
 
-public class TString extends Tipo{
-
+public class TString extends TArray{
     public static enum STRING_METHODS {
         SUMA
     }
@@ -10,7 +9,7 @@ public class TString extends Tipo{
     private static final TString T_STRING = new TString();
 
     public TString() {
-        super(String.valueOf(Tipos_PL.STRING), 0, false);
+        super(TChar.getTChar());
     }
 
     @Override
@@ -37,5 +36,15 @@ public class TString extends Tipo{
      */
     private static Objects concatDosStrings(Objeto c1, Objeto c2) {
         return  null;
+    }
+
+    @Override
+    public Objeto getElem(int i) {
+        return null;
+    }
+
+    @Override
+    public void setElem(int i, Objeto o) {
+
     }
 }

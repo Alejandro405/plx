@@ -39,10 +39,12 @@ terminal Integer NUM_ENTERO;
 terminal Float NUM_REAL;
 terminal Character CARACTER;
 terminal String CADENA;
+terminal Boolean FALSE, TRUE;
 terminal String MAS, MENOS, POR, DIV, EQ, NEQ, LT, GT, LE, GE, AND, OR, NOT, ASIGNA;
 terminal IF, ELSE, WHILE, FOR, DO, PRINT;
 
-nonterminal program, lista_sent, sent, sent_comp, sent_simpl;
+nonterminal program, lista_sent, sent, sent_comp, sent_simpl, sent_if, sent_while;
+nonterminal TBool cond;
 nonterminal Integer Init_Bloque;
 nonterminal List<String> list_id;
 nonterminal Tipo tipo, declr;
@@ -117,42 +119,30 @@ expr ::= AP expr:exp CP             {:  RESULT = exp;   :}
         | expr:a MENOS:op expr:b    {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
         | expr:a POR:op expr:b      {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
         | expr:a DIV:op expr:b      {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
-        | U_MINUS expr:exp          {:  RESULT = exp.metodos("UMENOS", new Vector());       :}
+        | MENOS:op expr:exp         {:  RESULT = exp.metodos("UMENOS", new Vector());       :}   %prec U_MINUS
         | ID:id                     {:  checkVariable(id); RESULT = PLXC.tablaSimbolos.getObj(id);  :}
         | NUM_ENTERO:num            {:  RESULT = new Instancia(num.toString(), TInt.getTInt(), TablaSimbolos.bloqueActual, false);          :}
         | NUM_REAL:num              {:  RESULT = new Instancia(num.toString(), TFloat.getTFloat(), TablaSimbolos.bloqueActual, false);      :}
         | CHAR:c                    {:  RESULT = new Instancia(String.valueOf(c), TChar.getTChar(), TablaSimbolos.bloqueActual, false);     :}
         ;
 
+cond ::=  AP cond:a CP          {:  RESULT = a;     :}
+        | NOT cond:a            {:  RESULT = a.metodos("NOT", new Vector());   :}
+        | cond:a AND cond:b     {:  RESULT = a.metodos(TBool.BOOL_METHODS.AND.name(), new Vector(List.of(b)));              :}
+        | cond:a OR cond:b      {:  RESULT = a.metodos(TBool.BOOL_METHODS.OR.name(), new Vector(List.of(b)));               :}
+        | expr:a GT expr:b      {:  RESULT = a.metodos(TFloat.FLOAT_METHODS.MAYOR.name(), new Vector(List.of(b)));          :}
+        | expr:a LT expr:b      {:  RESULT = a.metodos(TFloat.FLOAT_METHODS.MENOR.name(), new Vector(List.of(b)));          :}
+        | expr:a GE expr:b      {:  RESULT = a.metodos(TFloat.FLOAT_METHODS.MAYOR_IGUAL.name(), new Vector(List.of(b)));    :}
+        | expr:a LE expr:b      {:  RESULT = a.metodos(TFloat.FLOAT_METHODS.MENOR_IGUAL.name(), new Vector(List.of(b)));    :}
+        | FALSE                 {:  RESULT = new Instancia("false", TBool.getTBool(), TablaSimbolos.bloqueActual, false);   :}
+        | TRUE                  {:  RESULT = new Instancia("true", TBool.getTBool(), TablaSimbolos.bloqueActual, false);    :};
+
 tipo ::= INT:t          {:    RESULT = TInt.getTInt();            :}
         | FLOAT:t       {:    RESULT = TFloat.getTFloat();        :}
         | CHAR:t        {:    RESULT = TChar.getTChar();          :}
         | STRING:t      {:    RESULT = TString.getInstance();     :};
 
-Init_Bloque ::= {:  RESULT = TablaSimbolos.newBloque();    :};
+Init_Bloque ::=  {:  RESULT = TablaSimbolos.newBloque();     :};
 
-/**
-expresion ::= ID:id ASIGNA expresoion:val{: // La regla debe retornar el valor de la expresion: (a = 3) == 3
-    // Quiero asignar a la variable "id" el valor val
-    // Por el tipo de regla la variable ha de estar definida
-    if (!tabla.contains(id))
-        errorYPara("[ERROR]\tLa variable <"+id+"> no se encuentra definida dentro de la tabla", Vector.of(id, val));// NO EXISTE Vector.of(...)
+Get_Etiqueta ::= {:  RESULT = TablaSimbolos.newBloque();     :};
 
-    // Sobrescribir el contenido de la variable dentro de la tabla
-    Objeto var = tabla.getObjeto(id);
-    if(!(id instanceof Instancia))
-        errorYPara("[ERROR]\tLa variable <"+id+"> se encuentra definida dentro de la tabla, pero no es una instancia ", Vector.of(var, id));// NO EXISTE Vector.of(...)
-
-    RESULT o.metodos("asigna", Vector.of(e));
-:}
-*/
-        /*| ID:id ASIGNA NUM_ENTERO:n     {:
-
-                          Objeto variable = new Instancia(id, TInt.getTInt(), TablaSimbolos.bloqueActual, true);
-                          Objeto num = new Instancia(n.toString(), TInt.getTInt(), variable.getBloque(), false);
-                          checkVariable(variable);
-
-
-
-                          RESULT = variable.metodos("ASIGNA", new Vector<>(List.of(num)));
-                      :}*/

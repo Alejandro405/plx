@@ -79,6 +79,12 @@ public class TInt extends Tipo{
             PLXC.out.println("print " + o.getNombre() + " ;");
             return null;
         }
+
+        if (m.equals(INT_METHODS.MAYOR.name())) {
+            checkBinaryOp("MAYOR_QUE", p);
+
+            return mayorQueDosEnteros(o, p.firstElement());
+        }
         errorYPara("Operación no contemplada para el tipo entero. La operación en cuestión es [".concat(m).concat("]"), p);
 
         return null;
@@ -88,7 +94,7 @@ public class TInt extends Tipo{
         if (p.size() != 1)
             errorYPara("La " + op + " para el tipo entero solo se contempla para dos valores", p);
         if (!sameType(p.firstElement()))
-            errorYPara("Los parámetros para la " + op + " no son del tipo correcto (se necesitan enteros): " + p.toString(), p);
+            errorYPara("Los parámetros para la " + op + " no son del tipo correcto (se necesitan tipos numéricos): " + p.toString(), p);
     }
 
     public static TInt getTInt() {
@@ -96,7 +102,7 @@ public class TInt extends Tipo{
     }
 
     private static boolean sameType(Objeto o ) {
-        return ((Instancia)o).getTipoInstancia() == T_INT
+        return (((Instancia)o).getTipoInstancia() == T_INT || ((Instancia)o).getTipoInstancia() == TFloat.getTFloat())
                 && o.getClass() == Instancia.class;
     }
 
@@ -184,7 +190,7 @@ public class TInt extends Tipo{
      * @return Objeto dentro de la tabla de símbolos con el resultado de la operacion <a > b>
      */
     private static Objeto mayorQueDosEnteros(Objeto a, Objeto b) {
-        return null;
+        return genIfLessThan(b, a);
     }
 
     /**
@@ -200,7 +206,7 @@ public class TInt extends Tipo{
      * @return Objeto dentro de la tabla de símbolos con el resultado de la operacion <a < b>
      */
     private static Objeto menorQueDosEnteros(Objeto a, Objeto b) {
-        return null;
+        return genIfLessThan(a, b);
     }
 
     /**
@@ -217,8 +223,10 @@ public class TInt extends Tipo{
      * @return Objeto dentro de la tabla de símbolos con el resultado de la operacion <a >= b>
      */
     private static Objeto mayorIgualQueDosEnteros(Objeto a, Objeto b) {
-        return null;
+        return genIfLessOrEqual(b, a);
     }
+
+
 
     /**
      * Genera el CTD necesario para realizar la comparación menor o igual que entre dos objetos de tipo entero. CTD para la comparación menor o igual que de dos valores:
@@ -234,7 +242,7 @@ public class TInt extends Tipo{
      * @return Objeto dentro de la tabla de símbolos con el resultado de la operacion <a <= b>
      */
     private static Objeto menorIgualQueDosEnteros(Objeto a, Objeto b) {
-        return null;
+        return genIfLessOrEqual(a, b);
     }
 
     /**
@@ -250,7 +258,15 @@ public class TInt extends Tipo{
      * @return Objeto dentro de la tabla de símbolos con el resultado de la operacion <a == b>
      */
     private static Objeto igualQueDosEnteros(Objeto a, Objeto b) {
-        return null;
+        Instancia res = new Instancia(Objeto.newNombreObjeto(), TBool.getTBool(), TablaSimbolos.bloqueActual, false);
+        String l = PLXC.tablaSimbolos.getNewEtiq();
+
+        PLXC.out.println(res.getNombre() + " = 1;");
+        PLXC.out.println("if " + a.getNombre() + " == " + b.getNombre() + " goto " + l + ";");
+        PLXC.out.println(res.getNombre() + " = 0;");
+        PLXC.out.println(l + ":");
+
+        return res;
     }
 
     /**
@@ -268,4 +284,27 @@ public class TInt extends Tipo{
         return null;
     }
 
+
+    private static Instancia genIfLessThan(Objeto a, Objeto b) {
+        Instancia res = new Instancia(Objeto.newNombreObjeto(), TBool.getTBool(), TablaSimbolos.bloqueActual, false);
+        String l = PLXC.tablaSimbolos.getNewEtiq();
+        PLXC.out.println(res.getNombre() + " = 1;");
+        PLXC.out.println("if " + a.getNombre() + " < " + b.getNombre() + " goto " + l + ";");
+        PLXC.out.println(res.getNombre() + " = 0;");
+        PLXC.out.println(l + ":");
+
+        return res;
+    }
+
+    private static Instancia genIfLessOrEqual(Objeto a, Objeto b) {
+        Instancia res = new Instancia(Objeto.newNombreObjeto(), TBool.getTBool(), TablaSimbolos.bloqueActual, false);
+        String l = PLXC.tablaSimbolos.getNewEtiq();
+
+        PLXC.out.println(res.getNombre() + " = 1;");
+        PLXC.out.println("if " + a.getNombre() + " < " + b.getNombre() + " goto " + l + ";");
+        PLXC.out.println("if " + a.getNombre() + " == " + b.getNombre() + " goto " + l + ";");
+        PLXC.out.println(res.getNombre() + " = 0;");
+        PLXC.out.println(l + ":");
+        return res;
+    }
 }

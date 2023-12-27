@@ -1,6 +1,7 @@
 import java_cup.runtime.*;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Vector;
 
 action code {:
@@ -31,7 +32,7 @@ parser code {:
     }
 :}
 
-terminal ALL, CLL, AP, CP, AC, CC, PYC;
+terminal ALL, CLL, AP, CP, AC, CC, PYC, COMA;
 terminal Tipo INT, FLOAT, CHAR, STRING, U_MINUS;
 terminal String ID;
 terminal Integer NUM_ENTERO;
@@ -43,9 +44,8 @@ terminal IF, ELSE, WHILE, FOR, DO, PRINT;
 
 nonterminal program, lista_sent, sent;
 nonterminal List<String> list_id;
-nonterminal Tipo tipo;
-nonterminal Objeto asig, expr, declr;
-nonterminal String Bin_op;
+nonterminal Tipo tipo, declr;
+nonterminal Objeto asig, expr;
 
 precedence right        ASIGNA;
 precedence  left        IF, ELSE, DO, WHILE, FOR, PRINT;
@@ -67,31 +67,49 @@ lista_sent ::= lista_sent sent PYC
                 |
                 ;
 
-sent ::= asig
+sent ::= expr
         | declr
         | PRINT AP expr:valor CP        {:  if (valor != null) RESULT = valor.metodos("PRINT", new Vector());   :}
         ;
 
-declr ::= tipo:tipo ID:id                     {:
+declr ::= tipo:tipo ID:id                           {:
         Instancia newVar = new Instancia(id, tipo, TablaSimbolos.bloqueActual, true);
         PLXC.tablaSimbolos.putObj(newVar);
+
+        RESULT = tipo;
 :}
-        | tipo:tipo ID:id ASIGNA expr:exp  {:
+        | declr:tipo COMA ID:id                     {:    Instancia newVar = new Instancia(id, tipo, TablaSimbolos.bloqueActual, true);
+                                                            PLXC.tablaSimbolos.putObj(newVar);
+
+                                                            RESULT = tipo;:}
+        | tipo:tipo ID:id ASIGNA expr:exp           {:
                         Instancia newVar = new Instancia(id, tipo, TablaSimbolos.bloqueActual, true);
                         PLXC.tablaSimbolos.putObj(newVar);
                         newVar.metodos("ASIGNA",new Vector<>(List.of(exp)));
+
+                        RESULT = tipo;
                     :}
+        | declr:tipo COMA ID:id ASIGNA expr:exp     {:
+        Instancia newVar = new Instancia(id, tipo, TablaSimbolos.bloqueActual, true);
+                                PLXC.tablaSimbolos.putObj(newVar);
+                                newVar.metodos("ASIGNA",new Vector<>(List.of(exp)));
+
+                                RESULT = tipo;
+        :}
         ;
 
-asig ::= ID:id ASIGNA expr:valor        {:
-        Objeto variable = PLXC.tablaSimbolos.getObj(id);
-        this.checkVariable(variable);
-        RESULT = variable.metodos("ASIGNA", new Vector<>(List.of(valor)));
-    :};
-
+list_id ::=  ID:id                   {:
+            List<String> start = new ArrayList<>();
+            start.add(id);
+            RESULT = start; :}
+         | list_id:list COMA ID:id   {:  list.add(id); RESULT = list;        :};
 
 expr ::= AP expr:exp CP             {:  RESULT = exp;   :}
-        | asig:expr                 {:  RESULT = expr;  :}
+        | ID:id ASIGNA expr:valor   {:
+                  Objeto variable = PLXC.tablaSimbolos.getObj(id);
+                  this.checkVariable(variable);
+                  RESULT = variable.metodos("ASIGNA", new Vector<>(List.of(valor)));
+              :}
         | expr:a MAS:op expr:b      {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
         | expr:a MENOS:op expr:b    {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
         | expr:a POR:op expr:b      {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
@@ -102,11 +120,6 @@ expr ::= AP expr:exp CP             {:  RESULT = exp;   :}
         | NUM_REAL:num              {:  RESULT = new Instancia(num.toString(), TFloat.getTFloat(), TablaSimbolos.bloqueActual, false);      :}
         | CHAR:c                    {:  RESULT = new Instancia(String.valueOf(c), TChar.getTChar(), TablaSimbolos.bloqueActual, false);     :}
         ;
-
-Bin_op ::= MAS:op   {:  RESULT = "SUMA";     :}
-        | MENOS:op  {:  RESULT = "RESTA";    :}
-        | POR:op    {:  RESULT = "MULT";     :}
-        | DIV:op    {:  RESULT = "DIV";      :};
 
 tipo ::= INT:t          {:    RESULT = TInt.getTInt();            :}
         | FLOAT:t       {:    RESULT = TFloat.getTFloat();        :}

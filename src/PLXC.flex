@@ -40,6 +40,7 @@ char = \'(\\b|\\n|\\f|\\r|\\t|\\\"|\\\\|\\\'|[^\\\'\r\n])\'
 "["       {return symbol(sym.AC);}
 "]"       {return symbol(sym.CC);}
 ";"       {return symbol(sym.PYC);}
+","       {return symbol(sym.COMA);}
 "+"       {return symbol(sym.MAS, "SUMA");}
 "-"       {return symbol(sym.MENOS, "RESTA");}
 "*"       {return symbol(sym.POR, "MULT");}

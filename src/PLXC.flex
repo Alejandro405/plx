@@ -40,6 +40,10 @@ char = \'(\\b|\\n|\\f|\\r|\\t|\\\"|\\\\|\\\'|[^\\\'\r\n])\'
 "["       {return symbol(sym.AC);}
 "]"       {return symbol(sym.CC);}
 ";"       {return symbol(sym.PYC);}
+"+"       {return symbol(sym.MAS, yytext());}
+"-"       {return symbol(sym.MENOS, yytext());}
+"*"       {return symbol(sym.MAS, yytext());}
+"/"       {return symbol(sym.DIV, yytext());}
 "="       {return symbol(sym.ASIGNA);}
 "=="      {return symbol(sym.EQ);}
 "!="      {return symbol(sym.NEQ);}
@@ -52,6 +56,7 @@ char = \'(\\b|\\n|\\f|\\r|\\t|\\\"|\\\\|\\\'|[^\\\'\r\n])\'
 "<="      {return symbol(sym.LE);}
 "if"      {return symbol(sym.IF);}
 "else"    {return symbol(sym.ELSE);}
+"print"   {return symbol(sym.PRINT);}
 "while"   {return symbol(sym.WHILE);}
 "for"     {return symbol(sym.FOR);}
 "do"      {return symbol(sym.DO);}
@@ -59,10 +64,10 @@ char = \'(\\b|\\n|\\f|\\r|\\t|\\\"|\\\\|\\\'|[^\\\'\r\n])\'
 "int"     { return symbol(sym.INT);}
 "float"   { return symbol(sym.FLOAT);}
 "char"    { return symbol(sym.CHAR);}
-"string"  { return symbol(sym.STRING);}
+"String"  { return symbol(sym.STRING);}
 
 {id}      { return symbol(sym.ID, yytext()); }
-{cadena}  { return symbol(sym.STRING, new String(yytext().substring(1,yytext().length()-1))); }
+{cadena}  { return symbol(sym.CADENA, new String(yytext().substring(1,yytext().length()-1))); }
 {real}    { return symbol(sym.NUM_REAL, Float.valueOf(yytext())); }
 {entero}  { return symbol(sym.NUM_ENTERO, Integer.valueOf(yytext())); }
 {char}    { return symbol(sym.CHAR, new Character(yytext().charAt(1))); }

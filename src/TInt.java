@@ -7,7 +7,7 @@ import java.util.Vector;
 public class TInt extends Tipo{
 
     public static enum INT_METHODS {
-        ASIGNA, UMENOS, SUMA, RESTA, MULT, DIV, MAYOR, MENOR, MAYOR_IGUAL, MENOR_IGUAL, IGUAL, DISTINTO
+        ASIGNA, UMENOS, SUMA, RESTA, MULT, DIV, MAYOR, MENOR, MAYOR_IGUAL, MENOR_IGUAL, IGUAL, DISTINTO, PRINT
     }
 
     private static TInt T_INT = new TInt();
@@ -52,6 +52,14 @@ public class TInt extends Tipo{
                 errorYPara("Los parámetros para la suma no son del tipo correcto (se necesitan enteros): " + p.toString(), p);
 
             return sumaDosEnteros(o, p.firstElement());
+        }
+
+        if (m.equals(INT_METHODS.PRINT.name())) {
+            if (p.size() != 0)
+                errorYPara("La función print no necesita parámetros", p);
+
+            System.out.println("print " + o.getNombre() + " ;");
+            return null;
         }
         errorYPara("Operación no contemplada para el tipo entero. La operación en cuestión es [".concat(m).concat("]"), p);
 

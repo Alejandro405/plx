@@ -4,7 +4,17 @@ import java.util.List;
 import java.util.Vector;
 
 action code {:
+    public void checkVariable(Objeto obj) {
+        if (obj == null)
+                      Objeto.errorYPara("[ERROR]\tLa variable no ha sido declarada", new Vector<>(List.of(obj)));
 
+                  if (!(obj instanceof Instancia))
+                      Objeto.errorYPara("[ERROR]\tLa variable no es una instancia", new Vector<>(List.of(obj)));
+    }
+
+    public void checkVariable(String id) {
+        checkVariable(PLXC.tablaSimbolos.getObj(id));
+    }
 :}
 
 parser code {:
@@ -22,7 +32,7 @@ parser code {:
 :}
 
 terminal ALL, CLL, AP, CP, AC, CC, PYC;
-terminal INT, FLOAT, CHAR, STRING;
+terminal Tipo INT, FLOAT, CHAR, STRING, U_MINUS;
 terminal String ID;
 terminal Integer NUM_ENTERO;
 terminal Float NUM_REAL;
@@ -32,12 +42,15 @@ terminal MAS, MENOS, POR, DIV, EQ, NEQ, LT, GT, LE, GE, AND, OR, NOT, ASIGNA;
 terminal IF, ELSE, WHILE, FOR, DO, PRINT;
 
 nonterminal program, lista_sent, sent;
-nonterminal Objeto asig, valor, declr;
+nonterminal Tipo tipo;
+nonterminal Objeto asig, expr, declr;
+nonterminal String Bin_op;
 
 precedence right        ASIGNA;
 precedence  left        IF, ELSE, DO, WHILE, FOR, PRINT;
 precedence  left        MAS, MENOS;
 precedence  left        POR, DIV;
+precedence  left        U_MINUS;
 precedence  left        EQ, LE, GE;
 precedence  left        NEQ, LT, GT;
 precedence  left        NOT, AND, OR;
@@ -49,26 +62,45 @@ start with program;
 program ::= lista_sent;
 
 
-lista_sent ::= sent PYC
-            | lista_sent sent PYC ;
+lista_sent ::= lista_sent sent PYC
+                | ;
 
 sent ::= asig
-        | PRINT AP valor CP ;
+        | declr
+        | PRINT AP expr:valor CP        {:  if (valor != null) RESULT = valor.metodos("PRINT", new Vector());   :};
 
-asig ::= ID:id ASIGNA NUM_ENTERO:n {:
+declr ::= tipo:tipo ID:id ASIGNA expr:exp  {:
+                        Instancia newVar = new Instancia(id, tipo, TablaSimbolos.bloqueActual, true);
+                        PLXC.tablaSimbolos.putObj(newVar);
+                        newVar.metodos("ASIGNA",new Vector<>(List.of(exp)));
+                    :} ;
 
-                          Objeto variable = new Instancia(id, TInt.getTInt(), TablaSimbolos.bloqueActual, true);
-                          Objeto num = new Instancia(n.toString(), TInt.getTInt(), variable.getBloque(), false);
-                          if (variable == null)
-                              Objeto.errorYPara("[ERROR]\tLa variable no ha sido declarada", new Vector<>(List.of(variable)));
-
-                          if (!(variable instanceof Instancia))
-                              Objeto.errorYPara("[ERROR]\tLa variable no es una instancia", new Vector<>(List.of(variable)));
+asig ::= ID:id ASIGNA expr:valor        {:
+        Objeto variable = PLXC.tablaSimbolos.getObj(id);
+        this.checkVariable(variable);
+        RESULT = variable.metodos("ASIGNA", new Vector<>(List.of(valor)));
+    :};
 
 
+expr ::= AP expr:exp CP             {:  RESULT = exp;   :}
+        | asig:expr                 {:  RESULT = expr;  :}
+        | expr:a Bin_op:op expr:b   {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
+        | U_MINUS expr:exp          {:  RESULT = exp.metodos("UMENOS", new Vector());       :}
+        | ID:id                     {:  checkVariable(id); RESULT = PLXC.tablaSimbolos.getObj(id);  :}
+        | NUM_ENTERO:num            {:  RESULT = new Instancia(num.toString(), TInt.getTInt(), TablaSimbolos.bloqueActual, false);          :}
+        | NUM_REAL:num              {:  RESULT = new Instancia(num.toString(), TFloat.getTFloat(), TablaSimbolos.bloqueActual, false);      :}
+        | CHAR:c                    {:  RESULT = new Instancia(String.valueOf(c), TChar.getTChar(), TablaSimbolos.bloqueActual, false);     :}
+        ;
 
-                          RESULT = variable.metodos("ASIGNA", new Vector<>(List.of(num)));
-                      :};
+Bin_op ::= MAS:op   {:  RESULT = "SUMA";     :}
+        | MENOS:op  {:  RESULT = "RESTA";    :}
+        | POR:op    {:  RESULT = "MULT";     :}
+        | DIV:op    {:  RESULT = "DIV";      :};
+
+tipo ::= INT:t          {:    RESULT = TInt.getTInt();            :}
+        | FLOAT:t       {:    RESULT = TFloat.getTFloat();        :}
+        | CHAR:t        {:    RESULT = TChar.getTChar();          :}
+        | STRING:t      {:    RESULT = TString.getInstance();     :};
 
 
 /**
@@ -86,3 +118,13 @@ expresion ::= ID:id ASIGNA expresoion:val{: // La regla debe retornar el valor d
     RESULT o.metodos("asigna", Vector.of(e));
 :}
 */
+        /*| ID:id ASIGNA NUM_ENTERO:n     {:
+
+                          Objeto variable = new Instancia(id, TInt.getTInt(), TablaSimbolos.bloqueActual, true);
+                          Objeto num = new Instancia(n.toString(), TInt.getTInt(), variable.getBloque(), false);
+                          checkVariable(variable);
+
+
+
+                          RESULT = variable.metodos("ASIGNA", new Vector<>(List.of(num)));
+                      :}*/

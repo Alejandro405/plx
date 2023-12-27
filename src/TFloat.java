@@ -22,7 +22,7 @@ public class TFloat extends Tipo{
         return null;
     }
 
-    public static TFloat getInstance(){
+    public static TFloat getTFloat(){
         return T_FLOAT;
     }
 

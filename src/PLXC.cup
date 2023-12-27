@@ -38,10 +38,11 @@ terminal Integer NUM_ENTERO;
 terminal Float NUM_REAL;
 terminal Character CARACTER;
 terminal String CADENA;
-terminal MAS, MENOS, POR, DIV, EQ, NEQ, LT, GT, LE, GE, AND, OR, NOT, ASIGNA;
+terminal String MAS, MENOS, POR, DIV, EQ, NEQ, LT, GT, LE, GE, AND, OR, NOT, ASIGNA;
 terminal IF, ELSE, WHILE, FOR, DO, PRINT;
 
 nonterminal program, lista_sent, sent;
+nonterminal List<String> list_id;
 nonterminal Tipo tipo;
 nonterminal Objeto asig, expr, declr;
 nonterminal String Bin_op;
@@ -63,17 +64,24 @@ program ::= lista_sent;
 
 
 lista_sent ::= lista_sent sent PYC
-                | ;
+                |
+                ;
 
 sent ::= asig
         | declr
-        | PRINT AP expr:valor CP        {:  if (valor != null) RESULT = valor.metodos("PRINT", new Vector());   :};
+        | PRINT AP expr:valor CP        {:  if (valor != null) RESULT = valor.metodos("PRINT", new Vector());   :}
+        ;
 
-declr ::= tipo:tipo ID:id ASIGNA expr:exp  {:
+declr ::= tipo:tipo ID:id                     {:
+        Instancia newVar = new Instancia(id, tipo, TablaSimbolos.bloqueActual, true);
+        PLXC.tablaSimbolos.putObj(newVar);
+:}
+        | tipo:tipo ID:id ASIGNA expr:exp  {:
                         Instancia newVar = new Instancia(id, tipo, TablaSimbolos.bloqueActual, true);
                         PLXC.tablaSimbolos.putObj(newVar);
                         newVar.metodos("ASIGNA",new Vector<>(List.of(exp)));
-                    :} ;
+                    :}
+        ;
 
 asig ::= ID:id ASIGNA expr:valor        {:
         Objeto variable = PLXC.tablaSimbolos.getObj(id);
@@ -84,7 +92,10 @@ asig ::= ID:id ASIGNA expr:valor        {:
 
 expr ::= AP expr:exp CP             {:  RESULT = exp;   :}
         | asig:expr                 {:  RESULT = expr;  :}
-        | expr:a Bin_op:op expr:b   {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
+        | expr:a MAS:op expr:b      {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
+        | expr:a MENOS:op expr:b    {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
+        | expr:a POR:op expr:b      {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
+        | expr:a DIV:op expr:b      {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
         | U_MINUS expr:exp          {:  RESULT = exp.metodos("UMENOS", new Vector());       :}
         | ID:id                     {:  checkVariable(id); RESULT = PLXC.tablaSimbolos.getObj(id);  :}
         | NUM_ENTERO:num            {:  RESULT = new Instancia(num.toString(), TInt.getTInt(), TablaSimbolos.bloqueActual, false);          :}

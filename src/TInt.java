@@ -34,36 +34,61 @@ public class TInt extends Tipo{
             if (!o.getMutable())
                 errorYPara("La variable sobre la que se realizó la asignación no es mutable", new Vector<>(List.of(o, p.firstElement())));
             Objeto valor = p.firstElement();
-            // Generar código de tres direcciones que ejecute la asignación
-            /*
-             ID = expr
-
-             $ti = $tk
-             */
-            System.out.println(o.getNombre() + "=" + valor.getNombre() + ";");
+            PLXC.out.println(o.getNombre() + "=" + valor.getNombre() + ";");
 
             return o;
         }
 
         if (m.equals(INT_METHODS.SUMA.name())) {
-            if (p.size() == 1)
-                errorYPara("La suma para el tipo entero solo se contempla para dos valores", p);
-            if (!sameType(p.firstElement()))
-                errorYPara("Los parámetros para la suma no son del tipo correcto (se necesitan enteros): " + p.toString(), p);
+            checkBinaryOp("Suma", p);
 
             return sumaDosEnteros(o, p.firstElement());
         }
+        
+        if (m.equals(INT_METHODS.RESTA.name())) {
+            checkBinaryOp("Resta", p);
+
+            return restaDosEnteros(o, p.firstElement());
+        }
+        
+        if (m.equals(INT_METHODS.MULT.name())) {
+            checkBinaryOp("Multiplicación", p);
+
+            return multiplicaDosEnteros(o, p.firstElement());
+        }
+        
+        if (m.equals(INT_METHODS.DIV.name())) {
+            checkBinaryOp("Division", p);
+
+            return divideDosEnteros(o, p.firstElement());
+        }
+
+        if (m.equals(INT_METHODS.UMENOS.name())) {
+            if (!p.isEmpty())
+                errorYPara("La función umenos no necesita parámetros", p);
+
+            Instancia cero = new Instancia("0", T_INT, TablaSimbolos.bloqueActual, false);
+
+            return restaDosEnteros(o, cero);
+        }
 
         if (m.equals(INT_METHODS.PRINT.name())) {
-            if (p.size() != 0)
+            if (!p.isEmpty())
                 errorYPara("La función print no necesita parámetros", p);
 
-            System.out.println("print " + o.getNombre() + " ;");
+            PLXC.out.println("print " + o.getNombre() + " ;");
             return null;
         }
         errorYPara("Operación no contemplada para el tipo entero. La operación en cuestión es [".concat(m).concat("]"), p);
 
         return null;
+    }
+
+    private static void checkBinaryOp(String op, Vector<Objeto> p) {
+        if (p.size() != 1)
+            errorYPara("La " + op + " para el tipo entero solo se contempla para dos valores", p);
+        if (!sameType(p.firstElement()))
+            errorYPara("Los parámetros para la " + op + " no son del tipo correcto (se necesitan enteros): " + p.toString(), p);
     }
 
     public static TInt getTInt() {
@@ -93,7 +118,7 @@ public class TInt extends Tipo{
         // Obj contrndrá la etiqueta con el resultado de la suma dentro de la tabla de símbolos
         Objeto obj = new Instancia(Objeto.newNombreObjeto(), T_INT,TablaSimbolos.bloqueActual, false);
         /**/
-        System.out.println(obj.getNombre() + "=" + o.getNombre() + "+" + p.getNombre() + ";");
+        PLXC.out.println(obj.getNombre() + "=" + o.getNombre() + "+" + p.getNombre() + ";");
         return obj;
     }
 
@@ -107,7 +132,11 @@ public class TInt extends Tipo{
      * @return Objeto dentro de la tabla de símbolos con el resultado de la operacion <a - b>
      */
     private static Objeto restaDosEnteros(Objeto o, Objeto p) {
-        return null;
+        Instancia result = new Instancia(Objeto.newNombreObjeto(), T_INT, TablaSimbolos.bloqueActual, false);
+
+        PLXC.out.println(result.getNombre() + " =" + o.getNombre() + " - " + p.getNombre() + " ;");
+
+        return result;
     }
 
     /**
@@ -120,7 +149,11 @@ public class TInt extends Tipo{
      * @return Objeto dentro de la tabla de símbolos con el resultado de la operacion <a / b>
      */
     private static Objeto divideDosEnteros(Objeto o, Objeto p) {
-        return null;
+
+        Instancia result = new Instancia(Objeto.newNombreObjeto(), T_INT, TablaSimbolos.bloqueActual, false);
+        PLXC.out.println(result.getNombre() + " =" + o.getNombre() + " / " + p.getNombre() + " ;");
+
+        return result;
     }
 
     /**
@@ -132,7 +165,10 @@ public class TInt extends Tipo{
      * @return Objeto dentro de la tabla de símbolos con el resultado de la operacion <a * b>
      */
     private static Objeto multiplicaDosEnteros(Objeto o, Objeto p) {
-        return null;
+        Instancia result = new Instancia(Objeto.newNombreObjeto(), T_INT, TablaSimbolos.bloqueActual, false);
+        PLXC.out.println(result.getNombre() + " =" + o.getNombre() + " * " + p.getNombre() + " ;");
+
+        return result;
     }
 
     /**

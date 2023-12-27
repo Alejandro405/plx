@@ -40,10 +40,10 @@ char = \'(\\b|\\n|\\f|\\r|\\t|\\\"|\\\\|\\\'|[^\\\'\r\n])\'
 "["       {return symbol(sym.AC);}
 "]"       {return symbol(sym.CC);}
 ";"       {return symbol(sym.PYC);}
-"+"       {return symbol(sym.MAS, yytext());}
-"-"       {return symbol(sym.MENOS, yytext());}
-"*"       {return symbol(sym.MAS, yytext());}
-"/"       {return symbol(sym.DIV, yytext());}
+"+"       {return symbol(sym.MAS, "SUMA");}
+"-"       {return symbol(sym.MENOS, "RESTA");}
+"*"       {return symbol(sym.POR, "MULT");}
+"/"       {return symbol(sym.DIV, "DIV");}
 "="       {return symbol(sym.ASIGNA);}
 "=="      {return symbol(sym.EQ);}
 "!="      {return symbol(sym.NEQ);}
@@ -71,6 +71,12 @@ char = \'(\\b|\\n|\\f|\\r|\\t|\\\"|\\\\|\\\'|[^\\\'\r\n])\'
 {real}    { return symbol(sym.NUM_REAL, Float.valueOf(yytext())); }
 {entero}  { return symbol(sym.NUM_ENTERO, Integer.valueOf(yytext())); }
 {char}    { return symbol(sym.CHAR, new Character(yytext().charAt(1))); }
+
+// Expresion regular para reconocer un comentario de una línea
+\/\/[^\r\n]*(\r|\n|\r\n) {;}
+
+// Expresion regular para reconocer un comentario de varias líneas
+\/\*([^\*]|\*[^\/])*\*\/ {;}
 
 {wh}      {;}
 

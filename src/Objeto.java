@@ -7,7 +7,7 @@ public abstract class Objeto implements Comparable<Objeto>{
     private Integer bloque;
     private Boolean mutable;
 
-    private static Integer numObj;
+    private static Integer numObj = 0;
 
     public Objeto(String nombre, Integer bloque, Boolean mutable) {
         this.nombre = nombre;

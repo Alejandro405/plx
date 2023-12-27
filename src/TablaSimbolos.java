@@ -25,7 +25,7 @@ public class TablaSimbolos {
         return res;
     }
 
-    public Integer newBloque() {
+    public static Integer newBloque() {
         int aux = bloqueActual;
         contBloque++;
         bloqueActual = contBloque;
@@ -118,5 +118,12 @@ public class TablaSimbolos {
             if (aux.isEmpty())
                 this.tabla.remove(id);
         }
+    }
+
+    /**
+     * Para cada id de la tabla, eliminara el objeto asociado al bloque actual y a dicho identificador
+     */
+    public void delBlock() {
+        this.delBlock(bloqueActual);
     }
 }

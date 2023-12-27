@@ -42,7 +42,8 @@ terminal String CADENA;
 terminal String MAS, MENOS, POR, DIV, EQ, NEQ, LT, GT, LE, GE, AND, OR, NOT, ASIGNA;
 terminal IF, ELSE, WHILE, FOR, DO, PRINT;
 
-nonterminal program, lista_sent, sent;
+nonterminal program, lista_sent, sent, sent_comp, sent_simpl;
+nonterminal Integer Init_Bloque;
 nonterminal List<String> list_id;
 nonterminal Tipo tipo, declr;
 nonterminal Objeto asig, expr;
@@ -62,15 +63,17 @@ start with program;
 
 program ::= lista_sent;
 
+lista_sent ::= sent
+            | lista_sent sent
+            ;
 
-lista_sent ::= lista_sent sent PYC
-                |
-                ;
-
-sent ::= expr
-        | declr
-        | PRINT AP expr:valor CP        {:  if (valor != null) RESULT = valor.metodos("PRINT", new Vector());   :}
-        ;
+sent ::= expr PYC
+        | declr PYC
+        | PRINT AP expr:valor CP PYC        {:  if (valor != null) RESULT = valor.metodos("PRINT", new Vector());   :}
+        | ALL Init_Bloque:bloquePrevio lista_sent CLL {:
+            PLXC.tablaSimbolos.delBlock();
+            TablaSimbolos.bloqueActual = bloquePrevio;
+        :};
 
 declr ::= tipo:tipo ID:id                           {:
         Instancia newVar = new Instancia(id, tipo, TablaSimbolos.bloqueActual, true);
@@ -126,6 +129,7 @@ tipo ::= INT:t          {:    RESULT = TInt.getTInt();            :}
         | CHAR:t        {:    RESULT = TChar.getTChar();          :}
         | STRING:t      {:    RESULT = TString.getInstance();     :};
 
+Init_Bloque ::= {:  RESULT = TablaSimbolos.newBloque();    :};
 
 /**
 expresion ::= ID:id ASIGNA expresoion:val{: // La regla debe retornar el valor de la expresion: (a = 3) == 3

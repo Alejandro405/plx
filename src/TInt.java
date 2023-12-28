@@ -69,7 +69,7 @@ public class TInt extends Tipo{
 
             Instancia cero = new Instancia("0", T_INT, TablaSimbolos.bloqueActual, false);
 
-            return restaDosEnteros(o, cero);
+            return restaDosEnteros(cero, o);
         }
 
         if (m.equals(INT_METHODS.MAYOR.name())) {
@@ -288,7 +288,7 @@ public class TInt extends Tipo{
         String l = PLXC.tablaSimbolos.getNewEtiq();
 
         PLXC.out.println(res.getNombre() + " = 1;");
-        PLXC.out.println("if " + a.getNombre() + " == " + b.getNombre() + " goto " + l + ";");
+        PLXC.out.println("if (" + a.getNombre() + " == " + b.getNombre() + ") goto " + l + ";");
         PLXC.out.println(res.getNombre() + " = 0;");
         PLXC.out.println(l + ":");
 
@@ -315,7 +315,7 @@ public class TInt extends Tipo{
         Instancia res = new Instancia(Objeto.newNombreObjeto(), TBool.getTBool(), TablaSimbolos.bloqueActual, false);
         String l = PLXC.tablaSimbolos.getNewEtiq();
         PLXC.out.println(res.getNombre() + " = 1;");
-        PLXC.out.println("if " + a.getNombre() + " < " + b.getNombre() + " goto " + l + ";");
+        PLXC.out.println("if (" + a.getNombre() + " < " + b.getNombre() + ") goto " + l + ";");
         PLXC.out.println(res.getNombre() + " = 0;");
         PLXC.out.println(l + ":");
 
@@ -327,8 +327,8 @@ public class TInt extends Tipo{
         String l = PLXC.tablaSimbolos.getNewEtiq();
 
         PLXC.out.println(res.getNombre() + " = 1;");
-        PLXC.out.println("if " + a.getNombre() + " < " + b.getNombre() + " goto " + l + ";");
-        PLXC.out.println("if " + a.getNombre() + " == " + b.getNombre() + " goto " + l + ";");
+        PLXC.out.println("if (" + a.getNombre() + " < " + b.getNombre() + ") goto " + l + ";");
+        PLXC.out.println("if (" + a.getNombre() + " == " + b.getNombre() + ") goto " + l + ";");
         PLXC.out.println(res.getNombre() + " = 0;");
         PLXC.out.println(l + ":");
         return res;

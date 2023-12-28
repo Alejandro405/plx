@@ -18,6 +18,7 @@ action code {:
     }
 
     private static String end_if = "", end_and = "", end_or = "";
+    private Objeto res_bool;
 :}
 
 parser code {:
@@ -34,7 +35,7 @@ parser code {:
     }
 :}
 
-terminal ALL, CLL, AP, CP, AC, CC, PYC, COMA;
+terminal String ALL, CLL, AP, CP, AC, CC, PYC, COMA;
 terminal Tipo INT, FLOAT, CHAR, STRING, U_MINUS;
 terminal String ID;
 terminal Integer NUM_ENTERO;
@@ -43,10 +44,11 @@ terminal Character CARACTER;
 terminal String CADENA;
 terminal Boolean FALSE, TRUE;
 terminal String MAS, MENOS, POR, DIV, EQ, NEQ, LT, GT, LE, GE, AND, OR, NOT, ASIGNA;
-terminal IF, ELSE, ELSEIF, WHILE, FOR, DO, PRINT;
+terminal IF, WHILE, FOR, DO, PRINT;
+terminal String ELSE, ELSEIF;
 
-nonterminal program, lista_sent, sent, sent_comp, sent_simpl, sent_if, else_if, sent_while, op_else;
-nonterminal String and_end, or_end;
+nonterminal program, lista_sent, sent, sent_comp, sent_simpl, sent_if, sent_while, op_else;
+nonterminal String and_end, or_end, else_if;
 nonterminal Objeto cond, Get_BoolInstance;
 nonterminal Integer Init_Bloque;
 nonterminal List<String> list_id;
@@ -89,12 +91,14 @@ sent_simpl ::= expr PYC
 
 sent_while ::= WHILE AP cond:c CP sent;
 
-sent_if ::= IF AP cond:c CP
-            sent
-            else_if;
+sent_if ::= IF {:this.end_if = PLXC.tablaSimbolos.getNewEtiq();:} AP:nextElse cond:c CP {: PLXC.out.println("if (" + c.getNombre() + " == 0) goto " + nextElse + ";");:}
+            sent   {: PLXC.out.println("goto " + this.end_if + ";");PLXC.out.println(nextElse + ":");:}
+            else_if {: PLXC.out.println(this.end_if + ":");:};
 
-else_if ::= ELSE sent
-            | ELSEIF AP cond:c CP sent else_if
+else_if ::= ELSEIF AP:nextElse cond:c CP {:PLXC.out.println("if (" + c.getNombre() + " == 0) goto " + nextElse + ";");:}
+                sent {:PLXC.out.println("goto " + this.end_if + ";"); PLXC.out.println(nextElse + ":");:}
+                else_if:Else {:RESULT = Else;:}
+            | ELSE sent  {:  RESULT = ""; :}
             | ;
 
 declr ::= tipo:tipo ID:id                           {:
@@ -148,18 +152,36 @@ expr ::= AP expr:exp CP             {:  RESULT = exp;   :}
 
 cond ::=  AP cond:a CP          {:  RESULT = a;     :}
         | NOT cond:a            {:  RESULT = a.metodos("NOT", new Vector());   :}
-        | cond:a  AND              {:  this.end_and = PLXC.tablaSimbolos.getNewEtiq();PLXC.out.println("if " + a.getNombre() + " == 0 goto " + end_and + ";");:}
-            cond:b          {:  RESULT = a.metodos(TBool.BOOL_METHODS.AND.name(), new Vector(List.of(b))); PLXC.out.println(this.end_and + ":");              :}
-        | cond:a  OR               {:  this.end_or = PLXC.tablaSimbolos.getNewEtiq(); PLXC.out.println("if " + a.getNombre() + " == 1 goto " + end_or + ";");:}
-            cond:b           {:  RESULT = a.metodos(TBool.BOOL_METHODS.OR.name(), new Vector(List.of(b))); PLXC.out.println(this.end_or + ":");              :}
+        | cond:a  AND              {:
+        this.end_and = PLXC.tablaSimbolos.getNewEtiq();
+        this.res_bool = new Instancia(TBool.getTBool());
+        PLXC.out.println(res_bool.getNombre() + " = " + a.getNombre() + ";");
+        PLXC.out.println("if (" + a.getNombre() + " == 0) goto " + end_and + ";");
+:}
+            cond:b          {:
+            PLXC.out.println(res_bool.getNombre() + " = " + b.getNombre() + ";");
+            PLXC.out.println(this.end_and + ":");
+            RESULT = res_bool;
+:}
+        | cond:a  OR               {:
+        this.end_or = PLXC.tablaSimbolos.getNewEtiq();
+        this.res_bool = new Instancia(TBool.getTBool());
+        PLXC.out.println(res_bool.getNombre() + " = " + a.getNombre() + ";");
+        PLXC.out.println("if (" + a.getNombre() + " == 1) goto " + end_or + ";");
+:}
+            cond:b           {:
+            PLXC.out.println(res_bool.getNombre() + " = " + b.getNombre() + ";");
+            PLXC.out.println(this.end_or + ":");
+            RESULT = res_bool;
+:}
         | expr:a GT expr:b      {:  RESULT = a.metodos("MAYOR", new Vector(List.of(b)));          :}
         | expr:a LT expr:b      {:  RESULT = a.metodos("MENOR", new Vector(List.of(b)));          :}
         | expr:a GE expr:b      {:  RESULT = a.metodos("MAYOR_IGUAL", new Vector(List.of(b)));    :}
         | expr:a LE expr:b      {:  RESULT = a.metodos("MENOR_IGUAL", new Vector(List.of(b)));    :}
         | expr:a EQ expr:b      {:  RESULT = a.metodos("IGUAL", new Vector(List.of(b)));          :}
         | expr:a NEQ expr:b     {:  RESULT = a.metodos("DISTINTO", new Vector(List.of(b)));       :}
-        | FALSE                 {:  RESULT = new Instancia("false", TBool.getTBool(), TablaSimbolos.bloqueActual, false);   :}
-        | TRUE                  {:  RESULT = new Instancia("true", TBool.getTBool(), TablaSimbolos.bloqueActual, false);    :};
+        | FALSE                 {:  RESULT = new Instancia("0", TBool.getTBool(), TablaSimbolos.bloqueActual, false);   :}
+        | TRUE                  {:  RESULT = new Instancia("1", TBool.getTBool(), TablaSimbolos.bloqueActual, false);    :};
 
 tipo ::= INT:t          {:    RESULT = TInt.getTInt();            :}
         | FLOAT:t       {:    RESULT = TFloat.getTFloat();        :}

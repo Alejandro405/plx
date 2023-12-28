@@ -92,7 +92,7 @@ public class TBool extends Tipo{
         a.getNombre();
 
         PLXC.out.println(res.getNombre() + " = " + a.getNombre() + ";");
-        PLXC.out.println("if " + res.getNombre() + " == 1 goto " + end_if + ";");
+        PLXC.out.println("if (" + res.getNombre() + " == 1) goto " + end_if + ";");
         PLXC.out.println(res.getNombre() + " = " + b.getNombre() + ";");
         PLXC.out.println(end_if + ":");
 
@@ -114,7 +114,7 @@ public class TBool extends Tipo{
         String end_l = PLXC.tablaSimbolos.getNewEtiq();
 
         PLXC.out.println(res.getNombre() + " = 0;");
-        PLXC.out.println("if " + a.getNombre() + " == 1 goto " + end_l + ";");
+        PLXC.out.println("if (" + a.getNombre() + " == 1) goto " + end_l + ";");
         PLXC.out.println(res.getNombre() + " = 1;");
         PLXC.out.println(end_l + ":");
 

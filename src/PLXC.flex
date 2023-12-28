@@ -33,7 +33,7 @@ char = \'(\\b|\\n|\\f|\\r|\\t|\\\"|\\\\|\\\'|[^\\\'\r\n])\'
 
 %%
 
-"("       {return symbol(sym.AP);}
+"("       {return symbol(sym.AP, PLXC.tablaSimbolos.getNewEtiq());}
 ")"       {return symbol(sym.CP);}
 "{"       {return symbol(sym.ALL);}
 "}"       {return symbol(sym.CLL);}
@@ -57,7 +57,7 @@ char = \'(\\b|\\n|\\f|\\r|\\t|\\\"|\\\\|\\\'|[^\\\'\r\n])\'
 "<="      {return symbol(sym.LE);}
 "if"      {return symbol(sym.IF);}
 "else"    {return symbol(sym.ELSE);}
-"else if" {return symbol(sym.ELSEIF);}
+"else if" {return symbol(sym.ELSEIF, PLXC.tablaSimbolos.getNewEtiq());}
 "print"   {return symbol(sym.PRINT);}
 "while"   {return symbol(sym.WHILE);}
 "for"     {return symbol(sym.FOR);}

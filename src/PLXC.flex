@@ -48,8 +48,8 @@ char = \'(\\b|\\n|\\f|\\r|\\t|\\\"|\\\\|\\\'|[^\\\'\r\n])\'
 "="       {return symbol(sym.ASIGNA);}
 "=="      {return symbol(sym.EQ);}
 "!="      {return symbol(sym.NEQ);}
-"&"       {return symbol(sym.AND);}
-"|"       {return symbol(sym.OR);}
+"&&"       {return symbol(sym.AND);}
+"||"       {return symbol(sym.OR);}
 "!"       {return symbol(sym.NOT);}
 ">"       {return symbol(sym.GT);}
 "<"       {return symbol(sym.LT);}
@@ -57,10 +57,14 @@ char = \'(\\b|\\n|\\f|\\r|\\t|\\\"|\\\\|\\\'|[^\\\'\r\n])\'
 "<="      {return symbol(sym.LE);}
 "if"      {return symbol(sym.IF);}
 "else"    {return symbol(sym.ELSE);}
+"else if" {return symbol(sym.ELSEIF);}
 "print"   {return symbol(sym.PRINT);}
 "while"   {return symbol(sym.WHILE);}
 "for"     {return symbol(sym.FOR);}
 "do"      {return symbol(sym.DO);}
+
+"true"    {return symbol(sym.TRUE);}
+"false"   {return symbol(sym.FALSE);}
 
 "int"     { return symbol(sym.INT);}
 "float"   { return symbol(sym.FLOAT);}

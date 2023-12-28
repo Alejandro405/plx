@@ -72,6 +72,36 @@ public class TInt extends Tipo{
             return restaDosEnteros(o, cero);
         }
 
+        if (m.equals(INT_METHODS.MAYOR.name())) {
+            checkBinaryOp("MAYOR_QUE", p);
+
+            return mayorQueDosEnteros(o, p.firstElement());
+        }
+
+        if (m.equals(INT_METHODS.MENOR.name())) {
+            checkBinaryOp("MENOR_QUE", p);
+
+            return menorQueDosEnteros(o, p.firstElement());
+        }
+
+        if (m.equals(INT_METHODS.MAYOR_IGUAL.name())) {
+            checkBinaryOp("MAYOR_IGUAL_QUE", p);
+
+            return mayorIgualQueDosEnteros(o, p.firstElement());
+        }
+
+        if (m.equals(INT_METHODS.MENOR_IGUAL.name())) {
+            checkBinaryOp("MENOR_IGUAL_QUE", p);
+
+            return menorIgualQueDosEnteros(o, p.firstElement());
+        }
+
+        if (m.equals(INT_METHODS.IGUAL.name())) {
+            checkBinaryOp("IGUAL_QUE", p);
+
+            return igualQueDosEnteros(o, p.firstElement());
+        }
+
         if (m.equals(INT_METHODS.PRINT.name())) {
             if (!p.isEmpty())
                 errorYPara("La función print no necesita parámetros", p);
@@ -80,11 +110,7 @@ public class TInt extends Tipo{
             return null;
         }
 
-        if (m.equals(INT_METHODS.MAYOR.name())) {
-            checkBinaryOp("MAYOR_QUE", p);
 
-            return mayorQueDosEnteros(o, p.firstElement());
-        }
         errorYPara("Operación no contemplada para el tipo entero. La operación en cuestión es [".concat(m).concat("]"), p);
 
         return null;

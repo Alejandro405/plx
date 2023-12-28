@@ -22,7 +22,7 @@ public class PLXC {
 
 
             Parser p = new Parser(new Lexer(in));
-            Object result = p.parse().value;
+            Object result = p.debug_parse().value;
 
         } catch (RuntimeException e) {
             System.err.println("[ERROR]\tFallo durante la compilación del fuente: " + e.getMessage());

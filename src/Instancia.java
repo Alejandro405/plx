@@ -9,6 +9,11 @@ public class Instancia extends Objeto{
         this.tipoInstancia = tipo;
     }
 
+    public Instancia(Tipo tipoInstancia) {
+        super(Objeto.newNombreObjeto(), TablaSimbolos.bloqueActual, false);
+        this.tipoInstancia = tipoInstancia;
+    }
+
     @Override
     public Objeto metodos(String metodo, Vector<Objeto> params) {
         return tipoInstancia.metodosInstancia(this, metodo, params);

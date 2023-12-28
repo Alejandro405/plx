@@ -16,6 +16,7 @@ public class TablaSimbolos {
 
     public TablaSimbolos() {
         this.tabla = new HashMap<String, TreeMap<Integer, Objeto>>();
+        this.numEtiq = 0;
     }
 
     public String getNewEtiq() {

@@ -16,6 +16,8 @@ action code {:
     public void checkVariable(String id) {
         checkVariable(PLXC.tablaSimbolos.getObj(id));
     }
+
+    private static String end_if = "", end_and = "", end_or = "";
 :}
 
 parser code {:
@@ -41,10 +43,11 @@ terminal Character CARACTER;
 terminal String CADENA;
 terminal Boolean FALSE, TRUE;
 terminal String MAS, MENOS, POR, DIV, EQ, NEQ, LT, GT, LE, GE, AND, OR, NOT, ASIGNA;
-terminal IF, ELSE, WHILE, FOR, DO, PRINT;
+terminal IF, ELSE, ELSEIF, WHILE, FOR, DO, PRINT;
 
-nonterminal program, lista_sent, sent, sent_comp, sent_simpl, sent_if, sent_while;
-nonterminal TBool cond;
+nonterminal program, lista_sent, sent, sent_comp, sent_simpl, sent_if, else_if, sent_while, op_else;
+nonterminal String and_end, or_end;
+nonterminal Objeto cond, Get_BoolInstance;
 nonterminal Integer Init_Bloque;
 nonterminal List<String> list_id;
 nonterminal Tipo tipo, declr;
@@ -58,7 +61,8 @@ precedence  left        U_MINUS;
 precedence  left        EQ, LE, GE;
 precedence  left        NEQ, LT, GT;
 precedence  left        NOT, AND, OR;
-precedence  left        ID, NUM_ENTERO, NUM_REAL;
+precedence  left        ID, NUM_ENTERO, NUM_REAL, FALSE, TRUE;
+precedence  left        ELSEIF;
 
 
 start with program;
@@ -69,13 +73,29 @@ lista_sent ::= sent
             | lista_sent sent
             ;
 
-sent ::= expr PYC
+sent ::= sent_comp
+        | sent_simpl ;
+
+sent_comp ::= ALL Init_Bloque:bloquePrevio lista_sent CLL {:
+                          PLXC.tablaSimbolos.delBlock();
+                          TablaSimbolos.bloqueActual = bloquePrevio;
+                      :};
+
+sent_simpl ::= expr PYC
         | declr PYC
         | PRINT AP expr:valor CP PYC        {:  if (valor != null) RESULT = valor.metodos("PRINT", new Vector());   :}
-        | ALL Init_Bloque:bloquePrevio lista_sent CLL {:
-            PLXC.tablaSimbolos.delBlock();
-            TablaSimbolos.bloqueActual = bloquePrevio;
-        :};
+        | sent_if
+        | sent_while;
+
+sent_while ::= WHILE AP cond:c CP sent;
+
+sent_if ::= IF AP cond:c CP
+            sent
+            else_if;
+
+else_if ::= ELSE sent
+            | ELSEIF AP cond:c CP sent else_if
+            | ;
 
 declr ::= tipo:tipo ID:id                           {:
         Instancia newVar = new Instancia(id, tipo, TablaSimbolos.bloqueActual, true);
@@ -128,12 +148,16 @@ expr ::= AP expr:exp CP             {:  RESULT = exp;   :}
 
 cond ::=  AP cond:a CP          {:  RESULT = a;     :}
         | NOT cond:a            {:  RESULT = a.metodos("NOT", new Vector());   :}
-        | cond:a AND cond:b     {:  RESULT = a.metodos(TBool.BOOL_METHODS.AND.name(), new Vector(List.of(b)));              :}
-        | cond:a OR cond:b      {:  RESULT = a.metodos(TBool.BOOL_METHODS.OR.name(), new Vector(List.of(b)));               :}
-        | expr:a GT expr:b      {:  RESULT = a.metodos(TFloat.FLOAT_METHODS.MAYOR.name(), new Vector(List.of(b)));          :}
-        | expr:a LT expr:b      {:  RESULT = a.metodos(TFloat.FLOAT_METHODS.MENOR.name(), new Vector(List.of(b)));          :}
-        | expr:a GE expr:b      {:  RESULT = a.metodos(TFloat.FLOAT_METHODS.MAYOR_IGUAL.name(), new Vector(List.of(b)));    :}
-        | expr:a LE expr:b      {:  RESULT = a.metodos(TFloat.FLOAT_METHODS.MENOR_IGUAL.name(), new Vector(List.of(b)));    :}
+        | cond:a  AND              {:  this.end_and = PLXC.tablaSimbolos.getNewEtiq();PLXC.out.println("if " + a.getNombre() + " == 0 goto " + end_and + ";");:}
+            cond:b          {:  RESULT = a.metodos(TBool.BOOL_METHODS.AND.name(), new Vector(List.of(b))); PLXC.out.println(this.end_and + ":");              :}
+        | cond:a  OR               {:  this.end_or = PLXC.tablaSimbolos.getNewEtiq(); PLXC.out.println("if " + a.getNombre() + " == 1 goto " + end_or + ";");:}
+            cond:b           {:  RESULT = a.metodos(TBool.BOOL_METHODS.OR.name(), new Vector(List.of(b))); PLXC.out.println(this.end_or + ":");              :}
+        | expr:a GT expr:b      {:  RESULT = a.metodos("MAYOR", new Vector(List.of(b)));          :}
+        | expr:a LT expr:b      {:  RESULT = a.metodos("MENOR", new Vector(List.of(b)));          :}
+        | expr:a GE expr:b      {:  RESULT = a.metodos("MAYOR_IGUAL", new Vector(List.of(b)));    :}
+        | expr:a LE expr:b      {:  RESULT = a.metodos("MENOR_IGUAL", new Vector(List.of(b)));    :}
+        | expr:a EQ expr:b      {:  RESULT = a.metodos("IGUAL", new Vector(List.of(b)));          :}
+        | expr:a NEQ expr:b     {:  RESULT = a.metodos("DISTINTO", new Vector(List.of(b)));       :}
         | FALSE                 {:  RESULT = new Instancia("false", TBool.getTBool(), TablaSimbolos.bloqueActual, false);   :}
         | TRUE                  {:  RESULT = new Instancia("true", TBool.getTBool(), TablaSimbolos.bloqueActual, false);    :};
 
@@ -144,5 +168,9 @@ tipo ::= INT:t          {:    RESULT = TInt.getTInt();            :}
 
 Init_Bloque ::=  {:  RESULT = TablaSimbolos.newBloque();     :};
 
-Get_Etiqueta ::= {:  RESULT = TablaSimbolos.newBloque();     :};
+and_end ::= {:  RESULT = PLXC.tablaSimbolos.getNewEtiq();     :};
+
+or_end ::= {:  RESULT = PLXC.tablaSimbolos.getNewEtiq();     :};
+
+Get_BoolInstance ::= {: RESULT = new Instancia(TBool.getTBool());:};
 

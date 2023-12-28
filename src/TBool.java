@@ -21,12 +21,33 @@ public class TBool extends Tipo{
 
     @Override
     public Objeto metodosInstancia(Objeto o, String m, Vector<Objeto> p) {
+        if (!(o instanceof Instancia))
+            errorYPara("[ERROR]\tSolo es posible ejecutar" + m + " sobre una instancia", p);
+        if (((Instancia) o).getTipoInstancia() != T_BOOL)
+            errorYPara("[ERROR]\tSolo es posible ejecutar" + m + " sobre una instancia de tipo booleano", p);
+
+        if (m.equals(BOOL_METHODS.AND.toString())) {
+            checkBinBoolOper(m, p);
+            return and(o, p.get(0));
+        } else if (m.equals(BOOL_METHODS.OR.toString())) {
+            checkBinBoolOper(m, p);
+            return or(o, p.get(0));
+        } else if (m.equals(BOOL_METHODS.NOT.toString())) {
+            checkBinBoolOper(m, p);
+            return not(o);
+        }
+
         return null;
     }
 
-    private static boolean checkType(Objeto o ) {
-        return ((Instancia)o).getTipoInstancia() == T_BOOL
-                && o.getClass() == Instancia.class;
+    private static void checkBinBoolOper(String m, Vector<Objeto> p) {
+        if (p.size() != 1 && !checkType(p.firstElement()))
+            errorYPara("[ERROR]\tEl método " + m + " solo acepta un único parámetro de tipo booleano", p);
+    }
+
+    private static boolean checkType(Objeto o) {
+        return (o.getClass() == Instancia.class
+                && ((Instancia)o).getTipoInstancia() == T_BOOL);
     }
 
     /**
@@ -65,23 +86,39 @@ public class TBool extends Tipo{
      * @return Objeto dentro de la tabla de símbolos con el resultado de la operacion <a | b>
      */
     private static Objeto or(Objeto a, Objeto b) {
-        return null;
+        Instancia res = new Instancia(Objeto.newNombreObjeto(), T_BOOL, TablaSimbolos.bloqueActual, false);
+        String end_if = PLXC.tablaSimbolos.getNewEtiq();
+
+        a.getNombre();
+
+        PLXC.out.println(res.getNombre() + " = " + a.getNombre() + ";");
+        PLXC.out.println("if " + res.getNombre() + " == 1 goto " + end_if + ";");
+        PLXC.out.println(res.getNombre() + " = " + b.getNombre() + ";");
+        PLXC.out.println(end_if + ":");
+
+        return res;
     }
 
     /**
      * Genera el código CTD para el cálculo de la negación lógica. En CTD no existe la negación, será implementada con sentencia i:
-     *      if a == 0 goto l;
-     *          a=0;
-     *          goto end_if;
-     *       l:
-     *          a = 1;
-     *       end_if:
+     *      result = 0;
+     *      if a == 1 goto end_not;
+     *      result = 1;
+     *      end_not:
      *
      * @param a Objeto de tipo booleano que se quiere negar
      * @return La negación de a
      */
     private static Objeto not(Objeto a) {
-        return null;
+        Instancia res = new Instancia(Objeto.newNombreObjeto(), T_BOOL, TablaSimbolos.bloqueActual, false);
+        String end_l = PLXC.tablaSimbolos.getNewEtiq();
+
+        PLXC.out.println(res.getNombre() + " = 0;");
+        PLXC.out.println("if " + a.getNombre() + " == 1 goto " + end_l + ";");
+        PLXC.out.println(res.getNombre() + " = 1;");
+        PLXC.out.println(end_l + ":");
+
+        return res;
     }
 
     public static TBool getTBool(){

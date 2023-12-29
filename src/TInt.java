@@ -102,6 +102,12 @@ public class TInt extends Tipo{
             return igualQueDosEnteros(o, p.firstElement());
         }
 
+        if (m.equals(INT_METHODS.DISTINTO.name())) {
+            checkBinaryOp("DISTINTO_QUE", p);
+
+            return distintoQueDosEnteros(o, p.firstElement());
+        }
+
         if (m.equals(INT_METHODS.PRINT.name())) {
             if (!p.isEmpty())
                 errorYPara("La función print no necesita parámetros", p);
@@ -307,7 +313,16 @@ public class TInt extends Tipo{
      * @return Objeto dentro de la tabla de símbolos con el resultado de la operacion <a != b>
      */
     private static Objeto distintoQueDosEnteros(Objeto a, Objeto b) {
-        return null;
+        Instancia res = new Instancia(TBool.getTBool());
+        String l = PLXC.tablaSimbolos.getNewEtiq();
+
+        PLXC.out.println(res.getNombre() + " = 1;");
+        PLXC.out.println("if (" + a.getNombre() + " != " + b.getNombre() + ") goto " + l + ";");
+        PLXC.out.println(res.getNombre() + " = 0;");
+        PLXC.out.println(l + ":");
+
+
+        return res;
     }
 
 

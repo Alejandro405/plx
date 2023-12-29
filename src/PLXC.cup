@@ -18,6 +18,14 @@ action code {:
         checkVariable(PLXC.tablaSimbolos.getObj(id));
     }
 
+    public void checkType(Objeto obj, Tipo tipo) {
+        if (!(obj instanceof Instancia))
+            errorYPara("[ERROR]\tNo se puede hacer una asignación si el valor a asignar no es una instancia", new Vector<>(List.of(obj, tipo)));
+        Instancia aux = (Instancia) obj;
+        if (!aux.getTipoInstancia().isParseable(tipo))
+            errorYPara("[ERROR]\tNo se puede hacer una asignación si el valor a asignar no es del mismo tipo o no son parseables entre sii", new Vector<>(List.of(obj, tipo)));
+    }
+
     private String end_and = "", end_or = "";
     private Stack<String> if_tags = new Stack<>();
     private Objeto res_bool;
@@ -49,7 +57,7 @@ terminal String MAS, MENOS, POR, DIV, EQ, NEQ, LT, GT, LE, GE, AND, OR, NOT, ASI
 terminal String IF, WHILE, FOR, DO, PRINT;
 terminal String ELSE, ELSEIF;
 
-nonterminal program, lista_sent, sent, sent_comp, sent_simpl, sent_if, sent_while, op_else;
+nonterminal program, lista_sent, sent, sent_comp, sent_simpl, sent_if, sent_while, op_else, sent_do_while, sent_for;
 nonterminal String and_end, or_end, else_if;
 nonterminal Objeto cond, Get_BoolInstance;
 nonterminal Integer Init_Bloque;
@@ -89,9 +97,75 @@ sent_simpl ::= expr PYC
         | declr PYC
         | PRINT AP expr:valor CP PYC        {:  if (valor != null) RESULT = valor.metodos("PRINT", new Vector());   :}
         | sent_if
-        | sent_while;
+        | sent_while
+        | sent_do_while
+        | sent_for;
 
-sent_while ::= WHILE AP cond:c CP sent;
+sent_while ::= WHILE:whileTag
+                    // WHILE
+                    {:
+                    PLXC.out.println(whileTag + ":");
+                    :}
+                    AP cond:c CP
+                    // if c == 0 goto end_while ;
+                    {:
+                    PLXC.out.println("if (" + c.getNombre() + " == 0) goto end_" + whileTag + ";");
+                    :}
+                    sent
+                    // goto WHILE ;
+                    // end_while:
+                    {:
+                    PLXC.out.println("goto " + whileTag + ";");
+                       PLXC.out.println("end_" + whileTag + " :");:}
+                    ;
+
+sent_do_while ::= DO:doTag // -> Inicio y final del bucle
+                    //DOWHILE:
+                    {:
+                    PLXC.out.println(doTag + ":");
+                    :}
+                     sent
+                    WHILE:whileTag AP cond:c CP // -> Inicio de la condicion de parada
+                    {:
+                        PLXC.out.println("if (" + c.getNombre() + " == 1) goto " + doTag + ";");
+                        PLXC.out.println("end_" + doTag);
+                    :}
+                    // END_DOWHILE
+                    PYC;
+
+sent_for ::= FOR:forTag AP expr:inic
+            // init...
+            // FOR:
+            {:
+                PLXC.out.println(forTag + ":");
+            :}
+            PYC cond:c
+            // if (c == 0) goto FOR_END ;
+            // goto FOR_BODY ;
+            // FOR_ACT:
+            {:
+                PLXC.out.println("if (" + c.getNombre() + " == 0) goto end_" + forTag + ";");
+                PLXC.out.println("goto body_" + forTag + ";");
+                PLXC.out.println("act_" + forTag + ":");
+            :}
+            PYC expr:act
+            // goto FOR ;
+            {:
+                PLXC.out.println("goto " + forTag + ";");
+            :}
+            CP
+            // FOR_BODY :
+            {:
+                PLXC.out.println("body_" + forTag + ":");
+            :}
+            sent
+            {:
+                PLXC.out.println("goto act_" + forTag + ";");
+                PLXC.out.println("end_" + forTag + ":");
+            :}
+            // goto FOR_ACT ;
+            // FOR_END:
+            ;
 
 sent_if ::= IF:ifTag AP cond:c CP       {:
     this.if_tags.push(ifTag);
@@ -154,8 +228,10 @@ list_id ::=  ID:id                   {:
 
 expr ::= AP expr:exp CP             {:  RESULT = exp;   :}
         | ID:id ASIGNA expr:valor   {:
-                  Objeto variable = PLXC.tablaSimbolos.getObj(id);
-                  this.checkVariable(variable);
+                  this.checkVariable(id); // Comprueba que la variable este declarada y que sea una instancia
+                  Instancia variable = (Instancia) PLXC.tablaSimbolos.getObj(id);
+
+                  this.checkType(valor, variable.getTipoInstancia()); // Comprueba que el tipo de la variable sea el mismo que el de la expresion o sean parseables entre sii
                   RESULT = variable.metodos("ASIGNA", new Vector<>(List.of(valor)));
               :}
         | expr:a MAS:op expr:b      {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}

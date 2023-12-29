@@ -59,9 +59,9 @@ char = \'(\\b|\\n|\\f|\\r|\\t|\\\"|\\\\|\\\'|[^\\\'\r\n])\'
 "else"    {return symbol(sym.ELSE);}
 "else if" {return symbol(sym.ELSEIF, PLXC.tablaSimbolos.getNewEtiq());}
 "print"   {return symbol(sym.PRINT);}
-"while"   {return symbol(sym.WHILE);}
-"for"     {return symbol(sym.FOR);}
-"do"      {return symbol(sym.DO);}
+"while"   {return symbol(sym.WHILE, PLXC.tablaSimbolos.getNewEtiq());}
+"for"     {return symbol(sym.FOR, PLXC.tablaSimbolos.getNewEtiq());}
+"do"      {return symbol(sym.DO, PLXC.tablaSimbolos.getNewEtiq());}
 
 "true"    {return symbol(sym.TRUE);}
 "false"   {return symbol(sym.FALSE);}

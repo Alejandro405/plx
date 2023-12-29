@@ -2,6 +2,7 @@ import java_cup.runtime.*;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Stack;
 import java.util.Vector;
 
 action code {:
@@ -17,7 +18,8 @@ action code {:
         checkVariable(PLXC.tablaSimbolos.getObj(id));
     }
 
-    private static String end_if = "", end_and = "", end_or = "";
+    private String end_and = "", end_or = "";
+    private Stack<String> if_tags = new Stack<>();
     private Objeto res_bool;
 :}
 
@@ -44,7 +46,7 @@ terminal Character CARACTER;
 terminal String CADENA;
 terminal Boolean FALSE, TRUE;
 terminal String MAS, MENOS, POR, DIV, EQ, NEQ, LT, GT, LE, GE, AND, OR, NOT, ASIGNA;
-terminal IF, WHILE, FOR, DO, PRINT;
+terminal String IF, WHILE, FOR, DO, PRINT;
 terminal String ELSE, ELSEIF;
 
 nonterminal program, lista_sent, sent, sent_comp, sent_simpl, sent_if, sent_while, op_else;
@@ -91,15 +93,30 @@ sent_simpl ::= expr PYC
 
 sent_while ::= WHILE AP cond:c CP sent;
 
-sent_if ::= IF {:this.end_if = PLXC.tablaSimbolos.getNewEtiq();:} AP:nextElse cond:c CP {: PLXC.out.println("if (" + c.getNombre() + " == 0) goto " + nextElse + ";");:}
-            sent   {: PLXC.out.println("goto " + this.end_if + ";");PLXC.out.println(nextElse + ":");:}
-            else_if {: PLXC.out.println(this.end_if + ":");:};
+sent_if ::= IF:ifTag AP cond:c CP       {:
+    this.if_tags.push(ifTag);
+    PLXC.out.println("if (" + c.getNombre() + " == 0) goto else_" + ifTag + " ;");
+:}
+            sent                        {:
+            PLXC.out.println("goto end_" + ifTag + " ;");
+            PLXC.out.println("else_" + ifTag + ":");
+:}
+            else_if                     {:
+            PLXC.out.println("end_" + ifTag + ":");
+            this.if_tags.pop();
+:};
 
-else_if ::= ELSEIF AP:nextElse cond:c CP {:PLXC.out.println("if (" + c.getNombre() + " == 0) goto " + nextElse + ";");:}
-                sent {:PLXC.out.println("goto " + this.end_if + ";"); PLXC.out.println(nextElse + ":");:}
-                else_if:Else {:RESULT = Else;:}
-            | ELSE sent  {:  RESULT = ""; :}
-            | ;
+else_if ::= ELSEIF:elseIfTag AP cond:c CP           {:
+    PLXC.out.println(" if (" + c.getNombre() + " == 0) goto else_" + elseIfTag + ";");
+:}
+                sent                                {:
+                PLXC.out.println("goto end_" + this.if_tags.peek() + ";");
+                PLXC.out.println("else_" + elseIfTag + ":");
+                :}
+                else_if
+            | ELSE sent
+            |
+            ;
 
 declr ::= tipo:tipo ID:id                           {:
         Instancia newVar = new Instancia(id, tipo, TablaSimbolos.bloqueActual, true);
@@ -107,10 +124,12 @@ declr ::= tipo:tipo ID:id                           {:
 
         RESULT = tipo;
 :}
-        | declr:tipo COMA ID:id                     {:    Instancia newVar = new Instancia(id, tipo, TablaSimbolos.bloqueActual, true);
-                                                            PLXC.tablaSimbolos.putObj(newVar);
+        | declr:tipo COMA ID:id                     {:
+        Instancia newVar = new Instancia(id, tipo, TablaSimbolos.bloqueActual, true);
+        PLXC.tablaSimbolos.putObj(newVar);
 
-                                                            RESULT = tipo;:}
+        RESULT = tipo;
+:}
         | tipo:tipo ID:id ASIGNA expr:exp           {:
                         Instancia newVar = new Instancia(id, tipo, TablaSimbolos.bloqueActual, true);
                         PLXC.tablaSimbolos.putObj(newVar);

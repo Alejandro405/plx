@@ -1,7 +1,7 @@
 default: clean Parser Lexer
 
 Parser:
-	cup -parser Parser PLXC.cup
+	cup PLXC.cup
 
 Lexer:
 	jflex PLXC.flex

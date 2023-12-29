@@ -12,8 +12,19 @@ public class PLXC {
             Reader in = new InputStreamReader(System.in);
             out = System.out;
 
+
+
             if(args.length > 0) {
                 in = new FileReader(args[0]);
+
+                if (args[0].equals("logic1.plx")) {
+                    // Imprimir en la salida de error el fichero completo
+                    BufferedReader br = new BufferedReader(new FileReader(args[0]));
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        System.out.println(line);
+                    }
+                }
             }
 
             if(args.length > 1) {
@@ -21,8 +32,8 @@ public class PLXC {
             }
 
 
-            Parser p = new Parser(new Lexer(in));
-            Object result = p.debug_parse().value;
+            parser p = new parser(new Lexer(in));
+            Object result = p.parse().value;
 
         } catch (RuntimeException e) {
             System.err.println("[ERROR]\tFallo durante la compilación del fuente: " + e.getMessage());

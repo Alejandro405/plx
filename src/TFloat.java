@@ -20,6 +20,11 @@ public class TFloat extends Tipo {
     }
 
     @Override
+    public boolean isParseable(Tipo tipo) {
+        return false;
+    }
+
+    @Override
     public Objeto metodosInstancia(Objeto o, String m, Vector<Objeto> p) {
         if (!(o instanceof Instancia)) errorYPara("Error de tipo, el objeto no es una instancia", p);
         if (((Instancia) o).getTipoInstancia() != T_FLOAT)
@@ -94,6 +99,11 @@ public class TFloat extends Tipo {
         errorYPara("El método " + m + " no está definido para el tipo float", p);
 
         return null;
+    }
+
+    @Override
+    public Tipo getTipo() {
+        return T_FLOAT;
     }
 
     private void checkBinaryOp(Vector<Objeto> p, String m) {

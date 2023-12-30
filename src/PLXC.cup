@@ -20,10 +20,10 @@ action code {:
 
     public void checkType(Objeto obj, Tipo tipo) {
         if (!(obj instanceof Instancia))
-            errorYPara("[ERROR]\tNo se puede hacer una asignación si el valor a asignar no es una instancia", new Vector<>(List.of(obj, tipo)));
+            Objeto.errorYPara("[ERROR]\tNo se puede hacer una asignación si el valor a asignar no es una instancia", new Vector<>(List.of(obj, tipo)));
         Instancia aux = (Instancia) obj;
         if (!aux.getTipoInstancia().isParseable(tipo))
-            errorYPara("[ERROR]\tNo se puede hacer una asignación si el valor a asignar no es del mismo tipo o no son parseables entre sii", new Vector<>(List.of(obj, tipo)));
+            Objeto.errorYPara("[ERROR]\tNo se puede hacer una asignación si el valor a asignar no es del mismo tipo o no son parseables entre sii", new Vector<>(List.of(obj, tipo)));
     }
 
     private String end_and = "", end_or = "";
@@ -50,7 +50,7 @@ terminal Tipo INT, FLOAT, CHAR, STRING, U_MINUS;
 terminal String ID;
 terminal Integer NUM_ENTERO;
 terminal Float NUM_REAL;
-terminal Character CARACTER;
+terminal Integer CARACTER;
 terminal String CADENA;
 terminal Boolean FALSE, TRUE;
 terminal String MAS, MENOS, POR, DIV, EQ, NEQ, LT, GT, LE, GE, AND, OR, NOT, ASIGNA;
@@ -242,7 +242,7 @@ expr ::= AP expr:exp CP             {:  RESULT = exp;   :}
         | ID:id                     {:  checkVariable(id); RESULT = PLXC.tablaSimbolos.getObj(id);  :}
         | NUM_ENTERO:num            {:  RESULT = new Instancia(num.toString(), TInt.getTInt(), TablaSimbolos.bloqueActual, false);          :}
         | NUM_REAL:num              {:  RESULT = new Instancia(num.toString(), TFloat.getTFloat(), TablaSimbolos.bloqueActual, false);      :}
-        | CHAR:c                    {:  RESULT = new Instancia(String.valueOf(c), TChar.getTChar(), TablaSimbolos.bloqueActual, false);     :}
+        | CARACTER:c                    {:  RESULT = new Instancia(c.toString(), TChar.getTChar(), TablaSimbolos.bloqueActual, false);     :}
         ;
 
 cond ::=  AP cond:a CP          {:  RESULT = a;     :}

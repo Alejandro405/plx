@@ -18,6 +18,11 @@ public class TString extends TArray{
     }
 
     @Override
+    public boolean isParseable(Tipo tipo) {
+        return false;
+    }
+
+    @Override
     public Objeto metodosInstancia(Objeto o, String m, Vector<Objeto> p) {
         return null;
     }

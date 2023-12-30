@@ -17,4 +17,6 @@ public abstract class Tipo extends Objeto{
      * @return Objeto con el que acceder al valor de la operación. No el valor en sí, la variable CTD que lo almacena
      */
     public abstract Objeto metodosInstancia(Objeto o, String m, Vector<Objeto> p);
+
+    public abstract Tipo getTipo();
 }

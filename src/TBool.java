@@ -20,6 +20,11 @@ public class TBool extends Tipo{
     }
 
     @Override
+    public boolean isParseable(Tipo tipo) {
+        return false;
+    }
+
+    @Override
     public Objeto metodosInstancia(Objeto o, String m, Vector<Objeto> p) {
         if (!(o instanceof Instancia))
             errorYPara("[ERROR]\tSolo es posible ejecutar" + m + " sobre una instancia", p);
@@ -38,6 +43,11 @@ public class TBool extends Tipo{
         }
 
         return null;
+    }
+
+    @Override
+    public Tipo getTipo() {
+        return getTBool();
     }
 
     private static void checkBinBoolOper(String m, Vector<Objeto> p) {

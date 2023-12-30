@@ -30,6 +30,7 @@ entero = 0 | [1-9][0-9]*
                                                                                 //sintaxis que en Java, usando comillas simples, (por ejemplo ‘a’) y pudiendo usar las secuencias de escape
                                                                                 //al igual que en Java para los caracteres especiales (‘\b’,’\n’,’\f’,’\r’,’\t’,’\”’,’\\’,’\’’)
 char = \'(\\b|\\n|\\f|\\r|\\t|\\\"|\\\\|\\\'|[^\\\'\r\n])\'
+unicode_char = \'(\\u[0-9a-fA-F]{4})\'
 
 %%
 
@@ -48,8 +49,8 @@ char = \'(\\b|\\n|\\f|\\r|\\t|\\\"|\\\\|\\\'|[^\\\'\r\n])\'
 "="       {return symbol(sym.ASIGNA);}
 "=="      {return symbol(sym.EQ);}
 "!="      {return symbol(sym.NEQ);}
-"&&"       {return symbol(sym.AND);}
-"||"       {return symbol(sym.OR);}
+"&&"      {return symbol(sym.AND);}
+"||"      {return symbol(sym.OR);}
 "!"       {return symbol(sym.NOT);}
 ">"       {return symbol(sym.GT);}
 "<"       {return symbol(sym.LT);}
@@ -71,11 +72,14 @@ char = \'(\\b|\\n|\\f|\\r|\\t|\\\"|\\\\|\\\'|[^\\\'\r\n])\'
 "char"    { return symbol(sym.CHAR);}
 "String"  { return symbol(sym.STRING);}
 
+{unicode_char} {
+          return symbol(sym.CARACTER, Integer.parseInt(yytext().substring(3, 7), 16)); }
 {id}      { return symbol(sym.ID, yytext()); }
 {cadena}  { return symbol(sym.CADENA, new String(yytext().substring(1,yytext().length()-1))); }
 {real}    { return symbol(sym.NUM_REAL, Float.valueOf(yytext())); }
 {entero}  { return symbol(sym.NUM_ENTERO, Integer.valueOf(yytext())); }
-{char}    { return symbol(sym.CHAR, new Character(yytext().charAt(1))); }
+{char}    { return symbol(sym.CARACTER, Integer.valueOf(yytext().charAt(1))); }
+
 
 // Expresion regular para reconocer un comentario de una línea
 \/\/[^\r\n]*(\r|\n|\r\n) {;}

@@ -23,6 +23,11 @@ public class TInt extends Tipo{
     }
 
     @Override
+    public boolean isParseable(Tipo tipo) {
+        return false;
+    }
+
+    @Override
     public Objeto metodosInstancia(Objeto o, String m, Vector<Objeto> p) {
         if (!(o instanceof Instancia))  errorYPara("Error de tipo, el objeto no es una instancia", p);
         if (((Instancia) o ).getTipoInstancia() != T_INT)    errorYPara("Error de tipo, el objto sí es una instancia pero no es un entero", p);
@@ -120,6 +125,11 @@ public class TInt extends Tipo{
         errorYPara("Operación no contemplada para el tipo entero. La operación en cuestión es [".concat(m).concat("]"), p);
 
         return null;
+    }
+
+    @Override
+    public Tipo getTipo() {
+        return T_INT;
     }
 
     private static void checkBinaryOp(String op, Vector<Objeto> p) {

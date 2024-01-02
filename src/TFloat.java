@@ -21,7 +21,7 @@ public class TFloat extends Tipo {
 
     @Override
     public boolean isParseable(Tipo tipo) {
-        return false;
+        return true;
     }
 
     @Override
@@ -45,7 +45,7 @@ public class TFloat extends Tipo {
             checkBinaryOp(p, m);
 
             Instancia res = new Instancia(Objeto.newNombreObjeto(),T_FLOAT, TablaSimbolos.bloqueActual, false);
-            PLXC.out.println(res.getNombre() + "=" + o.getNombre() + "+" + p.firstElement().getNombre() + ";");
+            PLXC.out.println(res.getNombre() + "=" + o.getNombre() + " +" + p.firstElement().getNombre() + ";");
 
             return res;
         }
@@ -54,7 +54,7 @@ public class TFloat extends Tipo {
             checkBinaryOp(p, m);
 
             Instancia res = new Instancia(Objeto.newNombreObjeto(),T_FLOAT, TablaSimbolos.bloqueActual, false);
-            PLXC.out.println(res.getNombre() + " = " + o.getNombre() + " - " + p.firstElement().getNombre() + ";");
+            PLXC.out.println(res.getNombre() + " = " + o.getNombre() + " -" + p.firstElement().getNombre() + ";");
 
             return res;
         }
@@ -63,7 +63,7 @@ public class TFloat extends Tipo {
             checkBinaryOp(p, m);
 
             Instancia res = new Instancia(Objeto.newNombreObjeto(),T_FLOAT, TablaSimbolos.bloqueActual, false);
-            PLXC.out.println(res.getNombre() + " = " + o.getNombre() + " * " + p.firstElement().getNombre() + ";");
+            PLXC.out.println(res.getNombre() + " = " + o.getNombre() + " *" + p.firstElement().getNombre() + ";");
 
             return res;
         }
@@ -72,7 +72,7 @@ public class TFloat extends Tipo {
             checkBinaryOp(p, m);
 
             Instancia res = new Instancia(Objeto.newNombreObjeto(),T_FLOAT, TablaSimbolos.bloqueActual, false);
-            PLXC.out.println(res.getNombre() + " = " + o.getNombre() + " / " + p.firstElement().getNombre() + ";");
+            PLXC.out.println(res.getNombre() + " = " + o.getNombre() + " /" + p.firstElement().getNombre() + ";");
 
             return res;
         }
@@ -85,6 +85,36 @@ public class TFloat extends Tipo {
             PLXC.out.println(res.getNombre() + " = 0 -" + o.getNombre() + ";");
 
             return res;
+        }
+
+        if (m.equals(FLOAT_METHODS.MAYOR.name())) {
+            checkBinaryOp(p, m);
+            return mayorQueDosReales(o, p.firstElement());
+        }
+
+        if (m.equals(FLOAT_METHODS.MENOR.name())) {
+            checkBinaryOp(p, m);
+            return menorQueDosReales(o, p.firstElement());
+        }
+
+        if (m.equals(FLOAT_METHODS.MAYOR_IGUAL.name())) {
+            checkBinaryOp(p, m);
+            return mayorIgualQueDosReales(o, p.firstElement());
+        }
+
+        if (m.equals(FLOAT_METHODS.MENOR_IGUAL.name())) {
+            checkBinaryOp(p, m);
+            return menorIgualQueDosReales(o, p.firstElement());
+        }
+
+        if (m.equals(FLOAT_METHODS.IGUAL.name())) {
+            checkBinaryOp(p, m);
+            return igualQueDosReales(o, p.firstElement());
+        }
+
+        if (m.equals(FLOAT_METHODS.DISTINTO.name())) {
+            checkBinaryOp(p, m);
+            return distintoQueDosReales(o, p.firstElement());
         }
 
         if (m.equals(FLOAT_METHODS.PRINT.name())) {
@@ -101,9 +131,85 @@ public class TFloat extends Tipo {
         return null;
     }
 
+    private static Objeto distintoQueDosReales(Objeto a, Objeto b) {
+        Instancia res = new Instancia(TBool.getTBool());
+        String l = PLXC.tablaSimbolos.getNewEtiq();
+
+        PLXC.out.println(res.getNombre() + " = 1;");
+        PLXC.out.println("if (" + a.getNombre() + " != " + b.getNombre() + ") goto " + l + ";");
+        PLXC.out.println(res.getNombre() + " = 0;");
+        PLXC.out.println(l + ":");
+
+
+        return res;
+    }
+
+    private static Objeto igualQueDosReales(Objeto a, Objeto b) {
+        Instancia res = new Instancia(Objeto.newNombreObjeto(), TBool.getTBool(), TablaSimbolos.bloqueActual, false);
+        String l = PLXC.tablaSimbolos.getNewEtiq();
+
+        PLXC.out.println(res.getNombre() + " = 1;");
+        PLXC.out.println("if (" + a.getNombre() + " == " + b.getNombre() + ") goto " + l + ";");
+        PLXC.out.println(res.getNombre() + " = 0;");
+        PLXC.out.println(l + ":");
+
+        return res;
+    }
+
+    private static Objeto menorIgualQueDosReales(Objeto a, Objeto b) {
+        return genIfLessOrEqual(a, b);
+    }
+
+    private Objeto mayorIgualQueDosReales(Objeto a, Objeto b) {
+        return genIfLessOrEqual(b, a);
+    }
+
+    private static Objeto menorQueDosReales(Objeto a, Objeto b) {
+        return genIfLessThan(a, b);
+    }
+
+    private static Objeto mayorQueDosReales(Objeto a, Objeto b) {
+        return genIfLessThan(b, a);
+    }
+
+    private static Instancia genIfLessThan(Objeto a, Objeto b) {
+        Instancia res = new Instancia(Objeto.newNombreObjeto(), TBool.getTBool(), TablaSimbolos.bloqueActual, false);
+        String l = PLXC.tablaSimbolos.getNewEtiq();
+        PLXC.out.println(res.getNombre() + " = 1;");
+        PLXC.out.println("if (" + a.getNombre() + " < " + b.getNombre() + ") goto " + l + ";");
+        PLXC.out.println(res.getNombre() + " = 0;");
+        PLXC.out.println(l + ":");
+
+        return res;
+    }
+
+    private static Objeto genIfLessOrEqual(Objeto a, Objeto b) {
+        Instancia res = new Instancia(Objeto.newNombreObjeto(), TBool.getTBool(), TablaSimbolos.bloqueActual, false);
+        String l = PLXC.tablaSimbolos.getNewEtiq();
+
+        PLXC.out.println(res.getNombre() + " = 1;");
+        PLXC.out.println("if (" + a.getNombre() + " < " + b.getNombre() + ") goto " + l + ";");
+        PLXC.out.println("if (" + a.getNombre() + " == " + b.getNombre() + ") goto " + l + ";");
+        PLXC.out.println(res.getNombre() + " = 0;");
+        PLXC.out.println(l + ":");
+        return res;
+    }
+
     @Override
     public Tipo getTipo() {
         return T_FLOAT;
+    }
+
+    @Override
+    public Instancia cast(Tipo tarTipo, Instancia valor) {
+        if (tarTipo == TInt.getTInt() || tarTipo == TChar.getTChar()) {
+            Instancia res = new Instancia(tarTipo);
+            PLXC.out.println(res.getNombre() + " = (int) " + valor.getNombre() + ";");
+            return res;
+        } else {
+            errorYPara("[ERROR]\tNo se contempla el casting de float a " + tarTipo.getTipo(), new Vector<>(List.of(valor)));
+            return null;
+        }
     }
 
     private void checkBinaryOp(Vector<Objeto> p, String m) {

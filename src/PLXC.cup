@@ -57,7 +57,7 @@ terminal String MAS, MENOS, POR, DIV, EQ, NEQ, LT, GT, LE, GE, AND, OR, NOT, ASI
 terminal String IF, WHILE, FOR, DO, PRINT;
 terminal String ELSE, ELSEIF;
 
-nonterminal program, lista_sent, sent, sent_comp, sent_simpl, sent_if, sent_while, op_else, sent_do_while, sent_for;
+nonterminal program, lista_sent, sent, sent_comp, sent_simpl, sent_if, sent_while, op_else, sent_do_while, sent_for, for_expr;
 nonterminal String and_end, or_end, else_if;
 nonterminal Objeto cond, Get_BoolInstance;
 nonterminal Integer Init_Bloque;
@@ -122,18 +122,22 @@ sent_while ::= WHILE:whileTag
 sent_do_while ::= DO:doTag // -> Inicio y final del bucle
                     //DOWHILE:
                     {:
-                    PLXC.out.println(doTag + ":");
+                    PLXC.out.println("DO_" + doTag + ":");
                     :}
                      sent
-                    WHILE:whileTag AP cond:c CP // -> Inicio de la condicion de parada
+                    WHILE:whileTag AP cond:c CP PYC// -> Inicio de la condicion de parada
                     {:
-                        PLXC.out.println("if (" + c.getNombre() + " == 1) goto " + doTag + ";");
-                        PLXC.out.println("end_" + doTag);
+                        PLXC.out.println("if (" + c.getNombre() + " == 1) goto DO_" + doTag + " ;");
+                        PLXC.out.println("END_DO_" + doTag + ":");
                     :}
                     // END_DOWHILE
-                    PYC;
+                    ;
 
-sent_for ::= FOR:forTag AP expr:inic
+for_expr ::= expr:expr
+            |
+            ;
+
+sent_for ::= FOR:forTag AP for_expr:inic
             // init...
             // FOR:
             {:
@@ -148,7 +152,7 @@ sent_for ::= FOR:forTag AP expr:inic
                 PLXC.out.println("goto body_" + forTag + ";");
                 PLXC.out.println("act_" + forTag + ":");
             :}
-            PYC expr:act
+            PYC for_expr:act
             // goto FOR ;
             {:
                 PLXC.out.println("goto " + forTag + ";");
@@ -239,6 +243,20 @@ expr ::= AP expr:exp CP             {:  RESULT = exp;   :}
         | expr:a POR:op expr:b      {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
         | expr:a DIV:op expr:b      {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
         | MENOS:op expr:exp         {:  RESULT = exp.metodos("UMENOS", new Vector());       :}   %prec U_MINUS
+        | AP tipo:tipoDst CP expr:exp            {:
+
+        if (exp instanceof Instancia) {
+            Instancia aux = ((Instancia)exp).getTipoInstancia().cast(tipoDst, (Instancia) exp);
+            if (aux != null) {
+                RESULT = aux;
+            } else {
+                Objeto.errorYPara("[ERROR]\tNo se puede hacer una asignación si el valor a asignar no es del mismo tipo o no son parseables entre sii", new Vector<>());
+            }
+        } else {
+            Objeto.errorYPara("[ERROR]\tNo se puede hacer un casting si el valor a asignar no es una instancia", new Vector<>());
+        }
+
+        :}
         | ID:id                     {:  checkVariable(id); RESULT = PLXC.tablaSimbolos.getObj(id);  :}
         | NUM_ENTERO:num            {:  RESULT = new Instancia(num.toString(), TInt.getTInt(), TablaSimbolos.bloqueActual, false);          :}
         | NUM_REAL:num              {:  RESULT = new Instancia(num.toString(), TFloat.getTFloat(), TablaSimbolos.bloqueActual, false);      :}
@@ -276,12 +294,15 @@ cond ::=  AP cond:a CP          {:  RESULT = a;     :}
         | expr:a EQ expr:b      {:  RESULT = a.metodos("IGUAL", new Vector(List.of(b)));          :}
         | expr:a NEQ expr:b     {:  RESULT = a.metodos("DISTINTO", new Vector(List.of(b)));       :}
         | FALSE                 {:  RESULT = new Instancia("0", TBool.getTBool(), TablaSimbolos.bloqueActual, false);   :}
-        | TRUE                  {:  RESULT = new Instancia("1", TBool.getTBool(), TablaSimbolos.bloqueActual, false);    :};
+        | TRUE                  {:  RESULT = new Instancia("1", TBool.getTBool(), TablaSimbolos.bloqueActual, false);    :}
+        ;
 
 tipo ::= INT:t          {:    RESULT = TInt.getTInt();            :}
         | FLOAT:t       {:    RESULT = TFloat.getTFloat();        :}
         | CHAR:t        {:    RESULT = TChar.getTChar();          :}
-        | STRING:t      {:    RESULT = TString.getInstance();     :};
+        | STRING:t      {:    RESULT = TString.getInstance();     :}
+        |               {:    RESULT = TInt.getTInt();            :}
+        ;
 
 Init_Bloque ::=  {:  RESULT = TablaSimbolos.newBloque();     :};
 

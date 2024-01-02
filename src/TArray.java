@@ -23,5 +23,12 @@ public abstract class TArray extends Tipo{
     public Tipo getTipo() {
         return tipo;
     }
-    
+
+    @Override
+    public String toString() {
+        return "TArray{" +
+                "tam=" + tam +
+                ", tipo=" + tipo +
+                '}';
+    }
 }

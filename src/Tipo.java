@@ -19,4 +19,13 @@ public abstract class Tipo extends Objeto{
     public abstract Objeto metodosInstancia(Objeto o, String m, Vector<Objeto> p);
 
     public abstract Tipo getTipo();
+
+    /**
+     * Genera una instancia cuyo nombre representa la expresion cftd que realiza el casteo de tipos
+     *
+     * @param tarTipo  Tipo al que se quiere castear
+     * @param valor  Instancia de tipo entero a castear
+     * @return La expresión en CTD que realiza el casteo de la instancia
+     */
+    public abstract Instancia cast(Tipo tarTipo, Instancia valor);
 }

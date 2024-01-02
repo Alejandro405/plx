@@ -14,3 +14,6 @@ plx:
 
 ctd:
 	../resources/ctd
+
+entrega:
+	zip -r ../entrega/plxc.zip . -x Makefile Chueleta.java Lexer.java Parser.java sym.java test1.plxc

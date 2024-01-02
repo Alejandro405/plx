@@ -19,11 +19,16 @@ public class TString extends TArray{
 
     @Override
     public boolean isParseable(Tipo tipo) {
-        return false;
+        return true;
     }
 
     @Override
     public Objeto metodosInstancia(Objeto o, String m, Vector<Objeto> p) {
+        return null;
+    }
+
+    @Override
+    public Instancia cast(Tipo tarTipo, Instancia valor) {
         return null;
     }
 
@@ -52,4 +57,6 @@ public class TString extends TArray{
     public void setElem(int i, Objeto o) {
 
     }
+
+
 }

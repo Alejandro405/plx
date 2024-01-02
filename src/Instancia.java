@@ -38,4 +38,11 @@ public class Instancia extends Objeto{
     public static Instancia getCharConstant(Character valor){
         return new Instancia(valor.toString(), TChar.getTChar(), 0, false);
     }
+
+    @Override
+    public String toString() {
+        return "Instancia{" +
+                "tipoInstancia=" + tipoInstancia +
+                '}';
+    }
 }

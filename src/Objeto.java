@@ -50,6 +50,7 @@ public abstract class Objeto implements Comparable<Objeto>{
      * @param params Parámetos soble los que se oriigina el error
      */
     public static void errorYPara(String msg, Vector<Objeto> params) {
+        PLXC.out.println("error;\nhalt;");
         throw new RuntimeException(msg.concat(". Parámetros: " + params.toString()));
     }
 
@@ -71,5 +72,14 @@ public abstract class Objeto implements Comparable<Objeto>{
         int res = this.nombre.compareTo(o.nombre);
 
         return res == 0 ? (this.bloque - o.bloque) : res;
+    }
+
+    @Override
+    public String toString() {
+        return "Objeto{" +
+                "nombre='" + nombre + '\'' +
+                ", bloque=" + bloque +
+                ", mutable=" + mutable +
+                '}';
     }
 }

@@ -64,7 +64,7 @@ public class TChar extends Tipo{
         if (m.equals(CHAR_METHODS.SUMA.name())) {
             Objeto res = null;
             if (p.size() == 1) {
-                if (sameType(p.get(0)))
+                if (((Instancia) p.firstElement()).getTipoInstancia() == T_CHAR)
                     res = concatDosChars(o, p.get(0));
                 else if (((Instancia) p.firstElement()).getTipoInstancia() == TInt.getTInt())
                     res = sumaDosChars(o, p.get(0));
@@ -113,6 +113,20 @@ public class TChar extends Tipo{
     @Override
     public Tipo getTipo() {
         return getTChar();
+    }
+
+    @Override
+    public Instancia cast(Tipo tarTipo, Instancia valor) {
+        if (tarTipo == TInt.getTInt()) {
+            return new Instancia(valor.getNombre(), tarTipo, TablaSimbolos.bloqueActual, false);
+        } else if (tarTipo == TFloat.getTFloat()) {
+            Instancia res = new Instancia(tarTipo);
+            PLXC.out.println(res.getNombre() + " = (float) " + valor.getNombre() + ";");
+            return res;
+        } else {
+            errorYPara("[ERROR]\tNo se contempla el casting de char a " + tarTipo.getTipo(), new Vector<>(List.of(valor)));
+            return null;
+        }
     }
 
     public static TChar getTChar(){

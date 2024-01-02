@@ -21,7 +21,7 @@ public class TBool extends Tipo{
 
     @Override
     public boolean isParseable(Tipo tipo) {
-        return false;
+        return true;
     }
 
     @Override
@@ -48,6 +48,11 @@ public class TBool extends Tipo{
     @Override
     public Tipo getTipo() {
         return getTBool();
+    }
+
+    @Override
+    public Instancia cast(Tipo tarTipo, Instancia valor) {
+        return null;
     }
 
     private static void checkBinBoolOper(String m, Vector<Objeto> p) {

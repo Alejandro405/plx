@@ -73,7 +73,8 @@ precedence  left        U_MINUS;
 precedence  left        EQ, LE, GE;
 precedence  left        NEQ, LT, GT;
 precedence  left        NOT, AND, OR;
-precedence  left        ID, NUM_ENTERO, NUM_REAL, FALSE, TRUE;
+precedence  left        ID, NUM_ENTERO, NUM_REAL;
+precedence  left        FALSE, TRUE, CARACTER;
 precedence  left        ELSEIF;
 
 precedence  nonassoc    AP, CP;

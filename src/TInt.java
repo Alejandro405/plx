@@ -36,13 +36,14 @@ public class TInt extends Tipo{
 
         // LLegados hasta aquí, estamos seguros de que o es una instancia de tipo entero
         if (m.equals(INT_METHODS.ASIGNA.name())) {
-            if (!(p.size() == 1 && sameType(p.firstElement())))
+            Tipo aux = ((Instancia)p.firstElement()).getTipoInstancia();
+            if (!(p.size() == 1 && aux == T_INT))
                 errorYPara("La asignación solo opera con un argumento de tipo entero, será necesario un casteo del valor para asignar", p);
             if (!o.getMutable())
                 errorYPara("La variable sobre la que se realizó la asignación no es mutable", new Vector<>(List.of(o, p.firstElement())));
 
             Objeto valor = p.firstElement();
-            PLXC.out.println(o.getNombre() + "=" + valor.getNombre() + ";");
+            PLXC.out.println(o.getNombre() + " = " + valor.getNombre() + ";");
 
             return o;
         }
@@ -147,6 +148,10 @@ public class TInt extends Tipo{
             Instancia res = new Instancia(tarTipo);
             PLXC.out.println(res.getNombre() + " = (float) " + valor.getNombre() + ";");
             return res;
+        } else if (tarTipo == T_INT) {
+            Instancia res = new Instancia(tarTipo);
+            PLXC.out.println(res.getNombre() + " = " + valor.getNombre() + ";");
+            return res;
         } else {
             errorYPara("No se puede castear el tipo entero a ".concat(tarTipo.getNombre()), new Vector<>(List.of(valor)));
             return null;
@@ -165,7 +170,8 @@ public class TInt extends Tipo{
     }
 
     private static boolean sameType(Objeto o ) {
-        return (((Instancia)o).getTipoInstancia() == T_INT || ((Instancia)o).getTipoInstancia() == TChar.getTChar())
+        Tipo aux = ((Instancia)o).getTipoInstancia();
+        return (aux == T_INT || aux == TFloat.getTFloat() || aux == TChar.getTChar())
                 && o.getClass() == Instancia.class;
     }
 
@@ -187,13 +193,13 @@ public class TInt extends Tipo{
         // Obj contrndrá la etiqueta con el resultado de la suma dentro de la tabla de símbolos
         Instancia obj = null;
 
-        if (aux.getTipoInstancia() == T_INT) {
+        if (aux.getTipoInstancia() == T_INT || aux.getTipoInstancia() == TChar.getTChar()) {
             obj = new Instancia(Objeto.newNombreObjeto(), T_INT,TablaSimbolos.bloqueActual, false);
 
-            PLXC.out.println(obj.getNombre() + "=" + o.getNombre() + " + " + p.getNombre() + ";");
+            PLXC.out.println(obj.getNombre() + " = " + o.getNombre() + " + " + p.getNombre() + ";");
         } else {
             obj = new Instancia(Objeto.newNombreObjeto(), TFloat.getTFloat(), TablaSimbolos.bloqueActual, false);
-            PLXC.out.println(obj.getNombre() + "=" + o.getNombre() + " +r " + p.getNombre() + ";");
+            PLXC.out.println(obj.getNombre() + " = " + o.getNombre() + " +r " + p.getNombre() + ";");
         }
         /**/
         return obj;
@@ -211,15 +217,13 @@ public class TInt extends Tipo{
     private static Objeto restaDosEnteros(Objeto o, Objeto p) {
         Instancia result = null;
         Instancia aux = (Instancia) p;
-        if (aux.getTipoInstancia() == T_INT) {
+        if (aux.getTipoInstancia() == T_INT || aux.getTipoInstancia() == TChar.getTChar()) {
             result = new Instancia(Objeto.newNombreObjeto(), T_INT, TablaSimbolos.bloqueActual, false);
             PLXC.out.println(result.getNombre() + " =" + o.getNombre() + " - " + p.getNombre() + " ;");
         } else {
             result = new Instancia(Objeto.newNombreObjeto(), TFloat.getTFloat(), TablaSimbolos.bloqueActual, false);
             PLXC.out.println(result.getNombre() + " =" + o.getNombre() + " -r " + p.getNombre() + " ;");
         }
-
-        PLXC.out.println(result.getNombre() + " =" + o.getNombre() + " - " + p.getNombre() + " ;");
 
         return result;
     }
@@ -236,7 +240,7 @@ public class TInt extends Tipo{
     private static Objeto divideDosEnteros(Objeto o, Objeto p) {
         Instancia aux =  (Instancia) p;
         Instancia result = null;
-        if (aux.getTipoInstancia() == T_INT) {
+        if (aux.getTipoInstancia() == T_INT || aux.getTipoInstancia() == TChar.getTChar()) {
             result = new Instancia(Objeto.newNombreObjeto(), T_INT, TablaSimbolos.bloqueActual, false);
             PLXC.out.println(result.getNombre() + " =" + o.getNombre() + " / " + p.getNombre() + " ;");
         } else {

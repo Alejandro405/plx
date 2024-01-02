@@ -76,8 +76,8 @@ unicode_char = \'(\\u[0-9a-fA-F]{4})\'
           return symbol(sym.CARACTER, Integer.parseInt(yytext().substring(3, 7), 16)); }
 {id}      { return symbol(sym.ID, yytext()); }
 {cadena}  { return symbol(sym.CADENA, new String(yytext().substring(1,yytext().length()-1))); }
-{real}    { return symbol(sym.NUM_REAL, Float.valueOf(yytext())); }
 {entero}  { return symbol(sym.NUM_ENTERO, Integer.valueOf(yytext())); }
+{real}    { return symbol(sym.NUM_REAL, Float.valueOf(yytext())); }
 {char}    { return symbol(sym.CARACTER, Integer.valueOf(yytext().charAt(1))); }
 
 

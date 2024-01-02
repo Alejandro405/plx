@@ -46,7 +46,8 @@ public class TChar extends Tipo{
         if (((Instancia) o).getTipoInstancia() != T_CHAR) errorYPara("[ERROR]\tEl objeto proporcionado no es una instancia", new Vector<>(List.of(o)));
 
         if (m.equals(CHAR_METHODS.ASIGNA.name())) {
-            checkBinaryOp("asignación", p);
+            if (p.size() != 1 || ((Instancia) p.firstElement()).getTipoInstancia() != T_CHAR)
+                errorYPara("[ERROR]\tLa asignación entre chars solo se contempla para un valor", p);
             if (!o.getMutable())
                 errorYPara("[ERROR]\tEl objeto proporcionado para la asignación entre chars no es mutable", new Vector<>(List.of(o)));
 
@@ -113,7 +114,7 @@ public class TChar extends Tipo{
      * @return Variable en la que se referencia el resultado (instancia de tipo entero) de la resta en el lenguaje de tres direcciones.
      */
     private Objeto restaDosChars(Objeto o, Objeto objeto) {
-        Objeto res = new Instancia(TInt.getTInt());
+        Instancia res = new Instancia(TInt.getTInt());
 
         PLXC.out.println(res.getNombre() + " = " + o.getNombre() + " - " + objeto.getNombre() + ";" );
 

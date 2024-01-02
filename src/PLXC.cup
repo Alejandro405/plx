@@ -76,6 +76,10 @@ precedence  left        NOT, AND, OR;
 precedence  left        ID, NUM_ENTERO, NUM_REAL, FALSE, TRUE;
 precedence  left        ELSEIF;
 
+precedence  nonassoc    AP, CP;
+precedence  nonassoc    AC, CC;
+precedence  nonassoc    ALL, CLL;
+
 
 start with program;
 

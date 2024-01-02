@@ -183,11 +183,19 @@ public class TInt extends Tipo{
      * @return Objeto dentro de la tabla de símbolos con el resultado de la operacion <a + b>
      */
     private static Objeto sumaDosEnteros(Objeto o, Objeto p) {
-
+        Instancia aux = (Instancia) p;
         // Obj contrndrá la etiqueta con el resultado de la suma dentro de la tabla de símbolos
-        Instancia obj = new Instancia(Objeto.newNombreObjeto(), T_INT,TablaSimbolos.bloqueActual, false);
+        Instancia obj = null;
+
+        if (aux.getTipoInstancia() == T_INT) {
+            obj = new Instancia(Objeto.newNombreObjeto(), T_INT,TablaSimbolos.bloqueActual, false);
+
+            PLXC.out.println(obj.getNombre() + "=" + o.getNombre() + " + " + p.getNombre() + ";");
+        } else {
+            obj = new Instancia(Objeto.newNombreObjeto(), TFloat.getTFloat(), TablaSimbolos.bloqueActual, false);
+            PLXC.out.println(obj.getNombre() + "=" + o.getNombre() + " +r " + p.getNombre() + ";");
+        }
         /**/
-        PLXC.out.println(obj.getNombre() + "=" + o.getNombre() + "+" + p.getNombre() + ";");
         return obj;
     }
 
@@ -201,7 +209,15 @@ public class TInt extends Tipo{
      * @return Objeto dentro de la tabla de símbolos con el resultado de la operacion <a - b>
      */
     private static Objeto restaDosEnteros(Objeto o, Objeto p) {
-        Instancia result = new Instancia(Objeto.newNombreObjeto(), T_INT, TablaSimbolos.bloqueActual, false);
+        Instancia result = null;
+        Instancia aux = (Instancia) p;
+        if (aux.getTipoInstancia() == T_INT) {
+            result = new Instancia(Objeto.newNombreObjeto(), T_INT, TablaSimbolos.bloqueActual, false);
+            PLXC.out.println(result.getNombre() + " =" + o.getNombre() + " - " + p.getNombre() + " ;");
+        } else {
+            result = new Instancia(Objeto.newNombreObjeto(), TFloat.getTFloat(), TablaSimbolos.bloqueActual, false);
+            PLXC.out.println(result.getNombre() + " =" + o.getNombre() + " -r " + p.getNombre() + " ;");
+        }
 
         PLXC.out.println(result.getNombre() + " =" + o.getNombre() + " - " + p.getNombre() + " ;");
 
@@ -218,9 +234,17 @@ public class TInt extends Tipo{
      * @return Objeto dentro de la tabla de símbolos con el resultado de la operacion <a / b>
      */
     private static Objeto divideDosEnteros(Objeto o, Objeto p) {
+        Instancia aux =  (Instancia) p;
+        Instancia result = null;
+        if (aux.getTipoInstancia() == T_INT) {
+            result = new Instancia(Objeto.newNombreObjeto(), T_INT, TablaSimbolos.bloqueActual, false);
+            PLXC.out.println(result.getNombre() + " =" + o.getNombre() + " / " + p.getNombre() + " ;");
+        } else {
+            result = new Instancia(Objeto.newNombreObjeto(), TFloat.getTFloat(), TablaSimbolos.bloqueActual, false);
+            PLXC.out.println(result.getNombre() + " =" + o.getNombre() + " /r " + p.getNombre() + " ;");
+        }
 
-        Instancia result = new Instancia(Objeto.newNombreObjeto(), T_INT, TablaSimbolos.bloqueActual, false);
-        PLXC.out.println(result.getNombre() + " =" + o.getNombre() + " / " + p.getNombre() + " ;");
+
 
         return result;
     }

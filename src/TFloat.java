@@ -36,7 +36,7 @@ public class TFloat extends Tipo {
             if (!o.getMutable())
                 errorYPara("La variable sobre la que se realizó la asignación no es mutable", new Vector<>(List.of(o, p.firstElement())));
             Objeto valor = p.firstElement();
-            PLXC.out.println(o.getNombre() + "=" + valor.getNombre() + ";");
+            PLXC.out.println(o.getNombre() + " = " + valor.getNombre() + ";");
 
             return o;
         }
@@ -45,7 +45,7 @@ public class TFloat extends Tipo {
             checkBinaryOp(p, m);
 
             Instancia res = new Instancia(Objeto.newNombreObjeto(),T_FLOAT, TablaSimbolos.bloqueActual, false);
-            PLXC.out.println(res.getNombre() + "=" + o.getNombre() + " +" + p.firstElement().getNombre() + ";");
+            PLXC.out.println(res.getNombre() + "=" + o.getNombre() + " +r " + p.firstElement().getNombre() + ";");
 
             return res;
         }
@@ -54,7 +54,7 @@ public class TFloat extends Tipo {
             checkBinaryOp(p, m);
 
             Instancia res = new Instancia(Objeto.newNombreObjeto(),T_FLOAT, TablaSimbolos.bloqueActual, false);
-            PLXC.out.println(res.getNombre() + " = " + o.getNombre() + " -" + p.firstElement().getNombre() + ";");
+            PLXC.out.println(res.getNombre() + " = " + o.getNombre() + " -r " + p.firstElement().getNombre() + ";");
 
             return res;
         }
@@ -63,7 +63,7 @@ public class TFloat extends Tipo {
             checkBinaryOp(p, m);
 
             Instancia res = new Instancia(Objeto.newNombreObjeto(),T_FLOAT, TablaSimbolos.bloqueActual, false);
-            PLXC.out.println(res.getNombre() + " = " + o.getNombre() + " *" + p.firstElement().getNombre() + ";");
+            PLXC.out.println(res.getNombre() + " = " + o.getNombre() + " *r " + p.firstElement().getNombre() + ";");
 
             return res;
         }
@@ -72,7 +72,7 @@ public class TFloat extends Tipo {
             checkBinaryOp(p, m);
 
             Instancia res = new Instancia(Objeto.newNombreObjeto(),T_FLOAT, TablaSimbolos.bloqueActual, false);
-            PLXC.out.println(res.getNombre() + " = " + o.getNombre() + " /" + p.firstElement().getNombre() + ";");
+            PLXC.out.println(res.getNombre() + " = " + o.getNombre() + " /r " + p.firstElement().getNombre() + ";");
 
             return res;
         }
@@ -82,7 +82,7 @@ public class TFloat extends Tipo {
                 errorYPara("La operación " + m + " no opera con argumentos", p);
 
             Instancia res = new Instancia(Objeto.newNombreObjeto(),T_FLOAT, TablaSimbolos.bloqueActual, false);
-            PLXC.out.println(res.getNombre() + " = 0 -" + o.getNombre() + ";");
+            PLXC.out.println(res.getNombre() + " = 0 -r " + o.getNombre() + ";");
 
             return res;
         }

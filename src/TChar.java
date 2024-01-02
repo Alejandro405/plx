@@ -9,7 +9,7 @@ import java.util.Vector;
 public class TChar extends Tipo{
 
     public static enum CHAR_METHODS {
-        SUMA, RESTA, ASIGNA, PRINT
+        SUMA, RESTA, DIV, ASIGNA, PRINT
     }
     private static final TChar T_CHAR = new TChar();
 
@@ -81,6 +81,16 @@ public class TChar extends Tipo{
             return restaDosChars(o, p.get(0));
         }
 
+        if (m.equals(CHAR_METHODS.DIV.name())) {
+            checkBinaryOp("división", p);
+
+            Instancia res = new Instancia(TInt.getTInt());
+
+            PLXC.out.println(res.getNombre() + " = " + o.getNombre() + " / " + p.firstElement().getNombre() + ";");
+
+            return res;
+        }
+
         if (m.equals(CHAR_METHODS.PRINT.name())) {
             if (!p.isEmpty())
                 errorYPara("La " + m + " para el tipo char solo se contempla para un valor", p);
@@ -103,7 +113,7 @@ public class TChar extends Tipo{
      * @return Variable en la que se referencia el resultado (instancia de tipo entero) de la resta en el lenguaje de tres direcciones.
      */
     private Objeto restaDosChars(Objeto o, Objeto objeto) {
-        Objeto res = new Instancia(T_CHAR);
+        Objeto res = new Instancia(TInt.getTInt());
 
         PLXC.out.println(res.getNombre() + " = " + o.getNombre() + " - " + objeto.getNombre() + ";" );
 
@@ -143,7 +153,7 @@ public class TChar extends Tipo{
      * @return Variable en la que se referencia el resultado de la suma de chars (Instancia de tipo Entero) en el lenguaje de tres direcciones.
      */
     private static Objeto sumaDosChars(Objeto c1, Objeto c2) {
-        Objeto res = new Instancia(T_CHAR);
+        Objeto res = new Instancia(TInt.getTInt());
 
         PLXC.out.println(res.getNombre() + " = " + c1.getNombre() + " + " + c2.getNombre() + ";" );
 

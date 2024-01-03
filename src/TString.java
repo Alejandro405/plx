@@ -49,12 +49,12 @@ public class TString extends TArray{
     }
 
     @Override
-    public Objeto getElem(int i) {
+    public Objeto getElem(Objeto array, Instancia i) {
         return null;
     }
 
     @Override
-    public void setElem(int i, Objeto o) {
+    public void setElem(Objeto array, Instancia i, Objeto o) {
 
     }
 

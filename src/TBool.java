@@ -38,7 +38,6 @@ public class TBool extends Tipo{
             checkBinBoolOper(m, p);
             return or(o, p.get(0));
         } else if (m.equals(BOOL_METHODS.NOT.toString())) {
-            checkBinBoolOper(m, p);
             return not(o);
         }
 

@@ -22,7 +22,7 @@ action code {:
         if (!(obj instanceof Instancia))
             Objeto.errorYPara("[ERROR]\tNo se puede hacer una asignación si el valor a asignar no es una instancia", new Vector<>(List.of(obj, tipo)));
         Instancia aux = (Instancia) obj;
-        if (!aux.getTipoInstancia().isParseable(tipo))
+        if (!aux.getTipoInstancia().isParseable(tipo) || aux.getTipoInstancia().getClass() != tipo.getClass())
             Objeto.errorYPara("[ERROR]\tNo se puede hacer una asignación si el valor a asignar no es del mismo tipo o no son parseables entre sii", new Vector<>(List.of(obj, tipo)));
     }
 
@@ -62,6 +62,8 @@ nonterminal String and_end, or_end, else_if;
 nonterminal Objeto cond, Get_BoolInstance;
 nonterminal Integer Init_Bloque;
 nonterminal List<String> list_id;
+nonterminal List<Integer> list_int, list_char;
+nonterminal List<Float> list_float;
 nonterminal Tipo tipo, declr;
 nonterminal Objeto asig, expr;
 
@@ -207,6 +209,7 @@ declr ::= tipo:tipo ID:id                           {:
 
         RESULT = tipo;
 :}
+        | tipo:tipo ID:id AC NUM_ENTERO:tam CC
         | declr:tipo COMA ID:id                     {:
         Instancia newVar = new Instancia(id, tipo, TablaSimbolos.bloqueActual, true);
         PLXC.tablaSimbolos.putObj(newVar);
@@ -220,6 +223,7 @@ declr ::= tipo:tipo ID:id                           {:
 
                         RESULT = tipo;
                     :}
+        | tipo:tipo ID:id AC NUM_ENTERO:tam CC ASIGNA expr:exp {::}
         | declr:tipo COMA ID:id ASIGNA expr:exp     {:
         Instancia newVar = new Instancia(id, tipo, TablaSimbolos.bloqueActual, true);
                                 PLXC.tablaSimbolos.putObj(newVar);
@@ -235,7 +239,30 @@ list_id ::=  ID:id                   {:
             RESULT = start; :}
          | list_id:list COMA ID:id   {:  list.add(id); RESULT = list;        :};
 
+list_char ::= list_char:list COMA CARACTER:c  {:  list.add(c); RESULT = list;        :}
+           | CARACTER:c                       {:  List<Integer> start = new ArrayList<>();
+                                                  start.add(c);
+                                                  RESULT = start; :}
+           ;
+
+list_int ::= list_int:list COMA NUM_ENTERO:num  {:  list.add(num); RESULT = list;        :}
+           | NUM_ENTERO:num                 {:  List<Integer> start = new ArrayList<>();
+                                                  start.add(num);
+                                                  RESULT = start; :}
+          ;
+
+list_float ::= list_float:list COMA NUM_REAL:num  {:
+             list.add(num); RESULT = list;
+:}
+             | NUM_REAL:num                 {:
+             List<Float> start = new ArrayList<>();
+             start.add(num);
+             RESULT = start;
+:}
+            ;
+
 expr ::= AP expr:exp CP             {:  RESULT = exp;   :}
+        | ID:id AC NUM_ENTERO:idx CC ASIGNA expr:valor
         | ID:id ASIGNA expr:valor   {:
                   this.checkVariable(id); // Comprueba que la variable este declarada y que sea una instancia
                   Instancia variable = (Instancia) PLXC.tablaSimbolos.getObj(id);
@@ -263,6 +290,10 @@ expr ::= AP expr:exp CP             {:  RESULT = exp;   :}
 
         :}
         | ID:id                     {:  checkVariable(id); RESULT = PLXC.tablaSimbolos.getObj(id);  :}
+        | ID:id AC NUM_ENTERO:idx CC
+        | ALL list_float:l CLL
+        | ALL list_int:l CLL
+        | ALL list_char:l CLL
         | NUM_ENTERO:num            {:  RESULT = new Instancia(num.toString(), TInt.getTInt(), TablaSimbolos.bloqueActual, false);          :}
         | NUM_REAL:num              {:  RESULT = new Instancia(num.toString(), TFloat.getTFloat(), TablaSimbolos.bloqueActual, false);      :}
         | CARACTER:c                    {:  RESULT = new Instancia(c.toString(), TChar.getTChar(), TablaSimbolos.bloqueActual, false);     :}

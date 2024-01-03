@@ -16,17 +16,27 @@ public class TArray extends Tipo{
         ASIGNA
     }
 
-    private static final int DEF_TAM = 10;
+    private static final String DEF_TAM = "10";
     
-    private final int tam;
+    private final String tam;
     
     private final Tipo tipo;
-
-    private String id;
     
     public TArray(Tipo tipo) {
         super(tipo.getNombre(), 0, false);
         this.tam = DEF_TAM;
+        this.tipo = tipo;
+    }
+
+    public TArray(Tipo tipo, String tam) {
+        super(tipo.getNombre(), 0, false);
+        this.tam = tam;
+        this.tipo = tipo;
+    }
+
+    public TArray(Tipo tipo, Objeto tam) {
+        super(tipo.getNombre(), 0, false);
+        this.tam = tam.getNombre();
         this.tipo = tipo;
     }
     
@@ -34,7 +44,7 @@ public class TArray extends Tipo{
         checkIndex(i);
 
         Instancia res = new Instancia(this.tipo);
-        PLXC.out.println(res.getNombre() + " = " + this.id + "[" + i + "];");
+        PLXC.out.println(res.getNombre() + " = " + array.getNombre() + "[" + i.getNombre() + "];");
 
         return res;
     }
@@ -44,7 +54,7 @@ public class TArray extends Tipo{
 
         PLXC.out.println("check_index_" + l + ":");
         PLXC.out.println("if (" + i.getNombre() + " < 0) goto error_index_" + l + ";");
-        PLXC.out.println("if (" + tam + "< " + i.getNombre() + ") goto error_index_" + l + ";");
+        PLXC.out.println("if (" + tam + " < " + i.getNombre() + ") goto error_index_" + l + ";");
         PLXC.out.println("if (" + i.getNombre() + " == " + tam + ") goto error_index_" + l + ";");
         PLXC.out.println("goto end_check_index_" + l + ";");
         PLXC.out.println("error_index_" + l + ":");
@@ -55,10 +65,10 @@ public class TArray extends Tipo{
     public void setElem(Objeto array, Instancia i, Objeto o) {
         checkIndex(i);
 
-        PLXC.out.println(this.id + "[" + i + "] = " + o.getNombre() + ";");
+        PLXC.out.println(array.getNombre() + "[" + i.getNombre() + "] = " + o.getNombre() + ";");
     }
     
-    public int getTam() {
+    public String getTam() {
         return tam;
     }
 
@@ -70,8 +80,25 @@ public class TArray extends Tipo{
     @Override
     public Objeto metodosInstancia(Objeto o, String m, Vector<Objeto> p) {
 
+        /* Prototipo de asignacion:
+         *      int x[3];
+         *      x = {1,2,3};
+         */
         if (m.equals(ARRAY_METHODS.ASIGNA.name())) {
+            if (p.size() != 1)
+                Objeto.errorYPara("[ERROR]\tEl método asigna de un array debe recibir un parámetro (array)", new Vector<>());
 
+            // Comprobar que el parámetro es una instancia cuyo tipo es una instancia de la clase array
+            if (!(p.firstElement() instanceof Instancia && ((Instancia) p.firstElement()).getTipoInstancia().getClass() == this.getClass()))
+                Objeto.errorYPara("[ERROR]\tEl parámetro del método asigna de un array debe ser una instancia de tipo array", new Vector<>());
+
+
+            Instancia dst = (Instancia) o;
+            Instancia src = (Instancia) p.firstElement();
+
+            // Comprobar que el tamaño de los arrays es el mismo
+            checkLength(dst, src);
+            addAll(dst, src, tam);
         }
 
         if (m.equals(ARRAY_METHODS.GET.name())) {
@@ -91,7 +118,7 @@ public class TArray extends Tipo{
 
             Instancia i = (Instancia) p.firstElement();
 
-            setElem(o, i, (Instancia) p.lastElement());
+            setElem(o, i, p.lastElement());
 
             return o;
         }
@@ -109,6 +136,11 @@ public class TArray extends Tipo{
 
         errorYPara("[ERROR]\tNo se ha encontrado el método " + m + " para el tipo array", new Vector<>());
         return null;
+    }
+
+    private void checkLength(Instancia dst, Instancia src) {
+        if (((TArray) dst.getTipoInstancia()).tam != ((TArray) src.getTipoInstancia()).tam)
+                Objeto.errorYPara("[ERROR]\tLos arrays deben tener el mismo tamaño", new Vector<>());
     }
 
     public Tipo getTipo() {
@@ -129,13 +161,28 @@ public class TArray extends Tipo{
 
     private void printArray(Instancia array) {
         Objeto iter = new Instancia(array.getTipoInstancia());
-        for (int i = 0; i < tam; i++) {
+        for (int i = 0; i < Integer.parseInt(tam); i++) {
             PLXC.out.println(iter.getNombre() + " = " + array.getNombre() + "[" + i + "] ;");
             PLXC.out.println("print(" + iter.getNombre() + ");");
         }
     }
 
-
+    /**
+     * Añade todos los elementos de un array a otro de la siguiente forma:
+     *
+     *    vec[i] = $X[i];
+     *
+     * Se asume que los arrays tienen el mismo tamaño, que los parámetors son instancias de tipo array
+     *
+     * @param dstArray array destino
+     * @param srcArray array fuente
+     * @param numElem numero de elementos a copiar
+     */
+    public static void addAll(Instancia dstArray, Instancia srcArray, String numElem) {
+        for (int i = 0; i < Integer.parseInt(numElem); i++) {
+            PLXC.out.println(dstArray.getNombre() + "[" + i + "] = " + srcArray.getNombre() + "[" + i + "];");
+        }
+    }
 
     @Override
     public String toString() {

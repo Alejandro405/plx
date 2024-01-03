@@ -3,7 +3,7 @@ import java.util.Vector;
 
 public class TString extends TArray{
     public static enum STRING_METHODS {
-        SUMA
+        SUMA, ASIGNA, PRINT
     }
 
     private static final TString T_STRING = new TString();

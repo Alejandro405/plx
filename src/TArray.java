@@ -9,6 +9,8 @@ import java.util.Vector;
  */
 public class TArray extends Tipo{
 
+    private Instancia array_iterator;
+
     public static enum ARRAY_METHODS {
         GET,
         SET,
@@ -32,12 +34,14 @@ public class TArray extends Tipo{
         super(tipo.getNombre(), 0, false);
         this.tam = tam;
         this.tipo = tipo;
+        this.array_iterator = new Instancia("__ARRAY__PRINTER__", tipo, 0, true);
     }
 
     public TArray(Tipo tipo, Objeto tam) {
         super(tipo.getNombre(), 0, false);
         this.tam = tam.getNombre();
         this.tipo = tipo;
+        this.array_iterator = new Instancia("__ARRAY__PRINTER__", tipo, 0, true);
     }
     
     public Objeto getElem(Objeto array, Instancia i){
@@ -99,6 +103,8 @@ public class TArray extends Tipo{
             // Comprobar que el tamaño de los arrays es el mismo
             checkLength(dst, src);
             addAll(dst, src, tam);
+
+            return o;
         }
 
         if (m.equals(ARRAY_METHODS.GET.name())) {
@@ -139,7 +145,10 @@ public class TArray extends Tipo{
     }
 
     private void checkLength(Instancia dst, Instancia src) {
-        if (((TArray) dst.getTipoInstancia()).tam != ((TArray) src.getTipoInstancia()).tam)
+        int tamDST = Integer.parseInt(((TArray) dst.getTipoInstancia()).tam);
+        int tamSRC = Integer.parseInt(((TArray) src.getTipoInstancia()).tam);
+
+        if (tamDST != tamSRC)
                 Objeto.errorYPara("[ERROR]\tLos arrays deben tener el mismo tamaño", new Vector<>());
     }
 
@@ -160,17 +169,14 @@ public class TArray extends Tipo{
     }
 
     private void printArray(Instancia array) {
-        Objeto iter = new Instancia(array.getTipoInstancia());
         for (int i = 0; i < Integer.parseInt(tam); i++) {
-            PLXC.out.println(iter.getNombre() + " = " + array.getNombre() + "[" + i + "] ;");
-            PLXC.out.println("print(" + iter.getNombre() + ");");
+            PLXC.out.println(array_iterator.getNombre() + " = " + array.getNombre() + "[" + i + "];");
+            array_iterator.metodos("PRINT", new Vector<>());
         }
     }
 
     /**
-     * Añade todos los elementos de un array a otro de la siguiente forma:
-     *
-     *    vec[i] = $X[i];
+     * Añade todos los elementos de un array a otro
      *
      * Se asume que los arrays tienen el mismo tamaño, que los parámetors son instancias de tipo array
      *
@@ -178,9 +184,10 @@ public class TArray extends Tipo{
      * @param srcArray array fuente
      * @param numElem numero de elementos a copiar
      */
-    public static void addAll(Instancia dstArray, Instancia srcArray, String numElem) {
+    public void addAll(Instancia dstArray, Instancia srcArray, String numElem) {
         for (int i = 0; i < Integer.parseInt(numElem); i++) {
-            PLXC.out.println(dstArray.getNombre() + "[" + i + "] = " + srcArray.getNombre() + "[" + i + "];");
+            PLXC.out.println(array_iterator.getNombre() + " = " + srcArray.getNombre() + "[" + i + "];");
+            PLXC.out.println(dstArray.getNombre() + "[" + i + "] = " + array_iterator.getNombre() + ";");
         }
     }
 

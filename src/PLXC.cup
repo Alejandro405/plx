@@ -290,7 +290,10 @@ expr ::= AP expr:exp CP             {:  RESULT = exp;   :}
                   this.checkVariable(id); // Comprueba que la variable este declarada y que sea una instancia
                   Instancia variable = (Instancia) PLXC.tablaSimbolos.getObj(id);
 
-                  this.checkType(valor, variable.getTipoInstancia()); // Comprueba que el tipo de la variable sea el mismo que el de la expresion o sean parseables entre sii
+                  if (!(variable.getTipoInstancia() instanceof TArray)) {
+                        this.checkType(valor, variable.getTipoInstancia()); // Comprueba que el tipo de la variable sea el mismo que el de la expresion o sean parseables entre sii
+                  }
+
                   RESULT = variable.metodos("ASIGNA", new Vector<>(List.of(valor)));
               :}
         | expr:a MAS:op expr:b      {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
@@ -356,7 +359,9 @@ expr ::= AP expr:exp CP             {:  RESULT = exp;   :}
         | CARACTER:c                {:
         RESULT = new Instancia(c.toString(), TChar.getTChar(), TablaSimbolos.bloqueActual, false);
         :}
-        | CADENA:s                  {::}
+        | CADENA:s                  {:
+        RESULT = new Instancia(s, TString.getInstance(), TablaSimbolos.bloqueActual, false);
+        :}
         ;
 
 cond ::=  AP cond:a CP          {:  RESULT = a;     :}

@@ -70,7 +70,7 @@ unicode_char = \'(\\u[0-9a-fA-F]{4})\'
 "int"     { return symbol(sym.INT);}
 "float"   { return symbol(sym.FLOAT);}
 "char"    { return symbol(sym.CHAR);}
-"String"  { return symbol(sym.STRING);}
+"string"  { return symbol(sym.STRING);}
 
 {unicode_char} {
           return symbol(sym.CARACTER, Integer.parseInt(yytext().substring(3, 7), 16)); }

@@ -77,7 +77,7 @@ precedence  left        EQ, LE, GE;
 precedence  left        NEQ, LT, GT;
 precedence  left        NOT, AND, OR;
 precedence  left        ID, NUM_ENTERO, NUM_REAL;
-precedence  left        FALSE, TRUE, CARACTER;
+precedence  left        FALSE, TRUE, CARACTER, CADENA;
 precedence  left        ELSEIF;
 
 precedence  nonassoc    AP, CP;
@@ -223,7 +223,11 @@ declr ::= tipo:tipo ID:id                           {:
         RESULT = tipo;
 :}
         | tipo:tipo ID:id ASIGNA expr:exp           {:
-            Instancia newVar = new Instancia(id, tipo, TablaSimbolos.bloqueActual, true);
+            Instancia newVar;
+            if (tipo != TString.getInstance())
+                 newVar = new Instancia(id, tipo, TablaSimbolos.bloqueActual, true);
+            else
+                 newVar = new StringInstancia(id);
             PLXC.tablaSimbolos.putObj(newVar);
             newVar.metodos("ASIGNA",new Vector<>(List.of(exp)));
 

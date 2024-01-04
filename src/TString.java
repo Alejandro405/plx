@@ -41,10 +41,16 @@ public class TString extends Tipo{
     }
 
     public Objeto metodosInstancia(Objeto o, String m, Vector<Objeto> p) {
-        if (o.getClass() != StringInstancia.class)
-            errorYPara("[ERROR]\tNo se puede llamar al método " + m + " de un tipo string sobre un objeto que no ses una StringInstancia", new Vector<>(List.of(o)));
+        if (!(o instanceof StringInstancia))
+            errorYPara("[ERROR]\tNo se puede llamar al método " + m + " de un tipo string sobre un objeto que no ses una Instancia", new Vector<>(List.of(o)));
 
-        StringInstancia targetString = (StringInstancia) o;
+
+        StringInstancia targetString = null;
+        if (o instanceof StringInstancia) {
+            targetString = (StringInstancia) o;
+        } else {
+            targetString = new StringInstancia(o);
+        }
 
         if (m.equals(STRING_METHODS.ASIGNA.name())) {
             if (p.size() != 1)
@@ -92,14 +98,15 @@ public class TString extends Tipo{
      * @return Variable en la que se referencia el resultado de la concatenación en el lenguaje de tres direcciones.
      */
     private static Objeto asigna(StringInstancia dstString, StringInstancia srcString) {
-        if (srcString.isConstant()) {
-            // Asignar a una variable de tipo string cadena constante (string a = ".....";)
-            return asignaConstante(dstString, srcString.getNombre().toCharArray());
-        } else {
-            // Asignar a una variable de tipo string otra variable de tipo string (string a = b;)
-        }
 
-        return  null;
+        int tamFinal = Integer.parseInt(srcString.getTam());
+        for (int i = 0; i <tamFinal; i++) {
+            PLXC.out.println(string_iterator.getNombre() + " = " + srcString.getNombre() + "[" + i + "];");
+            PLXC.out.println(dstString.getNombre() + "[" + i + "] = " + string_iterator.getNombre() + ";");
+        }
+        dstString.setTam(String.valueOf(tamFinal));
+
+        return  dstString;
     }
 
     public static StringInstancia asignaConstante(StringInstancia dstString, char[] charArray) {

@@ -11,6 +11,18 @@ public class StringInstancia extends Instancia{
         this.isConstant = isConstant;
     }
 
+    public StringInstancia(String nombre) {
+        super(nombre, TString.getInstance(), 0, true);
+        this.tam = "0";
+        this.isConstant = false;
+    }
+
+    public StringInstancia(Objeto o) {
+        super(o.getNombre(), TString.getInstance(), o.getBloque(), o.getMutable());
+        tam = "0";
+        this.isConstant = false;
+    }
+
     public String getTam() {
         return tam;
     }

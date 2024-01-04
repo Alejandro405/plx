@@ -217,7 +217,11 @@ declr ::= tipo:tipo ID:id                           {:
         RESULT = tipo;
         :}
         | declr:tipo COMA ID:id                     {:
-        Instancia newVar = new Instancia(id, tipo, TablaSimbolos.bloqueActual, true);
+        Instancia newVar;
+        if (tipo != TString.getInstance())
+             newVar = new Instancia(id, tipo, TablaSimbolos.bloqueActual, true);
+        else
+             newVar = new StringInstancia(id);
         PLXC.tablaSimbolos.putObj(newVar);
 
         RESULT = tipo;
@@ -242,7 +246,11 @@ declr ::= tipo:tipo ID:id                           {:
             RESULT = tipo;
         :}
         | declr:tipo COMA ID:id ASIGNA expr:exp     {:
-            Instancia newVar = new Instancia(id, tipo, TablaSimbolos.bloqueActual, true);
+            Instancia newVar;
+            if (tipo != TString.getInstance())
+                 newVar = new Instancia(id, tipo, TablaSimbolos.bloqueActual, true);
+            else
+                 newVar = new StringInstancia(id);
             PLXC.tablaSimbolos.putObj(newVar);
             newVar.metodos("ASIGNA",new Vector<>(List.of(exp)));
 

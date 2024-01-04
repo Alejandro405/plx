@@ -23,7 +23,12 @@ id = [a-zA-Z_][a-zA-Z0-9_]*
 new_line = \r|\n|\r\n;
 wh = {new_line} | [\ \t\f]
 
-cadena = \"[^\"\r\n]*\"
+// Expresion regular para reconocer una cadena de caracteres usando comillas dobles, (por ejemplo “abc”) y pudiendo usar las secuencias de escape
+                                                             //al igual que en Java para los caracteres especiales dentro de las comillas (\b,\n,\f,\r,\t,\”,\\,\’), así como
+                                                             //secuencias en Unicode (por ejemplo \u1234)
+                                                             // interpretando bien sentencias como: string a = "abx", b = "x\"y\"z", donde solo se reconocen: "abx" y "x\"y\"z"
+cadena = \"(\\b|\\n|\\f|\\r|\\t|\\\"|\\\\|\\\'|[^\\\"\r\n])*\"
+
 real = (([0-9]+\.[0-9]*) | ([0-9]*\.[0-9]+)) (e|E(\+|\-)?[0-9]+)?
 entero = 0 | [1-9][0-9]*
 // Expresion regular para reconocer un caracter con las siguientes condiciones: Para las constantes se emplea la misma
@@ -75,7 +80,12 @@ unicode_char = \'(\\u[0-9a-fA-F]{4})\'
 {unicode_char} {
           return symbol(sym.CARACTER, Integer.parseInt(yytext().substring(3, 7), 16)); }
 {id}      { return symbol(sym.ID, yytext()); }
-{cadena}  { return symbol(sym.CADENA, new String(yytext().substring(1,yytext().length()-1))); }
+{cadena}  {
+          String cadena = yytext().substring(1,yytext().length()-1)
+            .replace("\\\"", "\"")
+            .replace("\\\\", "\\");
+
+          return symbol(sym.CADENA, cadena); }
 {entero}  { return symbol(sym.NUM_ENTERO, Integer.valueOf(yytext())); }
 {real}    { return symbol(sym.NUM_REAL, Float.valueOf(yytext())); }
 {char}    { return symbol(sym.CARACTER, Integer.valueOf(yytext().charAt(1))); }

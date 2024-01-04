@@ -1,0 +1,4 @@
+string a = "a\\b";
+
+string b;
+ b = a;

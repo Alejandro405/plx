@@ -28,6 +28,7 @@ public class TArray extends Tipo{
         super(tipo.getNombre(), 0, false);
         this.tam = DEF_TAM;
         this.tipo = tipo;
+        this.array_iterator = new Instancia("__ARRAY__PRINTER__", tipo, 0, true);
     }
 
     public TArray(Tipo tipo, String tam) {

@@ -360,7 +360,12 @@ expr ::= AP expr:exp CP             {:  RESULT = exp;   :}
         RESULT = new Instancia(c.toString(), TChar.getTChar(), TablaSimbolos.bloqueActual, false);
         :}
         | CADENA:s                  {:
-        RESULT = new Instancia(s, TString.getInstance(), TablaSimbolos.bloqueActual, false);
+            char[] chars = s.toCharArray();
+            StringInstancia res = new StringInstancia(true);
+
+            res = TString.asignaConstante(res, chars);
+
+            RESULT = res;
         :}
         ;
 

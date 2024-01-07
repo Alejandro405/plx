@@ -66,7 +66,7 @@ nonterminal List<String> list_id;
 nonterminal List<Integer> list_int, list_char;
 nonterminal List<Float> list_float;
 nonterminal Tipo tipo, declr;
-nonterminal Objeto asig, expr;
+nonterminal Objeto asig, expr, expr_array;
 
 precedence right        ASIGNA;
 precedence  left        IF, ELSE, DO, WHILE, FOR, PRINT;
@@ -345,29 +345,8 @@ expr ::= AP expr:exp CP             {:  RESULT = exp;   :}
             RESULT = variable.metodos("GET", new Vector<>(List.of(idx)));
 
         :}
-        | ALL list_float:l CLL      {:
-            Instancia res = new Instancia(new TArray(TFloat.getTFloat(), String.valueOf(l.size())));
-            for (int i = 0; i < l.size(); i++) {
-                PLXC.out.println(res.getNombre() + "[" + i + "] = " + l.get(i) + ";");
-            }
-
-            RESULT = res;
-        :}
-        | ALL list_int:l CLL        {:
-            Instancia res = new Instancia(new TArray(TInt.getTInt(), String.valueOf(l.size())));
-            for (int i = 0; i < l.size(); i++) {
-                PLXC.out.println(res.getNombre() + "[" + i + "] = " + l.get(i) + ";");
-            }
-
-            RESULT = res;
-        :}
-        | ALL list_char:l CLL       {:
-            Instancia res = new Instancia(new TArray(TChar.getTChar(), String.valueOf(l.size())));
-            for (int i = 0; i < l.size(); i++) {
-                PLXC.out.println(res.getNombre() + "[" + i + "] = " + l.get(i) + ";");
-            }
-
-            RESULT = res;
+        | expr_array:expr           {:
+        RESULT = expr;
         :}
         | NUM_ENTERO:num            {:
         RESULT = new Instancia(num.toString(), TInt.getTInt(), TablaSimbolos.bloqueActual, false);
@@ -387,6 +366,32 @@ expr ::= AP expr:exp CP             {:  RESULT = exp;   :}
             RESULT = res;
         :}
         ;
+
+expr_array ::= ALL list_float:l CLL      {:
+                           Instancia res = new Instancia(new TArray(TFloat.getTFloat(), String.valueOf(l.size())));
+                           for (int i = 0; i < l.size(); i++) {
+                               PLXC.out.println(res.getNombre() + "[" + i + "] = " + l.get(i) + ";");
+                           }
+
+                           RESULT = res;
+                       :}
+               | ALL list_int:l CLL        {:
+                   Instancia res = new Instancia(new TArray(TInt.getTInt(), String.valueOf(l.size())));
+                   for (int i = 0; i < l.size(); i++) {
+                       PLXC.out.println(res.getNombre() + "[" + i + "] = " + l.get(i) + ";");
+                   }
+
+                   RESULT = res;
+               :}
+               | ALL list_char:l CLL       {:
+                   Instancia res = new Instancia(new TArray(TChar.getTChar(), String.valueOf(l.size())));
+                   for (int i = 0; i < l.size(); i++) {
+                       PLXC.out.println(res.getNombre() + "[" + i + "] = " + l.get(i) + ";");
+                   }
+
+                   RESULT = res;
+               :}
+               ;
 
 cond ::=  AP cond:a CP          {:  RESULT = a;     :}
         | NOT cond:a            {:  RESULT = a.metodos("NOT", new Vector());   :}

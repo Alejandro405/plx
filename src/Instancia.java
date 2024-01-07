@@ -1,3 +1,4 @@
+import java.util.Objects;
 import java.util.Vector;
 
 public class Instancia extends Objeto{
@@ -37,6 +38,21 @@ public class Instancia extends Objeto{
 
     public static Instancia getCharConstant(Character valor){
         return new Instancia(valor.toString(), TChar.getTChar(), 0, false);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Instancia instancia = (Instancia) o;
+        return Objects.equals(tipoInstancia, instancia.tipoInstancia)
+                    && super.equals(instancia);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(tipoInstancia, super.hashCode());
     }
 
     @Override

@@ -47,6 +47,7 @@ unicode_char = \'(\\u[0-9a-fA-F]{4})\'
 "]"       {return symbol(sym.CC);}
 ";"       {return symbol(sym.PYC);}
 ","       {return symbol(sym.COMA);}
+"."       {return symbol(sym.PUNTO);}
 "+"       {return symbol(sym.MAS, "SUMA");}
 "-"       {return symbol(sym.MENOS, "RESTA");}
 "*"       {return symbol(sym.POR, "MULT");}
@@ -72,6 +73,7 @@ unicode_char = \'(\\u[0-9a-fA-F]{4})\'
 "true"    {return symbol(sym.TRUE);}
 "false"   {return symbol(sym.FALSE);}
 
+"length"  {return symbol(sym.LENGTH);}
 "int"     { return symbol(sym.INT);}
 "float"   { return symbol(sym.FLOAT);}
 "char"    { return symbol(sym.CHAR);}

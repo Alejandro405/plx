@@ -46,7 +46,7 @@ parser code {:
     }
 :}
 
-terminal String ALL, CLL, AP, CP, AC, CC, PYC, COMA;
+terminal String ALL, CLL, AP, CP, AC, CC, PYC, COMA, PUNTO;
 terminal Tipo INT, FLOAT, CHAR, STRING, U_MINUS;
 terminal String ID;
 terminal Integer NUM_ENTERO;
@@ -55,7 +55,7 @@ terminal Integer CARACTER;
 terminal String CADENA;
 terminal Boolean FALSE, TRUE;
 terminal String MAS, MENOS, POR, DIV, EQ, NEQ, LT, GT, LE, GE, AND, OR, NOT, ASIGNA;
-terminal String IF, WHILE, FOR, DO, PRINT;
+terminal String IF, WHILE, FOR, DO, PRINT, LENGTH;
 terminal String ELSE, ELSEIF;
 
 nonterminal program, lista_sent, sent, sent_comp, sent_simpl, sent_if, sent_while, op_else, sent_do_while, sent_for, for_expr;
@@ -287,6 +287,13 @@ list_float ::= list_float:list COMA NUM_REAL:num    {:
             ;
 
 expr ::= AP expr:exp CP             {:  RESULT = exp;   :}
+        | expr:a PUNTO LENGTH    {:
+            if (!(a instanceof Instancia && ((Instancia) a).getTipoInstancia() instanceof TArray))
+                Objeto.errorYPara("[ERROR]\tNo se puede hacer una asignación si el valor a asignar no es una instancia", new Vector<>(List.of(a)));
+
+
+            RESULT = a.metodos(TArray.ARRAY_METHODS.LENGTH.name(), new Vector<>());
+        :}
         | ID:id AC expr:idx CC ASIGNA expr:valor      {:
             // Checkear que el valor es una instancia y no es de tipo array
             checkVariable(id);

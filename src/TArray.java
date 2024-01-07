@@ -15,7 +15,8 @@ public class TArray extends Tipo{
         GET,
         SET,
         PRINT,
-        ASIGNA
+        ASIGNA,
+        LENGTH
     }
 
     private static final String DEF_TAM = "10";
@@ -101,9 +102,11 @@ public class TArray extends Tipo{
             Instancia dst = (Instancia) o;
             Instancia src = (Instancia) p.firstElement();
 
+            String numelem = (((TArray)src.getTipoInstancia()).tam);
+
             // Comprobar que el tamaño de los arrays es el mismo
             checkLength(dst, src);
-            addAll(dst, src, tam);
+            addAll(dst, src, numelem);
 
             return o;
         }
@@ -141,6 +144,12 @@ public class TArray extends Tipo{
             return o;
         }
 
+        if (m.equals(ARRAY_METHODS.LENGTH.name())) {
+            Instancia res = new Instancia(TInt.getTInt());
+            PLXC.out.println(res.getNombre() + " = " + tam + ";");
+            return res;
+        }
+
         errorYPara("[ERROR]\tNo se ha encontrado el método " + m + " para el tipo array", new Vector<>());
         return null;
     }
@@ -149,7 +158,7 @@ public class TArray extends Tipo{
         int tamDST = Integer.parseInt(((TArray) dst.getTipoInstancia()).tam);
         int tamSRC = Integer.parseInt(((TArray) src.getTipoInstancia()).tam);
 
-        if (tamDST != tamSRC)
+        if (tamDST < tamSRC)
                 Objeto.errorYPara("[ERROR]\tLos arrays deben tener el mismo tamaño", new Vector<>());
     }
 

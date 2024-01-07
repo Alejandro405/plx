@@ -1,4 +1,61 @@
-abc
-xyz
-
-
+prod = 1.0;
+i = 0;
+L0:
+$T0 = 6;
+$T1 = 1;
+if (i < $T0) goto L1;
+$T1 = 0;
+L1:
+if ($T1 == 0) goto end_L0;
+goto body_L0;
+act_L0:
+$T2 = i + 1;
+i = $T2;
+goto L0;
+body_L0:
+$T3 = i + 63;
+check_index_L2:
+if (i < 0) goto error_index_L2;
+if (6 < i) goto error_index_L2;
+if (i == 6) goto error_index_L2;
+goto end_check_index_L2;
+error_index_L2:
+error;
+halt;
+end_check_index_L2:
+st[i] = $T3;
+check_index_L3:
+if (i < 0) goto error_index_L3;
+if (6 < i) goto error_index_L3;
+if (i == 6) goto error_index_L3;
+goto end_check_index_L3;
+error_index_L3:
+error;
+halt;
+end_check_index_L3:
+$T4 = st[i];
+check_index_L4:
+if (i < 0) goto error_index_L4;
+if (6 < i) goto error_index_L4;
+if (i == 6) goto error_index_L4;
+goto end_check_index_L4;
+error_index_L4:
+error;
+halt;
+end_check_index_L4:
+mat[i] = $T4;
+check_index_L5:
+if (i < 0) goto error_index_L5;
+if (6 < i) goto error_index_L5;
+if (i == 6) goto error_index_L5;
+goto end_check_index_L5;
+error_index_L5:
+error;
+halt;
+end_check_index_L5:
+$T5 = mat[i];
+$T6 = prod *r $T5;
+prod = $T6;
+goto act_L0;
+end_L0:
+print prod ;

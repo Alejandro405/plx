@@ -65,8 +65,9 @@ nonterminal Integer Init_Bloque;
 nonterminal List<String> list_id;
 nonterminal List<Integer> list_int, list_char;
 nonterminal List<Float> list_float;
+nonterminal List<Instancia> list_inst;
 nonterminal Tipo tipo, declr;
-nonterminal Objeto asig, expr, expr_array;
+nonterminal Objeto asig, expr, expr_array, expr_arit;
 
 precedence right        ASIGNA;
 precedence  left        IF, ELSE, DO, WHILE, FOR, PRINT;
@@ -286,8 +287,7 @@ list_float ::= list_float:list COMA NUM_REAL:num    {:
 :}
             ;
 
-expr ::= AP expr:exp CP             {:  RESULT = exp;   :}
-        | expr:a PUNTO LENGTH    {:
+expr ::= expr:a PUNTO LENGTH    {:
             if (!(a instanceof Instancia && ((Instancia) a).getTipoInstancia() instanceof TArray))
                 Objeto.errorYPara("[ERROR]\tNo se puede hacer una asignación si el valor a asignar no es una instancia", new Vector<>(List.of(a)));
 
@@ -315,11 +315,6 @@ expr ::= AP expr:exp CP             {:  RESULT = exp;   :}
 
                   RESULT = variable.metodos("ASIGNA", new Vector<>(List.of(valor)));
               :}
-        | expr:a MAS:op expr:b      {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
-        | expr:a MENOS:op expr:b    {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
-        | expr:a POR:op expr:b      {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
-        | expr:a DIV:op expr:b      {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
-        | MENOS:op expr:exp         {:  RESULT = exp.metodos("UMENOS", new Vector());       :}   %prec U_MINUS
         | AP tipo:tipoDst CP expr:exp       {:
 
         if (exp instanceof Instancia) {
@@ -345,6 +340,7 @@ expr ::= AP expr:exp CP             {:  RESULT = exp;   :}
             RESULT = variable.metodos("GET", new Vector<>(List.of(idx)));
 
         :}
+        | expr_arit:expr_arit       {:  RESULT = expr_arit;  :}
         | expr_array:expr           {:
         RESULT = expr;
         :}
@@ -366,6 +362,14 @@ expr ::= AP expr:exp CP             {:  RESULT = exp;   :}
             RESULT = res;
         :}
         ;
+
+expr_arit ::= AP expr:exp CP             {:  RESULT = exp;   :}
+          | expr:a MAS:op expr:b      {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
+          | expr:a MENOS:op expr:b    {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
+          | expr:a POR:op expr:b      {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
+          | expr:a DIV:op expr:b      {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
+          | MENOS:op expr:exp         {:  RESULT = exp.metodos("UMENOS", new Vector());       :}   %prec U_MINUS
+          ;
 
 expr_array ::= ALL list_float:l CLL      {:
                            Instancia res = new Instancia(new TArray(TFloat.getTFloat(), String.valueOf(l.size())));

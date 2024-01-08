@@ -111,7 +111,7 @@ sent_comp ::= ALL Init_Bloque:bloquePrevio lista_sent CLL {:
 
 sent_simpl ::= valor PYC
         | declr PYC
-        | PRINT AP valor:valor CP PYC        {:  if (valor != null) RESULT = valor.metodos("PRINT", new Vector());   :}
+        | PRINT AP expr:valor CP PYC        {:  if (valor != null) RESULT = valor.metodos("PRINT", new Vector());   :}
         | sent_if
         | sent_while
         | sent_do_while

@@ -26,9 +26,11 @@ action code {:
             Objeto.errorYPara("[ERROR]\tNo se puede hacer una asignación si el valor a asignar no es del mismo tipo o no son parseables entre sii", new Vector<>(List.of(obj, tipo)));
     }
 
-    public void checkElem(Objeto valor) {
+    public Instancia checkElem(Objeto valor) {
         if (!(valor instanceof Instancia))
             Objeto.errorYPara("[ERROR]\tNo se puede formar una coleccion de elementos sin instancias de un mismo tipo mismo tipo", new Vector<>(List.of(valor)));
+
+       return (Instancia) valor;
     }
 
     private String end_and = "", end_or = "";
@@ -70,7 +72,7 @@ nonterminal Integer Init_Bloque;
 nonterminal List<String> list_id;
 nonterminal List<Integer> list_int, list_char;
 nonterminal List<Instancia> list_float;
-nonterminal List<Instancia> list_inst;
+nonterminal List<Instancia> list_valor;
 nonterminal Tipo tipo, declr;
 nonterminal Objeto asig, expr, expr_array, expr_arit, valor;
 
@@ -107,9 +109,9 @@ sent_comp ::= ALL Init_Bloque:bloquePrevio lista_sent CLL {:
                           TablaSimbolos.bloqueActual = bloquePrevio;
                       :};
 
-sent_simpl ::= expr PYC
+sent_simpl ::= valor PYC
         | declr PYC
-        | PRINT AP expr:valor CP PYC        {:  if (valor != null) RESULT = valor.metodos("PRINT", new Vector());   :}
+        | PRINT AP valor:valor CP PYC        {:  if (valor != null) RESULT = valor.metodos("PRINT", new Vector());   :}
         | sent_if
         | sent_while
         | sent_do_while
@@ -147,7 +149,7 @@ sent_do_while ::= DO:doTag // -> Inicio y final del bucle
                     // END_DOWHILE
                     ;
 
-for_expr ::= expr:expr
+for_expr ::= valor:expr
             |
             ;
 
@@ -269,7 +271,7 @@ list_id ::=  ID:id                          {:
             start.add(id);
             RESULT = start; :}
          | list_id:list COMA ID:id          {:  list.add(id); RESULT = list;        :};
-
+/**
 list_char ::= list_char:list COMA CARACTER:c        {:  list.add(c); RESULT = list;        :}
            | CARACTER:c                             {:  List<Integer> start = new ArrayList<>();
                                                   start.add(c);
@@ -282,13 +284,49 @@ list_int ::= list_int:list COMA NUM_ENTERO:num      {:  list.add(num); RESULT = 
                                                   RESULT = start; :}
           ;
 
-list_float ::= list_float:list COMA NUM_REAL:num    {:
-             list.add(new Instancia(num.toString(), TFloat.getTFloat(), TablaSimbolos.bloqueActual, false)); RESULT = list;
+list_float ::= list_float:list COMA expr_arit:expr    {:
+            if (!(expr instanceof Instancia))
+                 Objeto.errorYPara("[ERROR]\tNo se puede formar una coleccion de elementos sin instancias", new Vector<>(List.of(expr)));
+
+            Instancia elem = (Instancia) expr;
+            if (elem.getTipoInstancia() != TFloat.getTFloat())
+                 Objeto.errorYPara("[ERROR]\tNo se puede formar una coleccion de elementos sin instancias del mismo tipo", new Vector<>(List.of(elem)));
+
+            list.add(elem);
+            RESULT = list;
 :}
-             | NUM_REAL:num                         {:
+             | expr_arit:expr                         {:
              List<Instancia> start = new ArrayList<>();
-             start.add(new Instancia(num.toString(), TFloat.getTFloat(), TablaSimbolos.bloqueActual, false));
+
+             if (!(expr instanceof Instancia))
+                    Objeto.errorYPara("[ERROR]\tNo se puede formar una coleccion de elementos sin instancias", new Vector<>(List.of(expr)));
+
+             Instancia elem = (Instancia) expr;
+             if (elem.getTipoInstancia() != TFloat.getTFloat())
+                    Objeto.errorYPara("[ERROR]\tNo se puede formar una coleccion de elementos sin instancias del mismo tipo", new Vector<>(List.of(elem)));
+
+             start.add(elem);
              RESULT = start;
+:}
+            ;
+*/
+
+list_valor ::= list_valor:l COMA valor:val      {:
+            Instancia elem = checkElem(val);
+
+            if (l.get(0).getTipoInstancia() != elem.getTipoInstancia())
+                Objeto.errorYPara("[ERROR]\tEl elemento de la colección no es del mismo tipo que el resto", new Vector<>());
+
+            l.add(elem);
+            RESULT = l;
+:}
+            | valor:val                {:
+            Instancia elem = checkElem(val);
+            List<Instancia> start = new ArrayList<>();
+
+            start.add(elem);
+
+            RESULT = start;
 :}
             ;
 
@@ -382,7 +420,16 @@ expr_arit ::= AP valor:exp CP             {:  RESULT = exp;   :}
           | MENOS:op valor:exp         {:  RESULT = exp.metodos("UMENOS", new Vector());       :}   %prec U_MINUS
           ;
 
-expr_array ::= ALL list_float:l CLL        {:
+expr_array ::= ALL list_valor:l CLL       {:
+                Instancia res = new Instancia(new TArray(l.get(0).getTipoInstancia(), String.valueOf(l.size())));
+                for (int i = 0; i < l.size(); i++) {
+                     PLXC.out.println(res.getNombre() + "[" + i + "] = " + l.get(i).getNombre() + ";");
+                }
+
+                RESULT = res;
+:};
+/*
+ALL list_float:l CLL        {:
                            Instancia res = new Instancia(new TArray(TFloat.getTFloat(), String.valueOf(l.size())));
                            for (int i = 0; i < l.size(); i++) {
                                PLXC.out.println(res.getNombre() + "[" + i + "] = " + l.get(i).getNombre() + ";");
@@ -406,7 +453,9 @@ expr_array ::= ALL list_float:l CLL        {:
 
                    RESULT = res;
                :}
-               ;
+
+*/
+
 
 cond ::=  AP cond:a CP          {:  RESULT = a;     :}
         | NOT cond:a            {:  RESULT = a.metodos("NOT", new Vector());   :}
@@ -432,12 +481,12 @@ cond ::=  AP cond:a CP          {:  RESULT = a;     :}
             PLXC.out.println(this.end_or + ":");
             RESULT = res_bool;
 :}
-        | expr:a GT expr:b      {:  RESULT = a.metodos("MAYOR", new Vector(List.of(b)));          :}
-        | expr:a LT expr:b      {:  RESULT = a.metodos("MENOR", new Vector(List.of(b)));          :}
-        | expr:a GE expr:b      {:  RESULT = a.metodos("MAYOR_IGUAL", new Vector(List.of(b)));    :}
-        | expr:a LE expr:b      {:  RESULT = a.metodos("MENOR_IGUAL", new Vector(List.of(b)));    :}
-        | expr:a EQ expr:b      {:  RESULT = a.metodos("IGUAL", new Vector(List.of(b)));          :}
-        | expr:a NEQ expr:b     {:  RESULT = a.metodos("DISTINTO", new Vector(List.of(b)));       :}
+        | valor:a GT valor:b      {:  RESULT = a.metodos("MAYOR", new Vector(List.of(b)));          :}
+        | valor:a LT valor:b      {:  RESULT = a.metodos("MENOR", new Vector(List.of(b)));          :}
+        | valor:a GE valor:b      {:  RESULT = a.metodos("MAYOR_IGUAL", new Vector(List.of(b)));    :}
+        | valor:a LE valor:b      {:  RESULT = a.metodos("MENOR_IGUAL", new Vector(List.of(b)));    :}
+        | valor:a EQ valor:b      {:  RESULT = a.metodos("IGUAL", new Vector(List.of(b)));          :}
+        | valor:a NEQ valor:b     {:  RESULT = a.metodos("DISTINTO", new Vector(List.of(b)));       :}
         | FALSE                 {:  RESULT = new Instancia("0", TBool.getTBool(), TablaSimbolos.bloqueActual, false);   :}
         | TRUE                  {:  RESULT = new Instancia("1", TBool.getTBool(), TablaSimbolos.bloqueActual, false);    :}
         ;

@@ -1,6 +1,45 @@
-$T0 = 2.0 /r 3.0;
-$T1 =3 / 2 ;
-$T2 = (float) $T1;
-$T3=$T0 +r $T2;
-$T4 = (int) $T3;
-print $T4 ;
+pi = 3.1416;
+$T0=1.1 +r 2.2;
+$T1 = 2.0 *r pi;
+$T2[0] = 1.0;
+$T2[1] = $T0;
+$T2[2] = $T1;
+__ARRAY__PRINTER__ = $T2[0];
+x[0] = __ARRAY__PRINTER__;
+__ARRAY__PRINTER__ = $T2[1];
+x[1] = __ARRAY__PRINTER__;
+__ARRAY__PRINTER__ = $T2[2];
+x[2] = __ARRAY__PRINTER__;
+check_index_L0:
+if (0 < 0) goto error_index_L0;
+if (3 < 0) goto error_index_L0;
+if (0 == 3) goto error_index_L0;
+goto end_check_index_L0;
+error_index_L0:
+error;
+halt;
+end_check_index_L0:
+$T3 = x[0];
+check_index_L1:
+if (1 < 0) goto error_index_L1;
+if (3 < 1) goto error_index_L1;
+if (1 == 3) goto error_index_L1;
+goto end_check_index_L1;
+error_index_L1:
+error;
+halt;
+end_check_index_L1:
+$T4 = x[1];
+$T5=$T3 +r $T4;
+check_index_L2:
+if (2 < 0) goto error_index_L2;
+if (3 < 2) goto error_index_L2;
+if (2 == 3) goto error_index_L2;
+goto end_check_index_L2;
+error_index_L2:
+error;
+halt;
+end_check_index_L2:
+$T6 = x[2];
+$T7=$T5 +r $T6;
+print $T7 ;

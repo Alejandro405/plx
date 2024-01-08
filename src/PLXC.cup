@@ -7,11 +7,11 @@ import java.util.Vector;
 
 action code {:
     public void checkVariable(Objeto obj) {
-        if (obj == null)
-                      Objeto.errorYPara("[ERROR]\tLa variable no ha sido declarada", new Vector<>(List.of(obj)));
+          if (obj == null)
+              Objeto.errorYPara("[ERROR]\tLa variable no ha sido declarada", new Vector<>(List.of(obj)));
 
-                  if (!(obj instanceof Instancia))
-                      Objeto.errorYPara("[ERROR]\tLa variable no es una instancia", new Vector<>(List.of(obj)));
+          if (!(obj instanceof Instancia))
+              Objeto.errorYPara("[ERROR]\tLa variable no es una instancia", new Vector<>(List.of(obj)));
     }
 
     public void checkVariable(String id) {
@@ -24,6 +24,11 @@ action code {:
         Instancia aux = (Instancia) obj;
         if (!aux.getTipoInstancia().isParseable(tipo) )// || aux.getTipoInstancia().getClass() != tipo.getClass()
             Objeto.errorYPara("[ERROR]\tNo se puede hacer una asignación si el valor a asignar no es del mismo tipo o no son parseables entre sii", new Vector<>(List.of(obj, tipo)));
+    }
+
+    public void checkElem(Objeto valor) {
+        if (!(valor instanceof Instancia))
+            Objeto.errorYPara("[ERROR]\tNo se puede formar una coleccion de elementos sin instancias de un mismo tipo mismo tipo", new Vector<>(List.of(valor)));
     }
 
     private String end_and = "", end_or = "";
@@ -64,10 +69,10 @@ nonterminal Objeto cond, Get_BoolInstance;
 nonterminal Integer Init_Bloque;
 nonterminal List<String> list_id;
 nonterminal List<Integer> list_int, list_char;
-nonterminal List<Float> list_float;
+nonterminal List<Instancia> list_float;
 nonterminal List<Instancia> list_inst;
 nonterminal Tipo tipo, declr;
-nonterminal Objeto asig, expr, expr_array, expr_arit;
+nonterminal Objeto asig, expr, expr_array, expr_arit, valor;
 
 precedence right        ASIGNA;
 precedence  left        IF, ELSE, DO, WHILE, FOR, PRINT;
@@ -278,103 +283,109 @@ list_int ::= list_int:list COMA NUM_ENTERO:num      {:  list.add(num); RESULT = 
           ;
 
 list_float ::= list_float:list COMA NUM_REAL:num    {:
-             list.add(num); RESULT = list;
+             list.add(new Instancia(num.toString(), TFloat.getTFloat(), TablaSimbolos.bloqueActual, false)); RESULT = list;
 :}
              | NUM_REAL:num                         {:
-             List<Float> start = new ArrayList<>();
-             start.add(num);
+             List<Instancia> start = new ArrayList<>();
+             start.add(new Instancia(num.toString(), TFloat.getTFloat(), TablaSimbolos.bloqueActual, false));
              RESULT = start;
 :}
             ;
 
-expr ::= expr:a PUNTO LENGTH    {:
-            if (!(a instanceof Instancia && ((Instancia) a).getTipoInstancia() instanceof TArray))
-                Objeto.errorYPara("[ERROR]\tNo se puede hacer una asignación si el valor a asignar no es una instancia", new Vector<>(List.of(a)));
-
-
-            RESULT = a.metodos(TArray.ARRAY_METHODS.LENGTH.name(), new Vector<>());
-        :}
-        | ID:id AC expr:idx CC ASIGNA expr:valor      {:
-            // Checkear que el valor es una instancia y no es de tipo array
-            checkVariable(id);
-            // Checkear que le valor es del mismo que la variable
-            Instancia variable = (Instancia) PLXC.tablaSimbolos.getObj(id);
-
-            if (!(variable.getTipoInstancia() instanceof TArray))
-                Objeto.errorYPara("[ERROR]\tLa variable no es un array", new Vector<>(List.of(variable)));
-
-            RESULT = variable.metodos("SET", new Vector<>(List.of(idx, valor)));
-        :}
-        | ID:id ASIGNA expr:valor   {:
-                  this.checkVariable(id); // Comprueba que la variable este declarada y que sea una instancia
-                  Instancia variable = (Instancia) PLXC.tablaSimbolos.getObj(id);
-
-                  if (!(variable.getTipoInstancia() instanceof TArray)) {
-                        this.checkType(valor, variable.getTipoInstancia()); // Comprueba que el tipo de la variable sea el mismo que el de la expresion o sean parseables entre sii
-                  }
-
-                  RESULT = variable.metodos("ASIGNA", new Vector<>(List.of(valor)));
-              :}
-        | AP tipo:tipoDst CP expr:exp       {:
-
-        if (exp instanceof Instancia) {
-            Instancia aux = ((Instancia)exp).getTipoInstancia().cast(tipoDst, (Instancia) exp);
-            if (aux != null) {
-                RESULT = aux;
-            } else {
-                Objeto.errorYPara("[ERROR]\tNo se puede hacer una asignación si el valor a asignar no es del mismo tipo o no son parseables entre sii", new Vector<>());
-            }
-        } else {
-            Objeto.errorYPara("[ERROR]\tNo se puede hacer un casting si el valor a asignar no es una instancia", new Vector<>());
-        }
-
-        :}
-        | ID:id                     {:  checkVariable(id); RESULT = PLXC.tablaSimbolos.getObj(id);  :}
-        | ID:id AC expr:idx CC        {:
-            checkVariable(id);
-            Instancia variable = (Instancia) PLXC.tablaSimbolos.getObj(id);
-
-            if (!(variable.getTipoInstancia() instanceof TArray))
-                Objeto.errorYPara("[ERROR]\tLa variable no es un array", new Vector<>(List.of(variable)));
-
-            RESULT = variable.metodos("GET", new Vector<>(List.of(idx)));
-
-        :}
-        | expr_arit:expr_arit       {:  RESULT = expr_arit;  :}
+expr ::= valor:expr                 {:  RESULT = expr;  :}
         | expr_array:expr           {:
         RESULT = expr;
         :}
-        | NUM_ENTERO:num            {:
-        RESULT = new Instancia(num.toString(), TInt.getTInt(), TablaSimbolos.bloqueActual, false);
-        :}
-        | NUM_REAL:num              {:
-        RESULT = new Instancia(num.toString(), TFloat.getTFloat(), TablaSimbolos.bloqueActual, false);
-        :}
-        | CARACTER:c                {:
-        RESULT = new Instancia(c.toString(), TChar.getTChar(), TablaSimbolos.bloqueActual, false);
-        :}
-        | CADENA:s                  {:
-            char[] chars = s.toCharArray();
-            StringInstancia res = new StringInstancia(true);
-
-            res = TString.asignaConstante(res, chars);
-
-            RESULT = res;
-        :}
         ;
 
-expr_arit ::= AP expr:exp CP             {:  RESULT = exp;   :}
-          | expr:a MAS:op expr:b      {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
-          | expr:a MENOS:op expr:b    {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
-          | expr:a POR:op expr:b      {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
-          | expr:a DIV:op expr:b      {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
-          | MENOS:op expr:exp         {:  RESULT = exp.metodos("UMENOS", new Vector());       :}   %prec U_MINUS
+valor ::= ID:id PUNTO LENGTH    {:
+            checkVariable(id);
+            Objeto a = PLXC.tablaSimbolos.getObj(id);
+
+          if (!(a instanceof Instancia && ((Instancia) a).getTipoInstancia() instanceof TArray))
+              Objeto.errorYPara("[ERROR]\tNo se puede hacer una asignación si el valor a asignar no es una instancia", new Vector<>(List.of(a)));
+
+
+          RESULT = a.metodos(TArray.ARRAY_METHODS.LENGTH.name(), new Vector<>());
+      :}
+      | ID:id AC valor:idx CC ASIGNA valor:valor      {:
+          // Checkear que el valor es una instancia y no es de tipo array
+          checkVariable(id);
+          // Checkear que le valor es del mismo que la variable
+          Instancia variable = (Instancia) PLXC.tablaSimbolos.getObj(id);
+
+          if (!(variable.getTipoInstancia() instanceof TArray))
+              Objeto.errorYPara("[ERROR]\tLa variable no es un array", new Vector<>(List.of(variable)));
+
+          RESULT = variable.metodos("SET", new Vector<>(List.of(idx, valor)));
+      :}
+      | ID:id ASIGNA expr:valor   {:
+                this.checkVariable(id); // Comprueba que la variable este declarada y que sea una instancia
+                Instancia variable = (Instancia) PLXC.tablaSimbolos.getObj(id);
+
+                if (!(variable.getTipoInstancia() instanceof TArray)) {
+                      this.checkType(valor, variable.getTipoInstancia()); // Comprueba que el tipo de la variable sea el mismo que el de la expresion o sean parseables entre sii
+                }
+
+                RESULT = variable.metodos("ASIGNA", new Vector<>(List.of(valor)));
+            :}
+      | AP tipo:tipoDst CP valor:exp       {:
+
+      if (exp instanceof Instancia) {
+          Instancia aux = ((Instancia)exp).getTipoInstancia().cast(tipoDst, (Instancia) exp);
+          if (aux != null) {
+              RESULT = aux;
+          } else {
+              Objeto.errorYPara("[ERROR]\tNo se puede hacer una asignación si el valor a asignar no es del mismo tipo o no son parseables entre sii", new Vector<>());
+          }
+      } else {
+          Objeto.errorYPara("[ERROR]\tNo se puede hacer un casting si el valor a asignar no es una instancia", new Vector<>());
+      }
+
+      :}
+      | ID:id                     {:  checkVariable(id); RESULT = PLXC.tablaSimbolos.getObj(id);  :}
+      | ID:id AC valor:idx CC        {:
+          checkVariable(id);
+          Instancia variable = (Instancia) PLXC.tablaSimbolos.getObj(id);
+
+          if (!(variable.getTipoInstancia() instanceof TArray))
+              Objeto.errorYPara("[ERROR]\tLa variable no es un array", new Vector<>(List.of(variable)));
+
+          RESULT = variable.metodos("GET", new Vector<>(List.of(idx)));
+
+      :}
+      | NUM_ENTERO:num            {:
+      RESULT = new Instancia(num.toString(), TInt.getTInt(), TablaSimbolos.bloqueActual, false);
+      :}
+      | NUM_REAL:num              {:
+      RESULT = new Instancia(num.toString(), TFloat.getTFloat(), TablaSimbolos.bloqueActual, false);
+      :}
+      | CARACTER:c                {:
+      RESULT = new Instancia(c.toString(), TChar.getTChar(), TablaSimbolos.bloqueActual, false);
+      :}
+      | CADENA:s                  {:
+          char[] chars = s.toCharArray();
+          StringInstancia res = new StringInstancia(true);
+
+          res = TString.asignaConstante(res, chars);
+
+          RESULT = res;
+      :}
+      | expr_arit:expr_arit       {:  RESULT = expr_arit;  :}
+      ;
+
+expr_arit ::= AP valor:exp CP             {:  RESULT = exp;   :}
+          | valor:a MAS:op valor:b      {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
+          | valor:a MENOS:op valor:b    {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
+          | valor:a POR:op valor:b      {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
+          | valor:a DIV:op valor:b      {:  RESULT = a.metodos(op, new Vector(List.of(b)));     :}
+          | MENOS:op valor:exp         {:  RESULT = exp.metodos("UMENOS", new Vector());       :}   %prec U_MINUS
           ;
 
-expr_array ::= ALL list_float:l CLL      {:
+expr_array ::= ALL list_float:l CLL        {:
                            Instancia res = new Instancia(new TArray(TFloat.getTFloat(), String.valueOf(l.size())));
                            for (int i = 0; i < l.size(); i++) {
-                               PLXC.out.println(res.getNombre() + "[" + i + "] = " + l.get(i) + ";");
+                               PLXC.out.println(res.getNombre() + "[" + i + "] = " + l.get(i).getNombre() + ";");
                            }
 
                            RESULT = res;

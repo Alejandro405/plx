@@ -74,7 +74,7 @@ nonterminal List<Integer> list_int, list_char;
 nonterminal List<Instancia> list_float;
 nonterminal List<Instancia> list_valor;
 nonterminal Tipo tipo, declr;
-nonterminal Objeto asig, expr, expr_array, expr_arit, valor;
+nonterminal Objeto asig, expr, expr_array, expr_arit, valor, inic;
 
 precedence right        ASIGNA;
 precedence  left        IF, ELSE, DO, WHILE, FOR, PRINT;
@@ -212,58 +212,76 @@ else_if ::= ELSEIF:elseIfTag AP cond:c CP           {:
             |
             ;
 
-declr ::= tipo:tipo ID:id                           {:
-        Instancia newVar = new Instancia(id, tipo, TablaSimbolos.bloqueActual, true);
-        PLXC.tablaSimbolos.putObj(newVar);
-
-        RESULT = tipo;
-:}
-        | tipo:tipo ID:id AC expr:tam CC      {:
-        Instancia newVar = new Instancia(id, new TArray(tipo, tam), TablaSimbolos.bloqueActual, true);
-        PLXC.tablaSimbolos.putObj(newVar);
-
-        RESULT = tipo;
-        :}
-        | declr:tipo COMA ID:id                     {:
-        Instancia newVar;
-        if (tipo != TString.getInstance())
-             newVar = new Instancia(id, tipo, TablaSimbolos.bloqueActual, true);
-        else
-             newVar = new StringInstancia(id);
-        PLXC.tablaSimbolos.putObj(newVar);
-
-        RESULT = tipo;
-:}
-        | tipo:tipo ID:id ASIGNA expr:exp           {:
+declr ::= tipo:tipo ID:id  inic:inic                          {:
+        if (inic != null) {
             Instancia newVar;
+
             if (tipo != TString.getInstance())
                  newVar = new Instancia(id, tipo, TablaSimbolos.bloqueActual, true);
             else
                  newVar = new StringInstancia(id);
-            PLXC.tablaSimbolos.putObj(newVar);
-            newVar.metodos("ASIGNA",new Vector<>(List.of(exp)));
 
-            RESULT = tipo;
-        :}
-        | tipo:tipo ID:id AC expr:tam CC ASIGNA expr:exp {:
+            PLXC.tablaSimbolos.putObj(newVar);
+            newVar.metodos("ASIGNA",new Vector<>(List.of(inic)));
+        } else {
+            Instancia newVar = new Instancia(id, tipo, TablaSimbolos.bloqueActual, true);
+            PLXC.tablaSimbolos.putObj(newVar);
+        }
+
+        RESULT = tipo;
+:}
+        | tipo:tipo ID:id AC expr:tam CC inic:inic            {:
+
+        if (inic != null) {
             Instancia newVar = new Instancia(id, new TArray(tipo, tam), TablaSimbolos.bloqueActual, true);
             PLXC.tablaSimbolos.putObj(newVar);
 
-            newVar.metodos("ASIGNA",new Vector<>(List.of(exp)));
-
-            RESULT = tipo;
-        :}
-        | declr:tipo COMA ID:id ASIGNA expr:exp     {:
-            Instancia newVar;
-            if (tipo != TString.getInstance())
-                 newVar = new Instancia(id, tipo, TablaSimbolos.bloqueActual, true);
-            else
-                 newVar = new StringInstancia(id);
+            newVar.metodos("ASIGNA",new Vector<>(List.of(inic)));
+        } else {
+            Instancia newVar = new Instancia(id, new TArray(tipo, tam), TablaSimbolos.bloqueActual, true);
             PLXC.tablaSimbolos.putObj(newVar);
-            newVar.metodos("ASIGNA",new Vector<>(List.of(exp)));
+        }
 
-            RESULT = tipo;
+
+        RESULT = tipo;
         :}
+        | declr:tipo COMA ID:id  inic:inic                    {:
+                                  if (inic != null) {
+                                      Instancia newVar;
+
+                                      if (tipo != TString.getInstance())
+                                           newVar = new Instancia(id, tipo, TablaSimbolos.bloqueActual, true);
+                                      else
+                                           newVar = new StringInstancia(id);
+
+                                      PLXC.tablaSimbolos.putObj(newVar);
+                                      newVar.metodos("ASIGNA",new Vector<>(List.of(inic)));
+                                  } else {
+                                      Instancia newVar = new Instancia(id, tipo, TablaSimbolos.bloqueActual, true);
+                                      PLXC.tablaSimbolos.putObj(newVar);
+                                  }
+
+                                  RESULT = tipo;
+                          :}
+        | declr:tipo COMA ID:id AC expr:tam CC inic:inic      {:
+
+                                  if (inic != null) {
+                                      Instancia newVar = new Instancia(id, new TArray(tipo, tam), TablaSimbolos.bloqueActual, true);
+                                      PLXC.tablaSimbolos.putObj(newVar);
+
+                                      newVar.metodos("ASIGNA",new Vector<>(List.of(inic)));
+                                  } else {
+                                      Instancia newVar = new Instancia(id, new TArray(tipo, tam), TablaSimbolos.bloqueActual, true);
+                                      PLXC.tablaSimbolos.putObj(newVar);
+                                  }
+
+
+                                  RESULT = tipo;
+                                  :}
+        ;
+
+inic ::= ASIGNA expr:exp        {:RESULT = exp;:}
+        |
         ;
 
 list_id ::=  ID:id                          {:
@@ -271,45 +289,6 @@ list_id ::=  ID:id                          {:
             start.add(id);
             RESULT = start; :}
          | list_id:list COMA ID:id          {:  list.add(id); RESULT = list;        :};
-/**
-list_char ::= list_char:list COMA CARACTER:c        {:  list.add(c); RESULT = list;        :}
-           | CARACTER:c                             {:  List<Integer> start = new ArrayList<>();
-                                                  start.add(c);
-                                                  RESULT = start; :}
-           ;
-
-list_int ::= list_int:list COMA NUM_ENTERO:num      {:  list.add(num); RESULT = list;        :}
-           | NUM_ENTERO:num                         {:  List<Integer> start = new ArrayList<>();
-                                                  start.add(num);
-                                                  RESULT = start; :}
-          ;
-
-list_float ::= list_float:list COMA expr_arit:expr    {:
-            if (!(expr instanceof Instancia))
-                 Objeto.errorYPara("[ERROR]\tNo se puede formar una coleccion de elementos sin instancias", new Vector<>(List.of(expr)));
-
-            Instancia elem = (Instancia) expr;
-            if (elem.getTipoInstancia() != TFloat.getTFloat())
-                 Objeto.errorYPara("[ERROR]\tNo se puede formar una coleccion de elementos sin instancias del mismo tipo", new Vector<>(List.of(elem)));
-
-            list.add(elem);
-            RESULT = list;
-:}
-             | expr_arit:expr                         {:
-             List<Instancia> start = new ArrayList<>();
-
-             if (!(expr instanceof Instancia))
-                    Objeto.errorYPara("[ERROR]\tNo se puede formar una coleccion de elementos sin instancias", new Vector<>(List.of(expr)));
-
-             Instancia elem = (Instancia) expr;
-             if (elem.getTipoInstancia() != TFloat.getTFloat())
-                    Objeto.errorYPara("[ERROR]\tNo se puede formar una coleccion de elementos sin instancias del mismo tipo", new Vector<>(List.of(elem)));
-
-             start.add(elem);
-             RESULT = start;
-:}
-            ;
-*/
 
 list_valor ::= list_valor:l COMA valor:val      {:
             Instancia elem = checkElem(val);
@@ -428,33 +407,6 @@ expr_array ::= ALL list_valor:l CLL       {:
 
                 RESULT = res;
 :};
-/*
-ALL list_float:l CLL        {:
-                           Instancia res = new Instancia(new TArray(TFloat.getTFloat(), String.valueOf(l.size())));
-                           for (int i = 0; i < l.size(); i++) {
-                               PLXC.out.println(res.getNombre() + "[" + i + "] = " + l.get(i).getNombre() + ";");
-                           }
-
-                           RESULT = res;
-                       :}
-               | ALL list_int:l CLL        {:
-                   Instancia res = new Instancia(new TArray(TInt.getTInt(), String.valueOf(l.size())));
-                   for (int i = 0; i < l.size(); i++) {
-                       PLXC.out.println(res.getNombre() + "[" + i + "] = " + l.get(i) + ";");
-                   }
-
-                   RESULT = res;
-               :}
-               | ALL list_char:l CLL       {:
-                   Instancia res = new Instancia(new TArray(TChar.getTChar(), String.valueOf(l.size())));
-                   for (int i = 0; i < l.size(); i++) {
-                       PLXC.out.println(res.getNombre() + "[" + i + "] = " + l.get(i) + ";");
-                   }
-
-                   RESULT = res;
-               :}
-
-*/
 
 
 cond ::=  AP cond:a CP          {:  RESULT = a;     :}

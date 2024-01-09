@@ -16,6 +16,8 @@ public class TablaSimbolos {
 
     private static int contBloque;
 
+    public static Set<Funcion> funciones = new TreeSet<>();
+
     public TablaSimbolos() {
         this.tabla = new HashMap<String, TreeMap<Integer, Objeto>>();
         this.numEtiq = 0;

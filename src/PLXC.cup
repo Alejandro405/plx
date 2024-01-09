@@ -67,7 +67,7 @@ terminal String IF, WHILE, FOR, DO, PRINT, LENGTH;
 terminal String ELSE, ELSEIF;
 terminal String CASE, SWITCH, DEFAULT, BREAK;
 
-nonterminal program, lista_sent, sent, sent_comp, sent_simpl, sent_if, sent_while, op_else, sent_do_while, sent_for, for_expr, sent_switch, list_case, op_default, case_oper;
+nonterminal program, lista_sent, sent, sent_comp, sent_simpl, sent_if, sent_while, op_else , sent_do_while, sent_for, for_expr, sent_switch, list_case, op_default, case_oper, list_sent_simpl, declr_func, list_param, params, param;
 nonterminal String and_end, or_end, else_if;
 nonterminal Objeto cond, Get_BoolInstance;
 nonterminal Integer Init_Bloque;
@@ -104,7 +104,21 @@ lista_sent ::= sent
             ;
 
 sent ::= sent_comp
-        | sent_simpl ;
+        | sent_simpl
+        | declr_func
+        ;
+
+param ::= tipo:tipo ID:idParam ;
+
+list_param ::= list_param:l COMA param:p
+            | param:p
+            ;
+
+params ::= list_param:l     {:RESULT = l;:}
+        |                   {:RESULT = new ArrayList<>();:}
+        ;
+
+declr_func ::= tipo:tipoRet ID AP params CP PYC ;
 
 sent_comp ::= ALL Init_Bloque:bloquePrevio lista_sent CLL {:
                           PLXC.tablaSimbolos.delBlock();
@@ -120,6 +134,10 @@ sent_simpl ::= valor PYC
         | sent_for
         | sent_switch
         ;
+
+list_sent_simpl ::= list_sent_simpl sent_simpl
+                 |
+                 ;
 
 sent_while ::= WHILE:whileTag
                     // WHILE
@@ -370,7 +388,7 @@ expr ::= valor:expr                 {:  RESULT = expr;  :}
         :}
         ;
 
-valor ::= ID:id PUNTO LENGTH    {:
+valor ::= ID:id PUNTO LENGTH                {:
             checkVariable(id);
             Objeto a = PLXC.tablaSimbolos.getObj(id);
 
@@ -391,7 +409,7 @@ valor ::= ID:id PUNTO LENGTH    {:
 
           RESULT = variable.metodos("SET", new Vector<>(List.of(idx, valor)));
       :}
-      | ID:id ASIGNA expr:valor   {:
+      | ID:id ASIGNA expr:valor             {:
                 this.checkVariable(id); // Comprueba que la variable este declarada y que sea una instancia
                 Instancia variable = (Instancia) PLXC.tablaSimbolos.getObj(id);
 
@@ -401,7 +419,7 @@ valor ::= ID:id PUNTO LENGTH    {:
 
                 RESULT = variable.metodos("ASIGNA", new Vector<>(List.of(valor)));
             :}
-      | AP tipo:tipoDst CP valor:exp       {:
+      | AP tipo:tipoDst CP valor:exp        {:
 
       if (exp instanceof Instancia) {
           Instancia aux = ((Instancia)exp).getTipoInstancia().cast(tipoDst, (Instancia) exp);
@@ -416,7 +434,7 @@ valor ::= ID:id PUNTO LENGTH    {:
 
       :}
       | ID:id                     {:  checkVariable(id); RESULT = PLXC.tablaSimbolos.getObj(id);  :}
-      | ID:id AC valor:idx CC        {:
+      | ID:id AC valor:idx CC     {:
           checkVariable(id);
           Instancia variable = (Instancia) PLXC.tablaSimbolos.getObj(id);
 

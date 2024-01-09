@@ -104,6 +104,23 @@ public class TablaSimbolos {
     }
 
     /**
+     * Busca el objeto de la clase funcion con el tipo de retorno e id iguales a los pasados como parámetros.
+     * @param tipoRet El tipo de la función
+     * @param id El identificador de la función
+     * @return La funcion a consultar
+     */
+    public Funcion getFunction(Tipo tipoRet, String id) {
+        // Las funcinoes son objetos cuyo atributo siempre es "FUNCTION"
+        Objeto aux = this.tabla.get(id).get(0);
+        if (!(aux instanceof Funcion)) {
+            Objeto.errorYPara("[ERROR]\tLa funcion <"+ id +"> no ha sido instanciada como instancia de la clase Funcion, sino como <" + aux.getClass().getName() + ">", new Vector<>(List.of(aux)));
+            return null;
+        } else {
+            return (Funcion) aux;
+        }
+    }
+
+    /**
      * Añade una nueva entrada a la tabla
      *
      * @param o Objeto a introducir en la tabla
@@ -120,6 +137,20 @@ public class TablaSimbolos {
             aux.put(bloque, o);
             this.tabla.put(nombre, aux);
 
+        }
+    }
+
+    public void putFunction(Funcion f) {
+        String id = f.getId();
+        int bloque = f.getBloque();
+        TreeMap<Integer, Objeto> valor = new TreeMap<>();
+
+        Objeto aux = tabla.get(id).get(0);
+        if (aux instanceof Funcion && ((Funcion) aux).getTipoRetorno() == f.getTipoRetorno()) {
+            Objeto.errorYPara("[ERROR]\tYa existe una funcion en la tabla de símbolos con ese identificador y ese tipo de retorno", new Vector<>(List.of((Funcion)aux)));
+        } else {
+            valor.put(bloque, f);
+            tabla.put(id, valor);
         }
     }
 

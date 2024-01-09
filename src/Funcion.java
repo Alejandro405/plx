@@ -6,9 +6,8 @@ import java.util.*;
  */
 public class Funcion extends Objeto{
     public static enum FUNCION_METHODS {
-        APPLY
+        APPLY;
     }
-
 
     private String etiq;
 
@@ -17,7 +16,9 @@ public class Funcion extends Objeto{
     private Tipo tipoRetorno;
 
     // <Tipo del parámetro, instancia con la que se accede al parámetro dentro del cuerpo de la función>
+
     private Map<Tipo, Instancia> params;
+    private boolean implemented = false;
 
 
     public Funcion(String nombre, Tipo tipo, Map<Tipo, Instancia> parametros) {
@@ -26,6 +27,7 @@ public class Funcion extends Objeto{
         this.params = parametros;
         this.tipoRetorno = tipo;
         this.etiq = PLXC.tablaSimbolos.getNewEtiq();
+        this.implemented = false;
     }
 
     @Override
@@ -115,6 +117,10 @@ public class Funcion extends Objeto{
         PLXC.out.println("call " + getInicFuncition() + ";");
     }
 
+    public String getId() {
+        return this.id;
+    }
+
     public String getInicFuncition() {
         return "function_" + this.etiq;
     }
@@ -132,6 +138,26 @@ public class Funcion extends Objeto{
         if (PLXC.tablaSimbolos.getObj(this.id, 0) instanceof Instancia)
             res = (Instancia) PLXC.tablaSimbolos.getObj(this.id, 0);
         return res;
+    }
+
+    public boolean isImplemented() {
+        return implemented;
+    }
+
+    public void setImplemented(boolean implemented) {
+        this.implemented = implemented;
+    }
+
+    public Tipo getTipoRetorno() {
+        return tipoRetorno;
+    }
+
+    public String getEtiq() {
+        return etiq;
+    }
+
+    public Map<Tipo, Instancia> getParams() {
+        return params;
     }
 
     @Override

@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Stack;
 import java.util.Vector;
+import java.util.Map;
+import java.util.HashMap;
 
 action code {:
     public void checkVariable(Objeto obj) {
@@ -67,7 +69,9 @@ terminal String IF, WHILE, FOR, DO, PRINT, LENGTH;
 terminal String ELSE, ELSEIF;
 terminal String CASE, SWITCH, DEFAULT, BREAK;
 
-nonterminal program, lista_sent, sent, sent_comp, sent_simpl, sent_if, sent_while, op_else , sent_do_while, sent_for, for_expr, sent_switch, list_case, op_default, case_oper, list_sent_simpl, declr_func, list_param, params, param;
+nonterminal program, lista_sent, sent, sent_comp, sent_simpl, sent_if, sent_while, op_else , sent_do_while, sent_for, for_expr, sent_switch, list_case, op_default, case_oper, list_sent_simpl, declr_func;
+nonterminal Map<Tipo, Instancia> list_param, params;
+nonterminal Parametro param;
 nonterminal String and_end, or_end, else_if;
 nonterminal Objeto cond, Get_BoolInstance;
 nonterminal Integer Init_Bloque;
@@ -108,22 +112,42 @@ sent ::= sent_comp
         | declr_func
         ;
 
-param ::= tipo:tipo ID:idParam ;
+param ::= tipo:tipo ID:idParam     {:
+        // Crear una entrada para el diccionario que almacena los parámetros <Tipo, Instancia>
+        Parametro res = new Parametro(new Instancia(tipo), tipo);
 
-list_param ::= list_param:l COMA param:p
-            | param:p
+        RESULT = res;
+:}
+        ;
+
+list_param ::= list_param:map COMA param:p  {:
+            map.put(p.getTipo(), p.getInstancia());
+
+            RESULT = map;
+:}
+            | param:p                       {:
+            HashMap<Tipo, Instancia> start = new HashMap<>();
+
+            start.put(p.getTipo(), p.getInstancia());
+
+            RESULT = start;
+:}
             ;
 
 params ::= list_param:l     {:RESULT = l;:}
-        |                   {:RESULT = new ArrayList<>();:}
+        |                   {:RESULT = new HashMap<>();:}
         ;
 
-declr_func ::= tipo:tipoRet ID AP params CP PYC ;
+declr_func ::= tipo:tipoRet ID:id AP params:params CP PYC {:
+            Funcion f = new Funcion(id, tipoRet, params);
+            PLXC.tablaSimbolos.putFunction(f);
+:}
+            ;
 
 sent_comp ::= ALL Init_Bloque:bloquePrevio lista_sent CLL {:
-                          PLXC.tablaSimbolos.delBlock();
-                          TablaSimbolos.bloqueActual = bloquePrevio;
-                      :};
+                  PLXC.tablaSimbolos.delBlock();
+                  TablaSimbolos.bloqueActual = bloquePrevio;
+:};
 
 sent_simpl ::= valor PYC
         | declr PYC

@@ -35,6 +35,7 @@ action code {:
 
     private String end_and = "", end_or = "";
     private Stack<String> if_tags = new Stack<>();
+    private Stack<SwichOperator> switch_operators = new Stack<>();
     private Objeto res_bool;
 :}
 
@@ -47,13 +48,13 @@ parser code {:
                 int line = (((Symbol)info).left);
                 int column = (((Symbol)info).right);
                 Symbol value = (Symbol)info;
-                System.err.print(" (linea "+line+", colonna "+column+"): " + value.toString());
+                System.err.print(" (linea "+line+", colonna "+column+", símbolo " + sym.terminalNames[value.sym] + "): " + value.toString());
             } else System.err.print(": ");
         else System.err.print(": ");
     }
 :}
 
-terminal String ALL, CLL, AP, CP, AC, CC, PYC, COMA, PUNTO;
+terminal String ALL, CLL, AP, CP, AC, CC, PYC, COMA, PUNTO, DP;
 terminal Tipo INT, FLOAT, CHAR, STRING, U_MINUS;
 terminal String ID;
 terminal Integer NUM_ENTERO;
@@ -64,8 +65,9 @@ terminal Boolean FALSE, TRUE;
 terminal String MAS, MENOS, POR, DIV, EQ, NEQ, LT, GT, LE, GE, AND, OR, NOT, ASIGNA;
 terminal String IF, WHILE, FOR, DO, PRINT, LENGTH;
 terminal String ELSE, ELSEIF;
+terminal String CASE, SWITCH, DEFAULT, BREAK;
 
-nonterminal program, lista_sent, sent, sent_comp, sent_simpl, sent_if, sent_while, op_else, sent_do_while, sent_for, for_expr;
+nonterminal program, lista_sent, sent, sent_comp, sent_simpl, sent_if, sent_while, op_else, sent_do_while, sent_for, for_expr, sent_switch, list_case, op_default, case_oper;
 nonterminal String and_end, or_end, else_if;
 nonterminal Objeto cond, Get_BoolInstance;
 nonterminal Integer Init_Bloque;
@@ -115,7 +117,9 @@ sent_simpl ::= valor PYC
         | sent_if
         | sent_while
         | sent_do_while
-        | sent_for;
+        | sent_for
+        | sent_switch
+        ;
 
 sent_while ::= WHILE:whileTag
                     // WHILE
@@ -210,6 +214,57 @@ else_if ::= ELSEIF:elseIfTag AP cond:c CP           {:
                 else_if
             | ELSE sent
             |
+            ;
+
+sent_switch ::= SWITCH:switchTag AP valor:expr CP ALL
+                {:
+                    // Checkear que la expresion es una instancia de tipo entero
+                    if (!(expr instanceof Instancia) && ((Instancia) expr).getTipoInstancia() != TInt.getTInt())
+                        Objeto.errorYPara("[ERROR]\tLa expresion del switch no es una instancia de tipo entero", new Vector<>(List.of(expr)));
+                    SwichOperator swOper = new SwichOperator(switchTag, (Instancia) expr);
+                    this.switch_operators.push(swOper);
+
+                    PLXC.out.println(swOper.getEtiqSwitch() + ":");
+                :}
+                list_case
+                op_default
+                {:
+                    SwichOperator swOper = this.switch_operators.peek();
+                    PLXC.out.println(swOper.getEndSwitch() + ":");
+                    this.switch_operators.pop();
+                :}
+                CLL
+                ;
+
+list_case ::= list_case case_oper
+            | case_oper
+            ;
+
+case_oper ::= CASE:caseEtq valor:expr {:
+                  // Checkear que el valor sea una instancia de tipo entero
+                  if (!(expr instanceof Instancia) && ((Instancia) expr).getTipoInstancia() != TInt.getTInt())
+                        Objeto.errorYPara("[ERROR]\tLa expresion del switch no es una instancia de tipo entero", new Vector<>(List.of(expr)));
+
+                  SwichOperator swOper = this.switch_operators.peek();
+                  // if (switchExpr != expr) goto end_caseEtq ;
+                  PLXC.out.println(SwichOperator.genCase(caseEtq) + ":");
+                  PLXC.out.println("if (" + swOper.getExpr().getNombre() + " != " + expr.getNombre() + ") goto " + SwichOperator.getEndCase(caseEtq) + ";");
+                  swOper.addCase(caseEtq);
+:}
+            DP sent BREAK PYC {:
+                    //Salto incondicional al final del switch
+                    SwichOperator swOper = this.switch_operators.peek();
+                    PLXC.out.println("goto " + swOper.getEndSwitch() + ";");
+                    // Etiqueta de fin del end_caseEtq
+                    PLXC.out.println(SwichOperator.getEndCase(caseEtq)+ ":");
+:}
+            ;
+
+op_default ::= DEFAULT DP {:
+            SwichOperator swOper = this.switch_operators.peek();
+            PLXC.out.println("default_" + swOper.getEtiqSwitch() + ":");
+:}
+                sent BREAK PYC
             ;
 
 declr ::= tipo:tipo ID:id  inic:inic                          {:
@@ -443,11 +498,12 @@ cond ::=  AP cond:a CP          {:  RESULT = a;     :}
         | TRUE                  {:  RESULT = new Instancia("1", TBool.getTBool(), TablaSimbolos.bloqueActual, false);    :}
         ;
 
-tipo ::= INT:t          {:    RESULT = TInt.getTInt();            :}
-        | FLOAT:t       {:    RESULT = TFloat.getTFloat();        :}
-        | CHAR:t        {:    RESULT = TChar.getTChar();          :}
-        | STRING:t      {:    RESULT = TString.getInstance();     :}
-        |               {:    RESULT = TInt.getTInt();            :}
+tipo ::= INT:t                          {:    RESULT = TInt.getTInt();            :}
+        | FLOAT:t                       {:    RESULT = TFloat.getTFloat();        :}
+        | CHAR:t                        {:    RESULT = TChar.getTChar();          :}
+        | STRING:t                      {:    RESULT = TString.getInstance();     :}
+        | tipo:t ALL expr:exp CLL       {:    RESULT = new TArray(t, exp.getNombre());        :}
+        |                               {:    RESULT = TInt.getTInt();            :}
         ;
 
 Init_Bloque ::=  {:  RESULT = TablaSimbolos.newBloque();     :};

@@ -5,12 +5,13 @@ import java.util.Vector;
 
 public class TString extends Tipo{
     public static enum STRING_METHODS {
-        ASIGNA, PRINT
+        ASIGNA, PRINT, CONCATENA, LENGTH, GET, SET
     }
 
     private static final TString T_STRING = new TString();
 
     private static final Instancia string_iterator = new Instancia("__STRING__ITERATOR__", TChar.getTChar(), 0, true);
+    private int posActual = 0;
 
     private String tam;
 
@@ -71,8 +72,116 @@ public class TString extends Tipo{
             return targetString;
         }
 
+        if (m.equals(STRING_METHODS.GET.name())){
+            if (p.size() != 1)
+                errorYPara("[ERROR]\tEl método get de un string debe recibir un único parámetro (int)", new Vector<>());
+
+            if (!(p.firstElement() instanceof Instancia))
+                errorYPara("[ERROR]\tEl método get de un string debe recibir una única instancia", new Vector<>());
+
+            Instancia index = (Instancia) p.firstElement();
+            if (index.getTipoInstancia() != TInt.getTInt())
+                errorYPara("[ERROR]\tEl método get de un string debe recibir una instancia de tipo int como índice", new Vector<>());
+
+            return getElem(targetString, index);
+        }
+
+        if (m.equals(STRING_METHODS.SET.name())) {
+            if (p.size() != 2)
+                errorYPara("[ERROR]\tEl método set de un string debe recibir dos parámetros (indice e Instancia para asignar)", new Vector<>());
+
+            if (!(p.firstElement() instanceof Instancia) || !(p.lastElement() instanceof Instancia))
+                errorYPara("[ERROR]\tEl método set de un string debe recibir instancias parámetros", new Vector<>());
+
+            Instancia index = (Instancia) p.firstElement();
+            Instancia elem = (Instancia) p.lastElement();
+
+            return setElem(targetString, index, elem);
+        }
+
+
+        if (m.equals(STRING_METHODS.LENGTH.name())) {
+            if (!p.isEmpty())
+                errorYPara("[ERROR]\tEl método length de un string no debe recibir ningún parámetro", new Vector<>());
+
+            Instancia res = new Instancia(TInt.getTInt());
+
+            PLXC.out.println(res.getNombre() + " = " + targetString.getTam() + ";");
+
+            return res;
+        }
+
+        if (m.equals(STRING_METHODS.CONCATENA.name())) {
+            if(p.size() == 2) {
+                // Concatena dos Strings
+            } else {
+                for (Objeto x : p) {
+                    if (x instanceof StringInstancia)
+                        concatDosStrings(targetString, (StringInstancia) x);
+                    else
+                        errorYPara("[ERROR]\tEl método concatena de un string debe recibir StringInstancias como parámetros", new Vector<>());
+                }
+            }
+
+
+            return targetString;
+        }
+
         errorYPara("[ERROR]\tNo se encontró el método <" + m + "> definido sobre el tipo String", new Vector<>());
         return null;
+    }
+
+    private static void concatDosStrings(StringInstancia targetString, StringInstancia x) {
+        int oldTam = Integer.parseInt(targetString.getTam());
+        int newTam = oldTam  + Integer.parseInt(x.getTam());
+
+        for (int i = oldTam; i < newTam; i++) {
+            PLXC.out.println(string_iterator.getNombre() + " = " + x.getNombre() + "[" + (i - oldTam) + "];");
+            PLXC.out.println(targetString.getNombre() + "[" + i + "] = " + string_iterator.getNombre() + ";");
+        }
+
+
+    }
+
+    private Objeto setElem(StringInstancia targetString, Instancia index, Instancia elem) {
+        checkIndex(index);
+
+        PLXC.out.println(targetString.getNombre() + "[" + index.getNombre() + "] = " + elem.getNombre() + ";");
+        return targetString;
+    }
+
+    private void checkIndex(Instancia index) {
+        String l = PLXC.tablaSimbolos.getNewEtiq();
+
+        PLXC.out.println("check_index_" + l + ":");
+        PLXC.out.println("if (" + index.getNombre() + " < 0) goto error_index_" + l + ";");
+        PLXC.out.println("if (" + tam + " < " + index.getNombre() + ") goto error_index_" + l + ";");
+        PLXC.out.println("if (" + index.getNombre() + " == " + tam + ") goto error_index_" + l + ";");
+        PLXC.out.println("goto end_check_index_" + l + ";");
+        PLXC.out.println("error_index_" + l + ":");
+        PLXC.out.println("error;\nhalt;");
+        PLXC.out.println("end_check_index_" + l + ":");
+    }
+
+    private Objeto getElem(StringInstancia targetString, Instancia index) {
+        checkIndex(index);
+        Instancia res = new Instancia(TChar.getTChar());
+
+        PLXC.out.println(res.getNombre() + " = " + targetString.getNombre() + "[" + index.getNombre() + "];");
+        return  res;
+    }
+
+    private Instancia next(StringInstancia str, Instancia itr, Instancia posActual) {
+
+        PLXC.out.println(itr.getNombre() + " = " + str.getNombre() + " [" + posActual +"];");
+        PLXC.out.println(posActual.getNombre() + " = " + posActual.getNombre() + " + 1;");
+
+        return itr;
+    }
+
+    private void hasNext(StringInstancia str, Instancia posActual, String end) {
+        PLXC.out.println("if (" + posActual.getNombre() + " == " + str.getTam() + ") goto " + end + ";");
+        PLXC.out.println("if (" + str.getTam() + " < " + posActual.getNombre() + ") goto " + end + ";");
     }
 
     @Override

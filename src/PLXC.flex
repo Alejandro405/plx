@@ -48,6 +48,7 @@ unicode_char = \'(\\u[0-9a-fA-F]{4})\'
 ";"       {return symbol(sym.PYC);}
 ","       {return symbol(sym.COMA);}
 "."       {return symbol(sym.PUNTO);}
+":"       {return symbol(sym.DP);}
 "+"       {return symbol(sym.MAS, "SUMA");}
 "-"       {return symbol(sym.MENOS, "RESTA");}
 "*"       {return symbol(sym.POR, "MULT");}
@@ -66,6 +67,10 @@ unicode_char = \'(\\u[0-9a-fA-F]{4})\'
 "else"    {return symbol(sym.ELSE);}
 "else if" {return symbol(sym.ELSEIF, PLXC.tablaSimbolos.getNewEtiq());}
 "print"   {return symbol(sym.PRINT);}
+"switch"  {return symbol(sym.SWITCH, PLXC.tablaSimbolos.getNewEtiqSwitch());}
+"case"    {return symbol(sym.CASE, PLXC.tablaSimbolos.getNewEtiq());}
+"break"   {return symbol(sym.BREAK);}
+"default" {return symbol(sym.DEFAULT);}
 "while"   {return symbol(sym.WHILE, PLXC.tablaSimbolos.getNewEtiq());}
 "for"     {return symbol(sym.FOR, PLXC.tablaSimbolos.getNewEtiq());}
 "do"      {return symbol(sym.DO, PLXC.tablaSimbolos.getNewEtiq());}

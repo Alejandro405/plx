@@ -7,50 +7,55 @@
 public class sym {
   /* terminals */
   public static final int AC = 6;
-  public static final int POR = 25;
-  public static final int CHAR = 13;
-  public static final int GE = 32;
-  public static final int INT = 11;
-  public static final int FOR = 39;
+  public static final int POR = 26;
+  public static final int CHAR = 14;
+  public static final int GE = 33;
+  public static final int CASE = 46;
+  public static final int INT = 12;
+  public static final int FOR = 40;
   public static final int CP = 5;
-  public static final int NOT = 35;
-  public static final int AND = 33;
-  public static final int ELSEIF = 44;
-  public static final int LT = 29;
-  public static final int CARACTER = 19;
-  public static final int OR = 34;
-  public static final int DIV = 26;
-  public static final int ASIGNA = 36;
+  public static final int NOT = 36;
+  public static final int AND = 34;
+  public static final int ELSEIF = 45;
+  public static final int LT = 30;
+  public static final int CARACTER = 20;
+  public static final int OR = 35;
+  public static final int DIV = 27;
+  public static final int ASIGNA = 37;
   public static final int CC = 7;
-  public static final int IF = 37;
-  public static final int ID = 16;
-  public static final int LE = 31;
+  public static final int IF = 38;
+  public static final int ID = 17;
+  public static final int LE = 32;
   public static final int EOF = 0;
-  public static final int U_MINUS = 15;
-  public static final int TRUE = 22;
+  public static final int U_MINUS = 16;
+  public static final int TRUE = 23;
   public static final int error = 1;
   public static final int COMA = 9;
-  public static final int CADENA = 20;
-  public static final int MENOS = 24;
-  public static final int NEQ = 28;
-  public static final int EQ = 27;
+  public static final int CADENA = 21;
+  public static final int MENOS = 25;
+  public static final int NEQ = 29;
+  public static final int BREAK = 49;
+  public static final int EQ = 28;
   public static final int CLL = 3;
-  public static final int ELSE = 43;
-  public static final int NUM_REAL = 18;
+  public static final int SWITCH = 47;
+  public static final int ELSE = 44;
+  public static final int NUM_REAL = 19;
   public static final int PUNTO = 10;
-  public static final int WHILE = 38;
-  public static final int FLOAT = 12;
-  public static final int NUM_ENTERO = 17;
-  public static final int STRING = 14;
+  public static final int WHILE = 39;
+  public static final int DEFAULT = 48;
+  public static final int FLOAT = 13;
+  public static final int NUM_ENTERO = 18;
+  public static final int STRING = 15;
   public static final int ALL = 2;
-  public static final int FALSE = 21;
+  public static final int FALSE = 22;
   public static final int AP = 4;
-  public static final int GT = 30;
-  public static final int LENGTH = 42;
-  public static final int PRINT = 41;
-  public static final int DO = 40;
+  public static final int GT = 31;
+  public static final int DP = 11;
+  public static final int LENGTH = 43;
+  public static final int PRINT = 42;
+  public static final int DO = 41;
   public static final int PYC = 8;
-  public static final int MAS = 23;
+  public static final int MAS = 24;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
@@ -63,6 +68,7 @@ public class sym {
   "PYC",
   "COMA",
   "PUNTO",
+  "DP",
   "INT",
   "FLOAT",
   "CHAR",
@@ -96,7 +102,11 @@ public class sym {
   "PRINT",
   "LENGTH",
   "ELSE",
-  "ELSEIF"
+  "ELSEIF",
+  "CASE",
+  "SWITCH",
+  "DEFAULT",
+  "BREAK"
   };
 }
 

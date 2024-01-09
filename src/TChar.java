@@ -1,3 +1,4 @@
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -180,9 +181,12 @@ public class TChar extends Tipo{
         String b = "\\u0043";
         String c = "\\u25b2";
 
-        System.out.println(a.codePointAt(0));
-        System.out.println(b.codePointAt(0));
-        System.out.println(c.codePointAt(0));
+        var l = List.of(a, b, c);
+
+        Iterator<String> itr = l.iterator();
+        while (itr.hasNext()) {
+            System.out.println(itr.next());
+        }
 
 /*
         print('\u0043');

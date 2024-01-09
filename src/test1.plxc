@@ -1,4 +1,11 @@
-string a = "a\\b";
+int x = 3 + 2;
 
-string b;
- b = a;
+switch (x) {
+    case 5 :
+        print(1);
+        break;
+
+    default:
+        print(x);
+        break;
+}

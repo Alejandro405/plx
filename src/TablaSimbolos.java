@@ -9,6 +9,8 @@ public class TablaSimbolos {
     private Map<String, TreeMap<Integer, Objeto>> tabla;
 
     private Integer numEtiq;
+    private Integer etiqSwitch;
+
 
     public static Integer bloqueActual = 0;
 
@@ -17,6 +19,7 @@ public class TablaSimbolos {
     public TablaSimbolos() {
         this.tabla = new HashMap<String, TreeMap<Integer, Objeto>>();
         this.numEtiq = 0;
+        this.etiqSwitch = 0;
     }
 
     public String getNewEtiq() {
@@ -24,6 +27,17 @@ public class TablaSimbolos {
         numEtiq++;
 
         return res;
+    }
+
+    public String getNewEtiqSwitch() {
+        String res = "L" + etiqSwitch;
+        etiqSwitch++;
+
+        return res;
+    }
+
+    public String getCurrentEtiqSwitch() {
+        return "L" + etiqSwitch;
     }
 
     public static Integer newBloque() {

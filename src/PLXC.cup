@@ -437,7 +437,7 @@ valor ::= ID:id PUNTO LENGTH    {:
       :}
       | CADENA:s                  {:
           char[] chars = s.toCharArray();
-          StringInstancia res = new StringInstancia(true);
+          StringInstancia res = new StringInstancia(chars);
 
           res = TString.asignaConstante(res, chars);
 

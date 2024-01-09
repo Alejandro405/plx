@@ -168,10 +168,11 @@ public class TChar extends Tipo{
      * @param c2 Char 2
      * @return Variable en la que se referencia el resultado de la concatenaciṕn de dos chars (Instancia de tipo String) en el lenguaje de tres direcciones.
      */
-    private static Objeto concatDosChars(Objeto c1, Objeto c2) {
-        Objeto res = new Instancia(TString.getInstance());
+    private static StringInstancia concatDosChars(Objeto c1, Objeto c2) {
+        StringInstancia res = new StringInstancia(2);
 
-        PLXC.out.println(res.getNombre() + " = " + c1.getNombre() + " + " + c2.getNombre() + ";" );
+        PLXC.out.println(res.getNombre() + "[0] = " + c1.getNombre() + ";");
+        PLXC.out.println(res.getNombre() + "[1] = " + c2.getNombre() + ";");
 
         return  res;
     }

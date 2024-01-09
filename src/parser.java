@@ -1715,7 +1715,7 @@ class CUP$parser$actions {
 		String s = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
           char[] chars = s.toCharArray();
-          StringInstancia res = new StringInstancia(true);
+          StringInstancia res = new StringInstancia(chars);
 
           res = TString.asignaConstante(res, chars);
 

@@ -1,11 +1,9 @@
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.Vector;
 
 public class TString extends Tipo{
     public static enum STRING_METHODS {
-        ASIGNA, PRINT, CONCATENA, LENGTH, GET, SET
+        ASIGNA, PRINT, SUMA, LENGTH, GET, SET
     }
 
     private static final TString T_STRING = new TString();
@@ -42,7 +40,7 @@ public class TString extends Tipo{
     }
 
     public Objeto metodosInstancia(Objeto o, String m, Vector<Objeto> p) {
-        if (!(o instanceof StringInstancia))
+        if (!(o instanceof Instancia))
             errorYPara("[ERROR]\tNo se puede llamar al método " + m + " de un tipo string sobre un objeto que no ses una Instancia", new Vector<>(List.of(o)));
 
 
@@ -111,27 +109,62 @@ public class TString extends Tipo{
             return res;
         }
 
-        if (m.equals(STRING_METHODS.CONCATENA.name())) {
-            if(p.size() == 2) {
-                // Concatena dos Strings
-            } else {
-                for (Objeto x : p) {
-                    if (x instanceof StringInstancia)
-                        concatDosStrings(targetString, (StringInstancia) x);
-                    else
-                        errorYPara("[ERROR]\tEl método concatena de un string debe recibir StringInstancias como parámetros", new Vector<>());
-                }
+        if (m.equals(STRING_METHODS.SUMA.name())) {
+
+            if (p.size() != 1 || !(p.firstElement() instanceof Instancia))
+                errorYPara("[ERROR]\tEl método suma de un string debe recibir un único parámetro (StringInstance o una instancia de tipo char)", new Vector<>());
+
+
+            if (((Instancia) p.firstElement()).getTipoInstancia() == TChar.getTChar()){
+                return appendChar(targetString, (Instancia) p.firstElement());
+            }else {
+                StringInstancia b = (StringInstancia) p.firstElement();
+                return concatDosStrings(targetString, b);
             }
-
-
-            return targetString;
         }
 
         errorYPara("[ERROR]\tNo se encontró el método <" + m + "> definido sobre el tipo String", new Vector<>());
         return null;
     }
 
-    private static void concatDosStrings(StringInstancia targetString, StringInstancia x) {
+    private StringInstancia appendChar(StringInstancia a, Instancia objeto) {
+        // Aumentar la cadena actual (tamaño y añadir el valor del objeto recivido como parámetro):
+        int oldTam = Integer.parseInt(a.getTam());
+        int newTam = oldTam + 1;
+
+        PLXC.out.println(a.getNombre() + "[" + oldTam + "] = " + objeto.getNombre() + ";");
+        a.setTam(String.valueOf(newTam));
+
+        return a;
+    }
+
+    private boolean isCharInstancia(Objeto objeto) {
+        return objeto instanceof Instancia && ((Instancia) objeto).getTipoInstancia() == TChar.getTChar();
+    }
+
+    private static StringInstancia concatDosStrings(StringInstancia a, StringInstancia b) {
+        int newTam = Integer.parseInt(a.getTam()) + Integer.parseInt(b.getTam());
+
+        StringInstancia res = new StringInstancia(newTam);
+
+        int n = Integer.parseInt(a.getTam());
+        int i = 0;
+        while (i < n) {
+            PLXC.out.println(string_iterator.getNombre() + " = " + a.getNombre() + "[" + i + "];");
+            PLXC.out.println(res.getNombre() + "[" + i + "] = " + string_iterator.getNombre() + ";");
+            i++;
+        }
+
+
+        n += Integer.parseInt(b.getTam());
+        while (i < n) {
+            PLXC.out.println(string_iterator.getNombre() + " = " + b.getNombre() + "[" + (i - Integer.parseInt(a.getTam())) + "];");
+            PLXC.out.println(res.getNombre() + "[" + i + "] = " + string_iterator.getNombre() + ";");
+            i++;
+        }
+
+        return res;
+        /* Aumentar la cadena actual:
         int oldTam = Integer.parseInt(targetString.getTam());
         int newTam = oldTam  + Integer.parseInt(x.getTam());
 
@@ -139,7 +172,7 @@ public class TString extends Tipo{
             PLXC.out.println(string_iterator.getNombre() + " = " + x.getNombre() + "[" + (i - oldTam) + "];");
             PLXC.out.println(targetString.getNombre() + "[" + i + "] = " + string_iterator.getNombre() + ";");
         }
-
+        */
 
     }
 

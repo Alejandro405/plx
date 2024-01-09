@@ -17,17 +17,18 @@ public class Funcion extends Objeto{
 
     // <Tipo del parámetro, instancia con la que se accede al parámetro dentro del cuerpo de la función>
 
-    private Map<Tipo, Instancia> params;
+    private Set<Instancia> params;
     private boolean implemented = false;
 
 
-    public Funcion(String nombre, Tipo tipo, Map<Tipo, Instancia> parametros) {
+    public Funcion(String nombre, Tipo tipo, Set<Instancia> parametros) {
         super("FUNCTION", 0, false);
         this.id = nombre;
         this.params = parametros;
         this.tipoRetorno = tipo;
         this.etiq = PLXC.tablaSimbolos.getNewEtiq();
         this.implemented = false;
+
     }
 
     @Override
@@ -85,12 +86,13 @@ public class Funcion extends Objeto{
     public void initCallParams(List<Instancia> valores){
         // Indicer para acceder a los i-ésimos parámetros definidos antes de la llamada a la función.
         int i = 1;
-        for (var entry : params.entrySet()) {
-            Instancia param = entry.getValue();
-            PLXC.out.println(param.getNombre() + " = param " + (i + 1) + ";");
-
+        for (Instancia param : params) {
+            PLXC.out.println(param.getNombre() + " = param " + i + ";");
+            PLXC.tablaSimbolos.putObj(param);
             i++;
         }
+
+        PLXC.tablaSimbolos.putObj(this.getReturnInstancia());
     }
 
     /**
@@ -100,7 +102,12 @@ public class Funcion extends Objeto{
      *      call suma;
      */
     public void callFunction(List<Instancia> valores){
-        List<Tipo> tipos = params.keySet().stream().toList();
+        List<Tipo> tipos = new ArrayList<>();
+        for (Instancia param : params) {
+            tipos.add(param.getTipoInstancia());
+        }
+
+
 
         if (valores.size() != tipos.size()){
             errorYPara("[ERROR]\tEl número de parámetros no coincide con el número de parámetros de la función", new Vector<>());
@@ -130,13 +137,16 @@ public class Funcion extends Objeto{
     }
 
     public String getReturnVar() {
-        return "returned_value_" + this.getNombre();
+        return "returned_value_" + this.id;
     }
 
     public Instancia getReturnInstancia(){
         Instancia res = null;
-        if (PLXC.tablaSimbolos.getObj(this.id, 0) instanceof Instancia)
-            res = (Instancia) PLXC.tablaSimbolos.getObj(this.id, 0);
+        if (PLXC.tablaSimbolos.contains(this.getReturnVar()))
+            res = (Instancia) PLXC.tablaSimbolos.getObj(this.getReturnVar(), 0);
+        else
+            res = new Instancia(this.getReturnVar(), this.tipoRetorno, 0);
+
         return res;
     }
 
@@ -156,7 +166,7 @@ public class Funcion extends Objeto{
         return etiq;
     }
 
-    public Map<Tipo, Instancia> getParams() {
+    public Set<Instancia> getParams() {
         return params;
     }
 

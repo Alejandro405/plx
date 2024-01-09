@@ -145,13 +145,20 @@ public class TablaSimbolos {
         int bloque = f.getBloque();
         TreeMap<Integer, Objeto> valor = new TreeMap<>();
 
-        Objeto aux = tabla.get(id).get(0);
-        if (aux instanceof Funcion && ((Funcion) aux).getTipoRetorno() == f.getTipoRetorno()) {
-            Objeto.errorYPara("[ERROR]\tYa existe una funcion en la tabla de símbolos con ese identificador y ese tipo de retorno", new Vector<>(List.of((Funcion)aux)));
-        } else {
+        if (!tabla.containsKey(id)){
             valor.put(bloque, f);
-            tabla.put(id, valor);
+            this.tabla.put(id, valor);
+        } else {
+            Objeto aux = tabla.get(id).get(0);
+            if (aux instanceof Funcion && ((Funcion) aux).getTipoRetorno() == f.getTipoRetorno()) {
+                Objeto.errorYPara("[ERROR]\tYa existe una funcion en la tabla de símbolos con ese identificador y ese tipo de retorno", new Vector<>(List.of((Funcion)aux)));
+            } else {
+                valor.put(bloque, f);
+                tabla.put(id, valor);
+            }
         }
+
+
     }
 
     /**
@@ -173,5 +180,17 @@ public class TablaSimbolos {
      */
     public void delBlock() {
         this.delBlock(bloqueActual);
+    }
+
+    public boolean containsFunction(Tipo tipo, String id) {
+        boolean res = false;
+
+        if (tabla.containsKey(id)) {
+            Objeto aux = tabla.get(id).get(0);
+            if (aux instanceof Funcion) {
+                res = true;
+            }
+        }
+        return false;
     }
 }

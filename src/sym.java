@@ -28,6 +28,7 @@ public class sym {
   public static final int LE = 32;
   public static final int EOF = 0;
   public static final int U_MINUS = 16;
+  public static final int RETURN = 50;
   public static final int TRUE = 23;
   public static final int error = 1;
   public static final int COMA = 9;
@@ -106,7 +107,8 @@ public class sym {
   "CASE",
   "SWITCH",
   "DEFAULT",
-  "BREAK"
+  "BREAK",
+  "RETURN"
   };
 }
 

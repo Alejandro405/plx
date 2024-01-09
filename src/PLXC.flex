@@ -70,6 +70,7 @@ unicode_char = \'(\\u[0-9a-fA-F]{4})\'
 "switch"  {return symbol(sym.SWITCH, PLXC.tablaSimbolos.getNewEtiqSwitch());}
 "case"    {return symbol(sym.CASE, PLXC.tablaSimbolos.getNewEtiq());}
 "break"   {return symbol(sym.BREAK);}
+"return"  {return symbol(sym.RETURN);}
 "default" {return symbol(sym.DEFAULT);}
 "while"   {return symbol(sym.WHILE, PLXC.tablaSimbolos.getNewEtiq());}
 "for"     {return symbol(sym.FOR, PLXC.tablaSimbolos.getNewEtiq());}

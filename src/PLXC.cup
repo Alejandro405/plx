@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Stack;
 import java.util.Vector;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 
 action code {:
     public void checkVariable(Objeto obj) {
@@ -67,11 +67,12 @@ terminal Boolean FALSE, TRUE;
 terminal String MAS, MENOS, POR, DIV, EQ, NEQ, LT, GT, LE, GE, AND, OR, NOT, ASIGNA;
 terminal String IF, WHILE, FOR, DO, PRINT, LENGTH;
 terminal String ELSE, ELSEIF;
-terminal String CASE, SWITCH, DEFAULT, BREAK;
+terminal String CASE, SWITCH, DEFAULT, BREAK, RETURN;
 
-nonterminal program, lista_sent, sent, sent_comp, sent_simpl, sent_if, sent_while, op_else , sent_do_while, sent_for, for_expr, sent_switch, list_case, op_default, case_oper, list_sent_simpl, declr_func;
-nonterminal Map<Tipo, Instancia> list_param, params;
-nonterminal Parametro param;
+nonterminal program, lista_sent, sent, sent_comp, sent_simpl, sent_if, sent_while, op_else , sent_do_while, sent_for, for_expr, sent_switch, list_case, op_default, case_oper, list_sent_simpl, declr_func, impl_func;
+nonterminal Set<Instancia> list_param, params;
+nonterminal Instancia param;
+nonterminal Funcion func_id;
 nonterminal String and_end, or_end, else_if;
 nonterminal Objeto cond, Get_BoolInstance;
 nonterminal Integer Init_Bloque;
@@ -110,32 +111,33 @@ lista_sent ::= sent
 sent ::= sent_comp
         | sent_simpl
         | declr_func
+        | impl_func
         ;
 
 param ::= tipo:tipo ID:idParam     {:
         // Crear una entrada para el diccionario que almacena los parámetros <Tipo, Instancia>
-        Parametro res = new Parametro(new Instancia(tipo), tipo);
+        Instancia res = new Instancia(idParam, tipo, 0, true);
 
         RESULT = res;
 :}
         ;
 
-list_param ::= list_param:map COMA param:p  {:
-            map.put(p.getTipo(), p.getInstancia());
+list_param ::= list_param:s COMA param:p  {:
+            s.add(p);
 
-            RESULT = map;
+            RESULT = s;
 :}
             | param:p                       {:
-            HashMap<Tipo, Instancia> start = new HashMap<>();
+            Set<Instancia> start = new HashSet();
 
-            start.put(p.getTipo(), p.getInstancia());
+            start.add(p);
 
             RESULT = start;
 :}
             ;
 
 params ::= list_param:l     {:RESULT = l;:}
-        |                   {:RESULT = new HashMap<>();:}
+        |                   {:RESULT = new HashSet<>();:}
         ;
 
 declr_func ::= tipo:tipoRet ID:id AP params:params CP PYC {:
@@ -143,6 +145,29 @@ declr_func ::= tipo:tipoRet ID:id AP params:params CP PYC {:
             PLXC.tablaSimbolos.putFunction(f);
 :}
             ;
+
+impl_func ::= tipo:tipo ID:id AP params:params CP ALL {:
+            Funcion f = null;
+            if (!PLXC.tablaSimbolos.containsFunction(tipo, id)) {
+                f = new Funcion(id, tipo, params);
+                PLXC.tablaSimbolos.putFunction(f);
+            } else {
+                f = PLXC.tablaSimbolos.getFunction(tipo, id);
+            }
+
+            PLXC.out.println(f.getInicFuncition() + ":");
+            f.initCallParams(new ArrayList<>(params));
+:}
+            list_sent_simpl
+            RETURN expr:expr PYC {:
+            if (!(expr instanceof Instancia) && ((Instancia) expr).getTipoInstancia() != tipo) {
+                Objeto.errorYPara("[ERROR]\tLa expresin de retorno no casa con el tipo de la función", new Vector<>(List.of(expr, tipo)));
+            }
+
+            Funcion f = PLXC.tablaSimbolos.getFunction(tipo, id);
+            f.retornaResultado((Instancia) expr);
+:}
+            CLL;
 
 sent_comp ::= ALL Init_Bloque:bloquePrevio lista_sent CLL {:
                   PLXC.tablaSimbolos.delBlock();
@@ -412,6 +437,20 @@ expr ::= valor:expr                 {:  RESULT = expr;  :}
         :}
         ;
 
+func_id ::= ID:id      {:
+        Objeto aux = PLXC.tablaSimbolos.getObjeto(id, 0);
+        Funcion f = null;
+        if (!(aux instanceof Funcion)) {
+            Objeto.errorYPara("[ERROR]\tLa funcion con id <" + "id" + "> no se encuentra ni declarada ni implementada", new Vector<>());
+        } else {
+            f = (Funcion) aux;
+
+        }
+
+        RESULT = f;
+:}
+;
+
 valor ::= ID:id PUNTO LENGTH                {:
             checkVariable(id);
             Objeto a = PLXC.tablaSimbolos.getObj(id);
@@ -422,6 +461,9 @@ valor ::= ID:id PUNTO LENGTH                {:
 
           RESULT = a.metodos(TArray.ARRAY_METHODS.LENGTH.name(), new Vector<>());
       :}
+      | func_id:f AP list_param:params CP          {:
+        f.callFunction(new ArrayList(params));
+:}
       | ID:id AC valor:idx CC ASIGNA valor:valor      {:
           // Checkear que el valor es una instancia y no es de tipo array
           checkVariable(id);

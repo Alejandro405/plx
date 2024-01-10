@@ -38,6 +38,7 @@ action code {:
     private String end_and = "", end_or = "";
     private Stack<String> if_tags = new Stack<>();
     private Stack<SwichOperator> switch_operators = new Stack<>();
+    private Stack<Funcion> Funciones = new Stack<>();
     private Objeto res_bool;
 :}
 
@@ -57,7 +58,7 @@ parser code {:
 :}
 
 terminal String ALL, CLL, AP, CP, AC, CC, PYC, COMA, PUNTO, DP;
-terminal Tipo INT, FLOAT, CHAR, STRING, U_MINUS;
+terminal Tipo INT, FLOAT, CHAR, STRING, U_MINUS, VOID;
 terminal String ID;
 terminal Integer NUM_ENTERO;
 terminal Float NUM_REAL;
@@ -69,7 +70,7 @@ terminal String IF, WHILE, FOR, DO, PRINT, LENGTH;
 terminal String ELSE, ELSEIF;
 terminal String CASE, SWITCH, DEFAULT, BREAK, RETURN;
 
-nonterminal program, lista_sent, sent, sent_comp, sent_simpl, sent_if, sent_while, op_else , sent_do_while, sent_for, for_expr, sent_switch, list_case, op_default, case_oper, list_sent_simpl, declr_func, impl_func;
+nonterminal program, lista_sent, sent, sent_comp, sent_simpl, sent_if, sent_while, op_else , sent_do_while, sent_for, for_expr, sent_switch, list_case, op_default, case_oper, list_sent_simpl, declr_func, impl_func,impl_procedure;
 nonterminal Set<Instancia> list_param, params;
 nonterminal Instancia param;
 nonterminal Funcion func_id;
@@ -156,6 +157,25 @@ declr_func ::= tipo:tipoRet ID:id AP params:params CP PYC {:
             PLXC.tablaSimbolos.putFunction(f);
 :}
             ;
+
+impl_procedure ::= VOID ID:id AP params:params CP ALL {:
+                Procedure proced = null;
+
+                if (!PLXC.tablaSimbolos.containsFunction(TVoid.getTVoid(), id)) {
+                    proced = new Procedure(id, params);
+                    PLXC.tablaSimbolos.putFunction(proced);
+                } else {
+                    proced = (Procedure) PLXC.tablaSimbolos.getFunction(TVoid.getTVoid(), id);
+                }
+
+                PLXC.out.println();
+                PLXC.out.println("goto " + proced.getEndFuncition() + ";");
+                PLXC.out.println(proced.getInicFuncition() + ":");
+                proced.initCallParams(new ArrayList<>(params));
+:}
+                list_sent_simpl
+                CLL
+                ;
 
 impl_func ::= tipo:tipo ID:id AP params:params CP ALL {:
             Funcion f = null;
@@ -602,6 +622,7 @@ tipo ::= INT:t                          {:    RESULT = TInt.getTInt();          
         | FLOAT:t                       {:    RESULT = TFloat.getTFloat();        :}
         | CHAR:t                        {:    RESULT = TChar.getTChar();          :}
         | STRING:t                      {:    RESULT = TString.getInstance();     :}
+        | VOID:t                        {:    RESULT = TVoid.getTVoid();          :}
         | tipo:t ALL expr:exp CLL       {:    RESULT = new TArray(t, exp.getNombre());        :}
         |                               {:    RESULT = TInt.getTInt();            :}
         ;

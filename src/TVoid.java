@@ -7,6 +7,10 @@ public class TVoid extends Tipo{
         super(nombre, bloque, mutable);
     }
 
+    public static TVoid getTVoid() {
+        return T_VOID;
+    }
+
     @Override
     public Objeto metodos(String metodo, Vector<Objeto> params) {
         errorYPara("[ERROR]\tNo se puede llamar al método " + metodo + " de un tipo void.", params);

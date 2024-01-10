@@ -1,7 +1,11 @@
-string a = "hola";
-int i;
-for (i = 0; i < a.length; i = i + 1) {
-    print(a[i]);
+string concatChar(char a, char b) {
+    int i;
+    for(i = 0; i < 5; i = i + 1){
+        print(i);
+    }
+    return a + b;
 }
 
 
+print ('a' + 'b');
+print(concatChar('a', 'b'));

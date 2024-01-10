@@ -430,41 +430,40 @@ public class parser extends java_cup.runtime.lr_parser {
     "\004\125\006\024\023\023\024\045\025\013\026\026\027" +
     "\005\033\004\001\002\000\004\011\302\001\002\000\010" +
     "\012\uffc3\013\uffc3\047\153\001\002\000\006\012\uffc7\013" +
-    "\uffc7\001\002\000\006\004\121\023\327\001\002\000\006" +
-    "\007\ufff6\013\325\001\002\000\006\007\ufff7\013\ufff7\001" +
-    "\002\000\004\007\310\001\002\000\006\004\311\012\312" +
-    "\001\002\000\050\004\ufff3\006\ufff3\016\ufff3\017\ufff3\020" +
-    "\ufff3\021\ufff3\023\ufff3\024\ufff3\025\ufff3\026\ufff3\027\ufff3" +
-    "\033\ufff3\050\ufff3\051\ufff3\052\ufff3\053\ufff3\054\ufff3\061" +
-    "\ufff3\064\ufff3\001\002\000\062\002\ufff4\004\ufff4\005\ufff4" +
-    "\006\ufff4\016\ufff4\017\ufff4\020\ufff4\021\ufff4\023\ufff4\024" +
-    "\ufff4\025\ufff4\026\ufff4\027\ufff4\033\ufff4\050\ufff4\051\ufff4" +
-    "\052\ufff4\053\ufff4\054\ufff4\056\ufff4\057\ufff4\061\ufff4\063" +
-    "\ufff4\064\ufff4\001\002\000\050\004\uffe6\006\uffe6\016\uffe6" +
-    "\017\uffe6\020\uffe6\021\uffe6\023\uffe6\024\uffe6\025\uffe6\026" +
-    "\uffe6\027\uffe6\033\uffe6\050\uffe6\051\uffe6\052\uffe6\053\uffe6" +
-    "\054\uffe6\061\uffe6\064\uffe6\001\002\000\050\004\uff95\006" +
-    "\024\016\007\017\031\020\011\021\030\023\023\024\045" +
-    "\025\013\026\026\027\005\033\004\050\017\051\010\052" +
-    "\042\053\025\054\036\061\016\064\316\001\002\000\006" +
-    "\004\121\023\324\001\002\000\022\004\125\006\024\023" +
-    "\023\024\045\025\013\026\026\027\005\033\004\001\002" +
-    "\000\050\004\uffe7\006\uffe7\016\uffe7\017\uffe7\020\uffe7\021" +
-    "\uffe7\023\uffe7\024\uffe7\025\uffe7\026\uffe7\027\uffe7\033\uffe7" +
-    "\050\uffe7\051\uffe7\052\uffe7\053\uffe7\054\uffe7\061\uffe7\064" +
-    "\uffe7\001\002\000\004\012\321\001\002\000\004\005\ufff2" +
-    "\001\002\000\004\005\323\001\002\000\062\002\ufff1\004" +
-    "\ufff1\005\ufff1\006\ufff1\016\ufff1\017\ufff1\020\ufff1\021\ufff1" +
-    "\023\ufff1\024\ufff1\025\ufff1\026\ufff1\027\ufff1\033\ufff1\050" +
-    "\ufff1\051\ufff1\052\ufff1\053\ufff1\054\ufff1\056\ufff1\057\ufff1" +
-    "\061\ufff1\063\ufff1\064\ufff1\001\002\000\012\010\300\012" +
-    "\uffc3\013\uffc3\047\153\001\002\000\016\004\uff95\016\007" +
-    "\017\031\020\011\021\030\023\uff95\001\002\000\006\007" +
-    "\ufff8\013\ufff8\001\002\000\006\007\ufff9\013\ufff9\001\002" +
-    "\000\046\005\uffaa\007\uffaa\011\uffaa\012\uffaa\013\uffaa\015" +
-    "\uffaa\032\uffaa\033\uffaa\034\uffaa\035\uffaa\036\uffaa\037\uffaa" +
-    "\040\uffaa\041\uffaa\042\uffaa\043\uffaa\044\uffaa\045\uffaa\001" +
-    "\002" });
+    "\uffc7\001\002\000\006\004\121\023\327\001\002\000\004" +
+    "\007\ufff6\001\002\000\006\007\ufff7\013\325\001\002\000" +
+    "\004\007\310\001\002\000\006\004\311\012\312\001\002" +
+    "\000\050\004\ufff3\006\ufff3\016\ufff3\017\ufff3\020\ufff3\021" +
+    "\ufff3\023\ufff3\024\ufff3\025\ufff3\026\ufff3\027\ufff3\033\ufff3" +
+    "\050\ufff3\051\ufff3\052\ufff3\053\ufff3\054\ufff3\061\ufff3\064" +
+    "\ufff3\001\002\000\062\002\ufff4\004\ufff4\005\ufff4\006\ufff4" +
+    "\016\ufff4\017\ufff4\020\ufff4\021\ufff4\023\ufff4\024\ufff4\025" +
+    "\ufff4\026\ufff4\027\ufff4\033\ufff4\050\ufff4\051\ufff4\052\ufff4" +
+    "\053\ufff4\054\ufff4\056\ufff4\057\ufff4\061\ufff4\063\ufff4\064" +
+    "\ufff4\001\002\000\050\004\uffe6\006\uffe6\016\uffe6\017\uffe6" +
+    "\020\uffe6\021\uffe6\023\uffe6\024\uffe6\025\uffe6\026\uffe6\027" +
+    "\uffe6\033\uffe6\050\uffe6\051\uffe6\052\uffe6\053\uffe6\054\uffe6" +
+    "\061\uffe6\064\uffe6\001\002\000\050\004\uff95\006\024\016" +
+    "\007\017\031\020\011\021\030\023\023\024\045\025\013" +
+    "\026\026\027\005\033\004\050\017\051\010\052\042\053" +
+    "\025\054\036\061\016\064\316\001\002\000\006\004\121" +
+    "\023\324\001\002\000\022\004\125\006\024\023\023\024" +
+    "\045\025\013\026\026\027\005\033\004\001\002\000\050" +
+    "\004\uffe7\006\uffe7\016\uffe7\017\uffe7\020\uffe7\021\uffe7\023" +
+    "\uffe7\024\uffe7\025\uffe7\026\uffe7\027\uffe7\033\uffe7\050\uffe7" +
+    "\051\uffe7\052\uffe7\053\uffe7\054\uffe7\061\uffe7\064\uffe7\001" +
+    "\002\000\004\012\321\001\002\000\004\005\ufff2\001\002" +
+    "\000\004\005\323\001\002\000\062\002\ufff1\004\ufff1\005" +
+    "\ufff1\006\ufff1\016\ufff1\017\ufff1\020\ufff1\021\ufff1\023\ufff1" +
+    "\024\ufff1\025\ufff1\026\ufff1\027\ufff1\033\ufff1\050\ufff1\051" +
+    "\ufff1\052\ufff1\053\ufff1\054\ufff1\056\ufff1\057\ufff1\061\ufff1" +
+    "\063\ufff1\064\ufff1\001\002\000\012\010\300\012\uffc3\013" +
+    "\uffc3\047\153\001\002\000\016\004\uff95\016\007\017\031" +
+    "\020\011\021\030\023\uff95\001\002\000\004\007\ufff8\001" +
+    "\002\000\006\007\ufff9\013\ufff9\001\002\000\046\005\uffaa" +
+    "\007\uffaa\011\uffaa\012\uffaa\013\uffaa\015\uffaa\032\uffaa\033" +
+    "\uffaa\034\uffaa\035\uffaa\036\uffaa\037\uffaa\040\uffaa\041\uffaa" +
+    "\042\uffaa\043\uffaa\044\uffaa\045\uffaa\001\002" });
 
   /** Access to parse-action table. */
   public short[][] action_table() {return _action_table;}
@@ -594,8 +593,8 @@ public class parser extends java_cup.runtime.lr_parser {
     "\014\027\032\046\317\047\126\050\033\051\123\001\001" +
     "\000\002\001\001\000\002\001\001\000\004\054\321\001" +
     "\001\000\002\001\001\000\002\001\001\000\004\052\275" +
-    "\001\001\000\006\026\325\043\303\001\001\000\002\001" +
-    "\001\000\002\001\001\000\002\001\001" });
+    "\001\001\000\010\024\325\026\305\043\303\001\001\000" +
+    "\002\001\001\000\002\001\001\000\002\001\001" });
 
   /** Access to <code>reduce_goto</code> table. */
   public short[][] reduce_table() {return _reduce_table;}
@@ -795,7 +794,15 @@ class CUP$parser$actions {
 		String idParam = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
         // Crear una entrada para el diccionario que almacena los parámetros <Tipo, Instancia>
-        Instancia res = new Instancia(idParam, tipo, 0, true);
+        Instancia res = null;
+
+        if (tipo == TString.getInstance()) {
+            res = new StringInstancia(idParam);
+        } else if (tipo instanceof TArray) {
+            //generar otro parámetro extra que añadirá el compilador, el tamaño del array
+        }else {
+            res = new Instancia(idParam, tipo, 0, true);
+        }
 
         RESULT = res;
 
@@ -804,15 +811,15 @@ class CUP$parser$actions {
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 9: // list_param ::= list_param COMA param 
+          case 9: // list_param ::= param COMA list_param 
             {
               Set<Instancia> RESULT =null;
-		int sleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
-		int sright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
-		Set<Instancia> s = (Set<Instancia>)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
-		int pleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
-		int pright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
-		Instancia p = (Instancia)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+		int pleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
+		int pright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
+		Instancia p = (Instancia)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		int sleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
+		int sright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
+		Set<Instancia> s = (Set<Instancia>)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
             s.add(p);
 
@@ -1997,7 +2004,7 @@ class CUP$parser$actions {
           checkVariable(id);
           Instancia variable = (Instancia) PLXC.tablaSimbolos.getObj(id);
 
-          if (!(variable.getTipoInstancia() instanceof TArray) && !(variable instanceof StringInstancia))
+          if (!(variable instanceof Instancia) && (((Instancia) variable).getTipoInstancia() instanceof TArray))
               Objeto.errorYPara("[ERROR]\tLa variable no es un array", new Vector<>(List.of(variable)));
 
           RESULT = variable.metodos("GET", new Vector<>(List.of(idx)));

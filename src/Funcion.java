@@ -90,6 +90,7 @@ public class Funcion extends Objeto{
         for (Instancia param : params) {
             PLXC.out.println(param.getNombre() + " = param " + i + ";");
             PLXC.tablaSimbolos.putObj(param);
+
             i++;
         }
 

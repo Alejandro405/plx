@@ -116,13 +116,21 @@ sent ::= sent_comp
 
 param ::= tipo:tipo ID:idParam     {:
         // Crear una entrada para el diccionario que almacena los parámetros <Tipo, Instancia>
-        Instancia res = new Instancia(idParam, tipo, 0, true);
+        Instancia res = null;
+
+        if (tipo == TString.getInstance()) {
+            res = new StringInstancia(idParam);
+        } else if (tipo instanceof TArray) {
+            //generar otro parámetro extra que añadirá el compilador, el tamaño del array
+        }else {
+            res = new Instancia(idParam, tipo, 0, true);
+        }
 
         RESULT = res;
 :}
         ;
 
-list_param ::= list_param:s COMA param:p  {:
+list_param ::= param:p COMA list_param:s    {:
             s.add(p);
 
             RESULT = s;
@@ -461,7 +469,7 @@ valor ::= ID:id PUNTO LENGTH                {:
             checkVariable(id);
             Objeto a = PLXC.tablaSimbolos.getObj(id);
 
-          if (!(a instanceof Instancia && ((Instancia) a).getTipoInstancia() instanceof TArray))
+          if (!(a instanceof Instancia) && (((Instancia) a).getTipoInstancia() instanceof TArray))
               Objeto.errorYPara("[ERROR]\tNo se puede hacer una asignación si el valor a asignar no es una instancia", new Vector<>(List.of(a)));
 
 
@@ -512,7 +520,7 @@ valor ::= ID:id PUNTO LENGTH                {:
           checkVariable(id);
           Instancia variable = (Instancia) PLXC.tablaSimbolos.getObj(id);
 
-          if (!(a instanceof Instancia) && (((Instancia) a).getTipoInstancia() instanceof TArray))
+          if (!(variable instanceof Instancia) && (((Instancia) variable).getTipoInstancia() instanceof TArray))
               Objeto.errorYPara("[ERROR]\tLa variable no es un array", new Vector<>(List.of(variable)));
 
           RESULT = variable.metodos("GET", new Vector<>(List.of(idx)));

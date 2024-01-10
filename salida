@@ -1,43 +1,44 @@
-$T0[0] = 104;
-$T0[1] = 111;
-$T0[2] = 108;
-$T0[3] = 97;
-$T0[0] = 104;
-$T0[1] = 111;
-$T0[2] = 108;
-$T0[3] = 97;
-__STRING__ITERATOR__ = $T0[0];
-a[0] = __STRING__ITERATOR__;
-__STRING__ITERATOR__ = $T0[1];
-a[1] = __STRING__ITERATOR__;
-__STRING__ITERATOR__ = $T0[2];
-a[2] = __STRING__ITERATOR__;
-__STRING__ITERATOR__ = $T0[3];
-a[3] = __STRING__ITERATOR__;
+
+goto end_function_L0;
+function_L0:
+a = param 1;
+b = param 2;
 i = 0;
-L0:
-$T1 = 4;
-$T2 = 1;
-if (i < $T1) goto L1;
-$T2 = 0;
 L1:
-if ($T2 == 0) goto end_L0;
-goto body_L0;
-act_L0:
-$T3 = i + 1;
-i = $T3;
-goto L0;
-body_L0:
-check_index_L2:
-if (i < 0) goto error_index_L2;
-if (4 < i) goto error_index_L2;
-if (i == 4) goto error_index_L2;
-goto end_check_index_L2;
-error_index_L2:
-error;
-halt;
-end_check_index_L2:
-$T4 = a[i];
-printc $T4;
-goto act_L0;
-end_L0:
+$T0 = 1;
+if (i < 5) goto L2;
+$T0 = 0;
+L2:
+if ($T0 == 0) goto end_L1;
+goto body_L1;
+act_L1:
+$T1 = i + 1;
+i = $T1;
+goto L1;
+body_L1:
+print i ;
+goto act_L1;
+end_L1:
+$T2[0] = a;
+$T2[1] = b;
+__STRING__ITERATOR__ = $T2[0];
+returned_value_concatChar[0] = __STRING__ITERATOR__;
+__STRING__ITERATOR__ = $T2[1];
+returned_value_concatChar[1] = __STRING__ITERATOR__;
+return;
+end_function_L0:
+$T3[0] = 97;
+$T3[1] = 98;
+__STRING__ITERATOR__ = $T3[0];
+writec __STRING__ITERATOR__;
+__STRING__ITERATOR__ = $T3[1];
+writec __STRING__ITERATOR__;
+printc 0;
+param 1 = 97;
+param 2 = 98;
+gosub function_L0;
+__STRING__ITERATOR__ = returned_value_concatChar[0];
+writec __STRING__ITERATOR__;
+__STRING__ITERATOR__ = returned_value_concatChar[1];
+writec __STRING__ITERATOR__;
+printc 0;

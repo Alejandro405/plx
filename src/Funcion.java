@@ -73,8 +73,9 @@ public class Funcion extends Objeto{
                 errorYPara("[ERROR]\tEl tipo de retorno de la función no coincide con el tipo de la instancia declarada en la tabla de símbolos", new Vector<>(List.of(aux, tipoRetorno)));
             }
             returnInstancia = (Instancia) aux;
-            PLXC.out.println(returnInstancia.getNombre() + " = " + valor.getNombre() + ";" );
+            returnInstancia.metodos("ASIGNA", new Vector<>(List.of(valor)));
             PLXC.out.println("return;");
+            PLXC.out.println(this.getEndFuncition() + ":");
         }
     }
 
@@ -118,10 +119,10 @@ public class Funcion extends Objeto{
             if (x.getTipoInstancia() != tipos.get(i)){
                 errorYPara("[ERROR]\tEl tipo de los parámetros no coincide con el tipo de los parámetros de la función", new Vector<>(List.of(x)));
             }
-            PLXC.out.println("param " + i + " = " + x.getNombre() + ";");
+            PLXC.out.println("param " + (i + 1) + " = " + x.getNombre() + ";");
         }
 
-        PLXC.out.println("call " + getInicFuncition() + ";");
+        PLXC.out.println("gosub " + getInicFuncition() + ";");
     }
 
     public String getId() {
@@ -140,12 +141,25 @@ public class Funcion extends Objeto{
         return "returned_value_" + this.id;
     }
 
-    public Instancia getReturnInstancia(){
+    public Instancia getReturnInstancia() {
         Instancia res = null;
-        if (PLXC.tablaSimbolos.contains(this.getReturnVar()))
-            res = (Instancia) PLXC.tablaSimbolos.getObj(this.getReturnVar(), 0);
-        else
-            res = new Instancia(this.getReturnVar(), this.tipoRetorno, 0);
+        if (PLXC.tablaSimbolos.contains(this.getReturnVar())) {
+            Objeto x = PLXC.tablaSimbolos.getObj(this.getReturnVar(), 0);
+            if (x instanceof Instancia) {
+                if (x instanceof StringInstancia) {
+                    res = (StringInstancia) x;
+                } else {
+                    res = (Instancia) x;
+                }
+            }
+        } else {
+            if (tipoRetorno == TString.getInstance()) {
+                res = new StringInstancia(this.getReturnVar());
+            } else {
+                res = new Instancia(this.getReturnVar(), this.tipoRetorno, 0, true);
+
+            }
+        }
 
         return res;
     }

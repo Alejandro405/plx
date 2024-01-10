@@ -142,6 +142,9 @@ params ::= list_param:l     {:RESULT = l;:}
 
 declr_func ::= tipo:tipoRet ID:id AP params:params CP PYC {:
             Funcion f = new Funcion(id, tipoRet, params);
+
+            f.setImplemented(false);
+
             PLXC.tablaSimbolos.putFunction(f);
 :}
             ;
@@ -155,6 +158,8 @@ impl_func ::= tipo:tipo ID:id AP params:params CP ALL {:
                 f = PLXC.tablaSimbolos.getFunction(tipo, id);
             }
 
+            PLXC.out.println();
+            PLXC.out.println("goto " + f.getEndFuncition() + ";");
             PLXC.out.println(f.getInicFuncition() + ":");
             f.initCallParams(new ArrayList<>(params));
 :}
@@ -166,6 +171,7 @@ impl_func ::= tipo:tipo ID:id AP params:params CP ALL {:
 
             Funcion f = PLXC.tablaSimbolos.getFunction(tipo, id);
             f.retornaResultado((Instancia) expr);
+            f.setImplemented(true);
 :}
             CLL;
 
@@ -438,7 +444,7 @@ expr ::= valor:expr                 {:  RESULT = expr;  :}
         ;
 
 func_id ::= ID:id      {:
-        Objeto aux = PLXC.tablaSimbolos.getObjeto(id, 0);
+        Objeto aux = PLXC.tablaSimbolos.getObj(id, 0);
         Funcion f = null;
         if (!(aux instanceof Funcion)) {
             Objeto.errorYPara("[ERROR]\tLa funcion con id <" + "id" + "> no se encuentra ni declarada ni implementada", new Vector<>());
@@ -461,8 +467,10 @@ valor ::= ID:id PUNTO LENGTH                {:
 
           RESULT = a.metodos(TArray.ARRAY_METHODS.LENGTH.name(), new Vector<>());
       :}
-      | func_id:f AP list_param:params CP          {:
+      | func_id:f AP list_valor:params CP             {:
         f.callFunction(new ArrayList(params));
+
+        RESULT = f.getReturnInstancia();
 :}
       | ID:id AC valor:idx CC ASIGNA valor:valor      {:
           // Checkear que el valor es una instancia y no es de tipo array

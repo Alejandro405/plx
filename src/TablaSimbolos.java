@@ -57,7 +57,7 @@ public class TablaSimbolos {
      * @return true sii nombre se encuentra en la tabla, independientemente del bloque
      */
     public boolean contains(String nombre) {
-        return false;
+        return this.tabla.containsKey(nombre);
     }
 
     /**
@@ -67,7 +67,8 @@ public class TablaSimbolos {
      * @return true sii nombre se encuentra en la tabla para ese bloque
      */
     public boolean contains(String nombre, Integer bloque) {
-        return false;
+        TreeMap<Integer, Objeto> aux = tabla.get(nombre);
+        return aux != null && aux.containsKey(bloque);
     }
 
     /**
@@ -150,7 +151,7 @@ public class TablaSimbolos {
             this.tabla.put(id, valor);
         } else {
             Objeto aux = tabla.get(id).get(0);
-            if (aux instanceof Funcion && ((Funcion) aux).getTipoRetorno() == f.getTipoRetorno()) {
+            if (existFunction(f, aux) && f.isImplemented()) {
                 Objeto.errorYPara("[ERROR]\tYa existe una funcion en la tabla de símbolos con ese identificador y ese tipo de retorno", new Vector<>(List.of((Funcion)aux)));
             } else {
                 valor.put(bloque, f);
@@ -159,6 +160,10 @@ public class TablaSimbolos {
         }
 
 
+    }
+
+    private static boolean existFunction(Funcion f, Objeto aux) {
+        return aux instanceof Funcion && ((Funcion) aux).getTipoRetorno() == f.getTipoRetorno();
     }
 
     /**
@@ -191,6 +196,6 @@ public class TablaSimbolos {
                 res = true;
             }
         }
-        return false;
+        return res;
     }
 }

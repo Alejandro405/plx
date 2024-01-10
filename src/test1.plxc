@@ -1,5 +1,11 @@
-int suma(int a, int b) {
+int suma(int a, int b);
+
+print(suma(2,2));
+
+
+
+int suma(int a, int b){
     return a + b;
 }
 
-print (2 + 2);
+

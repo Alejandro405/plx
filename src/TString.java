@@ -177,19 +177,19 @@ public class TString extends Tipo{
     }
 
     private Objeto setElem(StringInstancia targetString, Instancia index, Instancia elem) {
-        checkIndex(index);
+        checkIndex(targetString, index);
 
         PLXC.out.println(targetString.getNombre() + "[" + index.getNombre() + "] = " + elem.getNombre() + ";");
         return targetString;
     }
 
-    private void checkIndex(Instancia index) {
+    private void checkIndex(StringInstancia targetString, Instancia index) {
         String l = PLXC.tablaSimbolos.getNewEtiq();
 
         PLXC.out.println("check_index_" + l + ":");
         PLXC.out.println("if (" + index.getNombre() + " < 0) goto error_index_" + l + ";");
-        PLXC.out.println("if (" + tam + " < " + index.getNombre() + ") goto error_index_" + l + ";");
-        PLXC.out.println("if (" + index.getNombre() + " == " + tam + ") goto error_index_" + l + ";");
+        PLXC.out.println("if (" + targetString.getTam() + " < " + index.getNombre() + ") goto error_index_" + l + ";");
+        PLXC.out.println("if (" + index.getNombre() + " == " + targetString.getTam() + ") goto error_index_" + l + ";");
         PLXC.out.println("goto end_check_index_" + l + ";");
         PLXC.out.println("error_index_" + l + ":");
         PLXC.out.println("error;\nhalt;");
@@ -197,10 +197,12 @@ public class TString extends Tipo{
     }
 
     private Objeto getElem(StringInstancia targetString, Instancia index) {
-        checkIndex(index);
+        checkIndex(targetString, index);
         Instancia res = new Instancia(TChar.getTChar());
 
+        // Asignar al String iterator y usar el Método asigna de TChar
         PLXC.out.println(res.getNombre() + " = " + targetString.getNombre() + "[" + index.getNombre() + "];");
+
         return  res;
     }
 

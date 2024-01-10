@@ -48,8 +48,8 @@ public class TArray extends Tipo{
     
     public Objeto getElem(Objeto array, Instancia i){
         checkIndex(i);
-
         Instancia res = new Instancia(this.tipo);
+
         PLXC.out.println(res.getNombre() + " = " + array.getNombre() + "[" + i.getNombre() + "];");
 
         return res;

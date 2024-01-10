@@ -1,13 +1,43 @@
-param 1 = 2;
-param 2 = 2;
-gosub function_L0;
-print returned_value_suma ;
-
-goto end_function_L0;
-function_L0:
-b = param 1;
-a = param 2;
-$T0 = a + b;
-returned_value_suma = $T0;
-return;
-end_function_L0:
+$T0[0] = 104;
+$T0[1] = 111;
+$T0[2] = 108;
+$T0[3] = 97;
+$T0[0] = 104;
+$T0[1] = 111;
+$T0[2] = 108;
+$T0[3] = 97;
+__STRING__ITERATOR__ = $T0[0];
+a[0] = __STRING__ITERATOR__;
+__STRING__ITERATOR__ = $T0[1];
+a[1] = __STRING__ITERATOR__;
+__STRING__ITERATOR__ = $T0[2];
+a[2] = __STRING__ITERATOR__;
+__STRING__ITERATOR__ = $T0[3];
+a[3] = __STRING__ITERATOR__;
+i = 0;
+L0:
+$T1 = 4;
+$T2 = 1;
+if (i < $T1) goto L1;
+$T2 = 0;
+L1:
+if ($T2 == 0) goto end_L0;
+goto body_L0;
+act_L0:
+$T3 = i + 1;
+i = $T3;
+goto L0;
+body_L0:
+check_index_L2:
+if (i < 0) goto error_index_L2;
+if (4 < i) goto error_index_L2;
+if (i == 4) goto error_index_L2;
+goto end_check_index_L2;
+error_index_L2:
+error;
+halt;
+end_check_index_L2:
+$T4 = a[i];
+printc $T4;
+goto act_L0;
+end_L0:

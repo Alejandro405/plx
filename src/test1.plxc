@@ -1,11 +1,7 @@
-int suma(int a, int b);
-
-print(suma(2,2));
-
-
-
-int suma(int a, int b){
-    return a + b;
+string a = "hola";
+int i;
+for (i = 0; i < a.length; i = i + 1) {
+    print(a[i]);
 }
 
 

@@ -1862,7 +1862,7 @@ class CUP$parser$actions {
             checkVariable(id);
             Objeto a = PLXC.tablaSimbolos.getObj(id);
 
-          if (!(a instanceof Instancia && ((Instancia) a).getTipoInstancia() instanceof TArray))
+          if (!(a instanceof Instancia) && (((Instancia) a).getTipoInstancia() instanceof TArray))
               Objeto.errorYPara("[ERROR]\tNo se puede hacer una asignación si el valor a asignar no es una instancia", new Vector<>(List.of(a)));
 
 
@@ -1997,7 +1997,7 @@ class CUP$parser$actions {
           checkVariable(id);
           Instancia variable = (Instancia) PLXC.tablaSimbolos.getObj(id);
 
-          if (!(variable.getTipoInstancia() instanceof TArray))
+          if (!(variable.getTipoInstancia() instanceof TArray) && !(variable instanceof StringInstancia))
               Objeto.errorYPara("[ERROR]\tLa variable no es un array", new Vector<>(List.of(variable)));
 
           RESULT = variable.metodos("GET", new Vector<>(List.of(idx)));

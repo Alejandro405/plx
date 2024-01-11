@@ -42,6 +42,11 @@ public class TChar extends Tipo{
     }
 
     @Override
+    public boolean isIterable() {
+        return false;
+    }
+
+    @Override
     public Objeto metodosInstancia(Objeto o, String m, Vector<Objeto> p) {
         if (!(o instanceof Instancia))  errorYPara("[ERROR]\tNo se contempla [ " + m +"] para el tipo char, solo instancias de tipo char.", p);
         if (((Instancia) o).getTipoInstancia() != T_CHAR) errorYPara("[ERROR]\tEl objeto proporcionado no es una instancia", new Vector<>(List.of(o)));

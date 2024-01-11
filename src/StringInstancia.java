@@ -1,3 +1,6 @@
+import java.util.List;
+import java.util.Vector;
+
 public class StringInstancia extends Instancia{
 
     private String tam;
@@ -39,6 +42,24 @@ public class StringInstancia extends Instancia{
 
             PLXC.out.println(this.getNombre() + "[" + i + "] = " + x + ";");
         }
+    }
+
+    /*
+    if (index < 0) goto end_foreac_forTag ;
+    if (tam < index) goto end_foreac_forTag ;
+    if (index == tam) goto end_foreac_forTag ;
+    iter = cole[index];
+    */
+    public static void iterate(Instancia index, StringInstancia colec, Instancia iter, String end) {
+        PLXC.out.println("if (" + index.getNombre() + " < 0) goto " + end + ";");
+        PLXC.out.println("if (" + colec.getTam() + " < " + index.getNombre() + ") goto " + end + ";");
+        PLXC.out.println("if (" + index.getNombre() + " == " + colec.getTam() + ") goto " + end + ";");
+        iter.metodos("ASIGNA", new Vector<>(List.of(
+                        colec.metodos(
+                                    "GET",
+                                    new Vector<>(List.of(index))
+                        )
+        )));
     }
 
     public String getTam() {

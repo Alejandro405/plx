@@ -5,8 +5,8 @@ import java.io.InputStreamReader;
 
 public class Chueleta {
     public static void main(String[] args) {
-        String nombreBinario = "./plxc";  // Reemplaza "tu_binario" con el nombre real de tu binario
-        String argumento = "salidas.bash";  // Reemplaza "test.in" con los argumentos reales que necesita tu binario
+        String nombreBinario = "/home/alejandro/Documentos/PL/practicaFinal/tablasimbolos/src/plxc";  // Reemplaza "tu_binario" con el nombre real de tu binario
+        String argumento = "/home/alejandro/Documentos/PL/practicaFinal/tablasimbolos/src/test1.plxc";  // Reemplaza "test.in" con los argumentos reales que necesita tu binario
 
         try {
             ProcessBuilder processBuilder = new ProcessBuilder(nombreBinario, argumento);

@@ -15,6 +15,11 @@ public class Instancia extends Objeto{
         this.tipoInstancia = tipoInstancia;
     }
 
+    public Instancia(Tipo tipoInstancia, String id, boolean isConstant) {
+        super(id, TablaSimbolos.bloqueActual, isConstant);
+        this.tipoInstancia = tipoInstancia;
+    }
+
     public Instancia(String idParam, Tipo tipo, Integer bloque) {
         super(idParam, bloque, false);
         this.tipoInstancia = tipo;

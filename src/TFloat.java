@@ -25,6 +25,11 @@ public class TFloat extends Tipo {
     }
 
     @Override
+    public boolean isIterable() {
+        return false;
+    }
+
+    @Override
     public Objeto metodosInstancia(Objeto o, String m, Vector<Objeto> p) {
         if (!(o instanceof Instancia)) errorYPara("Error de tipo, el objeto no es una instancia", p);
         if (((Instancia) o).getTipoInstancia() != T_FLOAT)

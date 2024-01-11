@@ -30,6 +30,11 @@ public class TInt extends Tipo{
     }
 
     @Override
+    public boolean isIterable() {
+        return false;
+    }
+
+    @Override
     public Objeto metodosInstancia(Objeto o, String m, Vector<Objeto> p) {
         if (!(o instanceof Instancia))  errorYPara("Error de tipo, el objeto no es una instancia", p);
         if (((Instancia) o ).getTipoInstancia() != T_INT)    errorYPara("Error de tipo, el objto sí es una instancia pero no es un entero", p);
@@ -122,7 +127,12 @@ public class TInt extends Tipo{
                 errorYPara("La función print no necesita parámetros", p);
 
             PLXC.out.println("print " + o.getNombre() + " ;");
-            return null;
+            return o;
+        }
+
+        if (m.equals("INCREMENTA_1")) {
+            PLXC.out.println(o.getNombre() + " = " + o.getNombre() + " + 1;");
+            return o;
         }
 
 

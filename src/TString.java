@@ -39,6 +39,11 @@ public class TString extends Tipo{
         return false;
     }
 
+    @Override
+    public boolean isIterable() {
+        return true;
+    }
+
     public Objeto metodosInstancia(Objeto o, String m, Vector<Objeto> p) {
         if (!(o instanceof Instancia))
             errorYPara("[ERROR]\tNo se puede llamar al método " + m + " de un tipo string sobre un objeto que no ses una Instancia", new Vector<>(List.of(o)));

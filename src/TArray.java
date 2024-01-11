@@ -1,3 +1,4 @@
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -81,6 +82,11 @@ public class TArray extends Tipo{
     @Override
     public boolean isParseable(Tipo tipo) {
         return false;
+    }
+
+    @Override
+    public boolean isIterable() {
+        return true;
     }
 
     @Override
@@ -199,6 +205,24 @@ public class TArray extends Tipo{
             PLXC.out.println(array_iterator.getNombre() + " = " + srcArray.getNombre() + "[" + i + "];");
             PLXC.out.println(dstArray.getNombre() + "[" + i + "] = " + array_iterator.getNombre() + ";");
         }
+    }
+
+    /*
+    if (index < 0) goto end_foreac_forTag ;
+    if (tam < index) goto end_foreac_forTag ;
+    if (index == tam) goto end_foreac_forTag ;
+    iter = cole[index];
+    */
+    public static void iterate(Instancia index, TArray tipoInstancia, Instancia colec, Instancia iter, String end) {
+        PLXC.out.println("if (" + index.getNombre() + " < 0) goto " + end + ";");
+        PLXC.out.println("if (" + tipoInstancia.getTam() + " < " + index.getNombre() + ") goto " + end + ";");
+        PLXC.out.println("if (" + index.getNombre() + " == " + tipoInstancia.getTam() + ") goto " + end + ";");
+        iter.metodos("ASIGNA", new Vector<>(List.of(
+                        colec.metodos(
+                                    "GET",
+                                    new Vector<>(List.of(index))
+                        )
+        )));
     }
 
     @Override

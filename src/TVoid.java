@@ -24,6 +24,11 @@ public class TVoid extends Tipo{
     }
 
     @Override
+    public boolean isIterable() {
+        return false;
+    }
+
+    @Override
     public Objeto metodosInstancia(Objeto o, String m, Vector<Objeto> p) {
         errorYPara("[ERROR]\tNo se puede llamar al método " + m + " de un tipo void.", p);
         return null;

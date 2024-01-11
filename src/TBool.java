@@ -25,6 +25,11 @@ public class TBool extends Tipo{
     }
 
     @Override
+    public boolean isIterable() {
+        return false;
+    }
+
+    @Override
     public Objeto metodosInstancia(Objeto o, String m, Vector<Objeto> p) {
         if (!(o instanceof Instancia))
             errorYPara("[ERROR]\tSolo es posible ejecutar" + m + " sobre una instancia", p);

@@ -25,6 +25,11 @@ public class Instancia extends Objeto{
         this.tipoInstancia = tipo;
     }
 
+    public Instancia() {
+        super();
+        this.tipoInstancia = null;
+    }
+
     @Override
     public Objeto metodos(String metodo, Vector<Objeto> params) {
         return tipoInstancia.metodosInstancia(this, metodo, params);

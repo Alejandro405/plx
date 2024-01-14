@@ -57,7 +57,7 @@ parser code {:
     }
 :}
 
-terminal String ALL, CLL, AP, CP, AC, CC, PYC, COMA, PUNTO, DP;
+terminal String ALL, CLL, AP, CP, AC, CC, PYC, COMA, PUNTO, DP, SET;
 terminal Tipo INT, FLOAT, CHAR, STRING, U_MINUS, VOID;
 terminal String ID;
 terminal Integer NUM_ENTERO;
@@ -66,11 +66,12 @@ terminal Integer CARACTER;
 terminal String CADENA;
 terminal Boolean FALSE, TRUE;
 terminal String MAS, MENOS, POR, DIV, EQ, NEQ, LT, GT, LE, GE, AND, OR, NOT, ASIGNA;
+terminal String UNION, ADD, REM;
 terminal String IF, WHILE, FOR, DO, PRINT, LENGTH;
 terminal String ELSE, ELSEIF;
 terminal String CASE, SWITCH, DEFAULT, BREAK, RETURN;
 
-nonterminal program, lista_sent, sent, sent_comp, sent_simpl, sent_if, sent_while, op_else , sent_do_while, sent_for, for_expr, sent_switch, list_case, op_default, case_oper, list_sent_simpl, declr_func, impl_func,impl_procedure;
+nonterminal program, lista_sent, sent, sent_comp, sent_simpl, sent_if, sent_while, op_else , sent_do_while, sent_for, for_expr, sent_foreach, sent_switch, list_case, op_default, case_oper, list_sent_simpl, declr_func, impl_func,impl_procedure;
 nonterminal Set<Instancia> list_param, params;
 nonterminal Instancia param;
 nonterminal Funcion func_id;
@@ -80,8 +81,8 @@ nonterminal Integer Init_Bloque;
 nonterminal List<String> list_id;
 nonterminal List<Integer> list_int, list_char;
 nonterminal List<Instancia> list_float;
-nonterminal List<Instancia> list_valor;
-nonterminal Tipo tipo, declr;
+nonterminal List<Instancia> list_valor, set_value;
+nonterminal Tipo tipo, declr, declr_conj;
 nonterminal Objeto asig, expr, expr_array, expr_arit, valor, inic;
 
 precedence right        ASIGNA;
@@ -210,12 +211,14 @@ sent_comp ::= ALL Init_Bloque:bloquePrevio lista_sent CLL {:
 
 sent_simpl ::= valor PYC
         | declr PYC
+        | declr_conj PYC
         | PRINT AP expr:valor CP PYC        {:  if (valor != null) RESULT = valor.metodos("PRINT", new Vector());   :}
         | sent_if
         | sent_while
         | sent_do_while
         | sent_for
         | sent_switch
+        | sent_foreach
         ;
 
 list_sent_simpl ::= list_sent_simpl sent_simpl
@@ -368,6 +371,59 @@ op_default ::= DEFAULT DP {:
                 sent BREAK PYC
             ;
 
+sent_foreach ::= FOR:forTag AP tipo:tipo ID:id {:
+                // Añadir la variable itradora a la tablade símbolos
+                Instancia iter = new Instancia(id, tipo, TablaSimbolos.bloqueActual, true);
+                PLXC.tablaSimbolos.putObj(iter);
+:}
+                DP expr:expr CP {:
+                // Checkear si la expresion es iterable
+                if (!(expr instanceof Instancia) || !((Instancia)expr).getTipoInstancia().isIterable())
+                    Objeto.errorYPara("[ERROR]\tLa expresion del búcle for each no es iterable.", new Vector<>(List.of(expr)));
+
+                if (expr instanceof SetInstance) {
+                    SetInstance set = (SetInstance) expr;
+                    Instancia iter = new Instancia(set.getTipoInstancia());
+
+                    set.iterate(iter);
+                } else {
+                    // En caso de serlo, declarar la etiqueta del búcle y asignar valor a la variable iteradora
+                    Instancia index = new Instancia("$_FOREACH_IDX_".concat(forTag), TInt.getTInt(), TablaSimbolos.bloqueActual, true);
+                    PLXC.tablaSimbolos.putObj(index);
+                    Instancia iter = (Instancia) PLXC.tablaSimbolos.getObj(id, TablaSimbolos.bloqueActual);
+                    Instancia colec = (Instancia) expr;
+
+                    PLXC.out.println(index.getNombre() + " = 0;");
+                    PLXC.out.println("foreach_" + forTag + ":");
+
+                    if (colec instanceof StringInstancia) {
+                        if (iter.getTipoInstancia() != TChar.getTChar())
+                            Objeto.errorYPara("[ERROR]\tLa variable iteradora del búcle for each necesita ser de tipo char.", new Vector<>(List.of(iter)));
+
+                        StringInstancia.iterate(index, (StringInstancia) colec, iter, "end_foreach_".concat(forTag));
+                    } else if (colec.getTipoInstancia() == TString.getInstance()){
+                        Objeto.errorYPara("[ERROR]\tLa expresion del búcle for each necesita un StringInstance no una instancia de tipo String.", new Vector<>(List.of(expr)));
+                    } else if (colec.getTipoInstancia() instanceof TArray) {
+                        TArray.iterate(index, (TArray) colec.getTipoInstancia(), colec, iter, "end_foreach_".concat(forTag));
+                    }
+
+
+                    // Instanciar la variable índice con la que se hará en control y acceso a los elementos
+                    // (Sentencia de control, la colección ha de contener el número de iteraciones)
+                }
+
+                :}
+                sent
+                {:
+                // Resetear el iterador
+                Instancia idx = (Instancia) PLXC.tablaSimbolos.getObj("$_FOREACH_IDX_".concat(forTag), TablaSimbolos.bloqueActual);
+
+                idx.metodos("INCREMENTA_1", new Vector<>());
+                PLXC.out.println("goto foreach_" + forTag + ";");
+                PLXC.out.println("end_foreach_" + forTag + ":");
+:}
+               ;
+
 declr ::= tipo:tipo ID:id  inic:inic                          {:
         if (inic != null) {
             Instancia newVar;
@@ -439,6 +495,31 @@ declr ::= tipo:tipo ID:id  inic:inic                          {:
 inic ::= ASIGNA expr:exp        {:RESULT = exp;:}
         |
         ;
+
+set_value ::= ALL list_valor:inic CLL {: RESULT = inic;:}
+            | ALL CLL                 {: RESULT = new ArrayList<Instancia>();:}
+            | ID:id {:
+            Objeto expr = PLXC.tablaSimbolos.getObj(id, TablaSimbolos.bloqueActual);
+            if (!(expr instanceof SetInstance)) {
+                Objeto.errorYPara("[ERROR]\tLa expresion proporcionada como set value no es una instancia de SetInstace", new Vector<>(List.of(expr)));
+            } else {
+                SetInstance setValue = (SetInstance) expr;
+                RESULT = setValue.getElems();
+            }
+
+:}
+            ;
+
+declr_conj ::= SET tipo:tipo ID:id ASIGNA set_value:inic {:
+        Instancia newVariable = new SetInstance(id, tipo, inic, TablaSimbolos.bloqueActual, true);
+
+        PLXC.tablaSimbolos.putObj(newVariable);
+:}
+            | SET tipo:tipo ID:id {:
+            SetInstance newVar = new SetInstance(id, tipo, TablaSimbolos.bloqueActual, true);
+            PLXC.tablaSimbolos.putObj(newVar);
+:}
+            ;
 
 list_id ::=  ID:id                          {:
             List<String> start = new ArrayList<>();
@@ -546,6 +627,33 @@ valor ::= ID:id PUNTO LENGTH                {:
           RESULT = variable.metodos("GET", new Vector<>(List.of(idx)));
 
       :}
+      | ID:idA UNION ID:idB       {:
+            SetInstance a = null, b = null;
+            Objeto aux = PLXC.tablaSimbolos.getObj(idA, TablaSimbolos.bloqueActual);
+            if (! (aux instanceof SetInstance)) {
+                Objeto.errorYPara("[ERROR]\tLa unión de conjuntos necesita des objeto de tipo SetInstance", new Vector<>());
+            } else {
+                a = (SetInstance) aux;
+            }
+
+            aux = PLXC.tablaSimbolos.getObj(idB, TablaSimbolos.bloqueActual);
+            if (! (aux instanceof SetInstance)) {
+                Objeto.errorYPara("[ERROR]\tLa unión de conjuntos necesita des objeto de tipo SetInstance", new Vector<>());
+            } else {
+                b = (SetInstance) aux;
+            }
+
+            RESULT = a.metodos(TSet.SET_METHODS.UNION.name(), new Vector<>(List.of(b)));
+:}
+      | ID:id ADD valor:value   {:
+       if (!(value instanceof Instancia))
+            Objeto.errorYPara("[ERROR]\tNo se pueden añadir elementos a un conjunto si estos no son instancias", new Vector<>(List.of(value)));
+
+       SetInstance set = (SetInstance) PLXC.tablaSimbolos.getObj(id, TablaSimbolos.bloqueActual);
+       Instancia elem = (Instancia) value;
+
+       RESULT = set.metodos(TSet.SET_METHODS.ADD.name(), new Vector<>(List.of(elem)));
+:}
       | NUM_ENTERO:num            {:
       RESULT = new Instancia(num.toString(), TInt.getTInt(), TablaSimbolos.bloqueActual, false);
       :}

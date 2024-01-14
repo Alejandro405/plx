@@ -54,6 +54,7 @@ unicode_char = \'(\\u[0-9a-fA-F]{4})\'
 "*"       {return symbol(sym.POR, "MULT");}
 "/"       {return symbol(sym.DIV, "DIV");}
 "="       {return symbol(sym.ASIGNA);}
+"+="      {return symbol(sym.UNION);}
 "=="      {return symbol(sym.EQ);}
 "!="      {return symbol(sym.NEQ);}
 "&&"      {return symbol(sym.AND);}
@@ -63,6 +64,9 @@ unicode_char = \'(\\u[0-9a-fA-F]{4})\'
 "<"       {return symbol(sym.LT);}
 ">="      {return symbol(sym.GE);}
 "<="      {return symbol(sym.LE);}
+"<=="     {return symbol(sym.ADD);}
+"==>"     {return symbol(sym.REM);}
+
 "if"      {return symbol(sym.IF, PLXC.tablaSimbolos.getNewEtiq());}
 "else"    {return symbol(sym.ELSE);}
 "else if" {return symbol(sym.ELSEIF, PLXC.tablaSimbolos.getNewEtiq());}
@@ -79,6 +83,7 @@ unicode_char = \'(\\u[0-9a-fA-F]{4})\'
 "true"    {return symbol(sym.TRUE);}
 "false"   {return symbol(sym.FALSE);}
 
+"set"     {return symbol(sym.SET);}
 "length"  {return symbol(sym.LENGTH);}
 "int"     { return symbol(sym.INT);}
 "float"   { return symbol(sym.FLOAT);}

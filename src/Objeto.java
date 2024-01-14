@@ -15,6 +15,10 @@ public abstract class Objeto implements Comparable<Objeto>{
         this.mutable = mutable;
     }
 
+    public Objeto() {
+
+    }
+
     /*
     * Formato del nombre
     */

@@ -16,15 +16,6 @@ public class PLXC {
 
             if(args.length > 0) {
                 in = new FileReader(args[0]);
-
-                if (args[0].equals("logic1.plx")) {
-                    // Imprimir en la salida de error el fichero completo
-                    BufferedReader br = new BufferedReader(new FileReader(args[0]));
-                    String line;
-                    while ((line = br.readLine()) != null) {
-                        System.out.println(line);
-                    }
-                }
             }
 
             if(args.length > 1) {

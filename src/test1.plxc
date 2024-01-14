@@ -1,7 +1,5 @@
-int suma(int a, int b);
-print(suma(1, 2));
+set string a = {"hola", "fuckin", "mundo"};
 
-
-int suma(int a, int b) {
-    return a + b;
+for (string x : a){
+    print(x);
 }

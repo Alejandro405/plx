@@ -82,8 +82,8 @@ nonterminal List<String> list_id;
 nonterminal List<Integer> list_int, list_char;
 nonterminal List<Instancia> list_float;
 nonterminal List<Instancia> list_valor, set_value;
-nonterminal Tipo tipo, declr, declr_conj;
-nonterminal Objeto asig, expr, expr_array, expr_arit, valor, inic;
+nonterminal Tipo tipo, declr, declr_conj, tipo_primit;
+nonterminal Objeto asig, expr, expr_array, array_length, expr_arit, valor, inic;
 
 precedence right        ASIGNA;
 precedence  left        IF, ELSE, DO, WHILE, FOR, PRINT;
@@ -726,14 +726,39 @@ cond ::=  AP cond:a CP          {:  RESULT = a;     :}
         | TRUE                  {:  RESULT = new Instancia("1", TBool.getTBool(), TablaSimbolos.bloqueActual, false);    :}
         ;
 
-tipo ::= INT:t                          {:    RESULT = TInt.getTInt();            :}
-        | FLOAT:t                       {:    RESULT = TFloat.getTFloat();        :}
-        | CHAR:t                        {:    RESULT = TChar.getTChar();          :}
-        | STRING:t                      {:    RESULT = TString.getInstance();     :}
-        | VOID:t                        {:    RESULT = TVoid.getTVoid();          :}
-        | tipo:t ALL expr:exp CLL       {:    RESULT = new TArray(t, exp.getNombre());        :}
+tipo ::= tipo_primit:t                  {:
+        RESULT = t;
+        :}
+        | tipo:t ALL array_length:exp CLL       {:
+
+        if (exp != null) {
+            RESULT = new TArray(t, exp.getNombre());
+        } else {
+            RESULT = new TArray(t);
+        }
+
+:}
+        | tipo:t ALL CLL ALL CLL          {:
+
+        TArray tfila = new TArray(t);
+        TArray tmatriz = new TArray(tfila);
+
+        RESULT = tmatriz;
+
+:}
         |                               {:    RESULT = TInt.getTInt();            :}
         ;
+
+tipo_primit ::= INT:t                          {:    RESULT = TInt.getTInt();            :}
+            | FLOAT:t                       {:    RESULT = TFloat.getTFloat();        :}
+            | CHAR:t                        {:    RESULT = TChar.getTChar();          :}
+            | STRING:t                      {:    RESULT = TString.getInstance();     :}
+            | VOID:t                        {:    RESULT = TVoid.getTVoid();          :}
+            ;
+
+array_length ::= expr   {: RESULT = expr; :}
+              |
+              ;
 
 Init_Bloque ::=  {:  RESULT = TablaSimbolos.newBloque();     :};
 

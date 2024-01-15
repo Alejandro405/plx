@@ -1,5 +1,31 @@
-set string a = {"hola", "fuckin", "mundo"};
+function asdf:
+    x = param 1;
 
-for (string x : a){
-    print(x);
-}
+    acum = 0;
+    i = 0;
+    for:
+        aux = x[i];
+        if(aux == 2147483647) goto end_for;
+
+        acum = acum + aux;
+
+    i = i + 1;
+    goto for;
+    end_for:
+
+    asdf = acum;
+    return;
+
+end asdf;
+
+y[0] = 1;
+y[1] = 2;
+y[2] = 3;
+y[3] = 4;
+y[4] = 5;
+y[5] = 2147483647;
+
+param 1 = y;
+call asdf;
+
+print asdf;

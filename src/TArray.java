@@ -10,6 +10,10 @@ import java.util.Vector;
  */
 public class TArray extends Tipo{
 
+    private static final int MAXINT = Integer.MAX_VALUE;
+
+    private static int numInstances = 0;
+
     private Instancia array_iterator;
 
     public static enum ARRAY_METHODS {
@@ -30,21 +34,24 @@ public class TArray extends Tipo{
         super(tipo.getNombre(), 0, false);
         this.tam = DEF_TAM;
         this.tipo = tipo;
-        this.array_iterator = new Instancia("__ARRAY__PRINTER__", tipo, 0, true);
+        this.array_iterator = new Instancia("__ARRAY__PRINTER__".concat(String.valueOf(numInstances)), tipo, 0, true);
+        numInstances++;
     }
 
     public TArray(Tipo tipo, String tam) {
         super(tipo.getNombre(), 0, false);
         this.tam = tam;
         this.tipo = tipo;
-        this.array_iterator = new Instancia("__ARRAY__PRINTER__", tipo, 0, true);
+        this.array_iterator = new Instancia("__ARRAY__PRINTER__".concat(String.valueOf(numInstances)), tipo, 0, true);
+        numInstances++;
     }
 
     public TArray(Tipo tipo, Objeto tam) {
         super(tipo.getNombre(), 0, false);
         this.tam = tam.getNombre();
         this.tipo = tipo;
-        this.array_iterator = new Instancia("__ARRAY__PRINTER__", tipo, 0, true);
+        this.array_iterator = new Instancia("__ARRAY__PRINTER__".concat(String.valueOf(numInstances)), tipo, 0, true);
+        numInstances++;
     }
     
     public Objeto getElem(Objeto array, Instancia i){
@@ -189,6 +196,8 @@ public class TArray extends Tipo{
             PLXC.out.println(array_iterator.getNombre() + " = " + array.getNombre() + "[" + i + "];");
             array_iterator.metodos("PRINT", new Vector<>());
         }
+
+        PLXC.out.println("printc 0;");
     }
 
     /**
@@ -205,6 +214,9 @@ public class TArray extends Tipo{
             PLXC.out.println(array_iterator.getNombre() + " = " + srcArray.getNombre() + "[" + i + "];");
             PLXC.out.println(dstArray.getNombre() + "[" + i + "] = " + array_iterator.getNombre() + ";");
         }
+
+        // Ojo
+        PLXC.out.println(dstArray.getNombre() + "[" + numElem + "] = " + MAXINT +";");
     }
 
     /*

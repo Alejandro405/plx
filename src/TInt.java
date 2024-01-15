@@ -126,7 +126,7 @@ public class TInt extends Tipo{
             if (!p.isEmpty())
                 errorYPara("La función print no necesita parámetros", p);
 
-            PLXC.out.println("print " + o.getNombre() + " ;");
+            PLXC.out.println("write " + o.getNombre() + " ;");
             return o;
         }
 

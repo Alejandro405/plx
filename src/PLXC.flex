@@ -95,7 +95,7 @@ unicode_char = \'(\\u[0-9a-fA-F]{4})\'
           return symbol(sym.CARACTER, Integer.parseInt(yytext().substring(3, 7), 16)); }
 {id}      { return symbol(sym.ID, yytext()); }
 {cadena}  {
-          String cadena = yytext().substring(1,yytext().length()-1)
+        String cadena = yytext().substring(1,yytext().length()-1)
             .replace("\\\"", "\"")
             .replace("\\\\", "\\");
 

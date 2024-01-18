@@ -85,14 +85,19 @@ nonterminal List<Instancia> list_valor, set_value;
 nonterminal Tipo tipo, declr, declr_conj, tipo_primit;
 nonterminal Objeto asig, expr, expr_array, array_length, expr_arit, valor, inic;
 
-precedence right        ASIGNA;
-precedence  left        IF, ELSE, DO, WHILE, FOR, PRINT;
+precedence  nonassoc    IF, ELSE;
+precedence  left        DO, WHILE, FOR, PRINT;
 precedence  left        MAS, MENOS;
 precedence  left        POR, DIV;
 precedence  left        U_MINUS;
+
+precedence  left        AND;
+precedence  left        OR;
+precedence  right       NOT;
+
 precedence  left        EQ, LE, GE;
 precedence  left        NEQ, LT, GT;
-precedence  left        NOT, AND, OR;
+
 precedence  left        ID, NUM_ENTERO, NUM_REAL;
 precedence  left        FALSE, TRUE, CARACTER, CADENA;
 precedence  left        ELSEIF;
@@ -600,7 +605,9 @@ valor ::= ID:id PUNTO LENGTH                {:
                       this.checkType(valor, variable.getTipoInstancia()); // Comprueba que el tipo de la variable sea el mismo que el de la expresion o sean parseables entre sii
                 }
 
-                RESULT = variable.metodos("ASIGNA", new Vector<>(List.of(valor)));
+                variable.metodos("ASIGNA", new Vector<>(List.of(valor)));
+
+                RESULT = valor;
             :}
       | AP tipo:tipoDst CP valor:exp        {:
 
@@ -756,7 +763,7 @@ tipo_primit ::= INT:t                          {:    RESULT = TInt.getTInt();   
             | VOID:t                        {:    RESULT = TVoid.getTVoid();          :}
             ;
 
-array_length ::= expr   {: RESULT = expr; :}
+array_length ::= expr:expr   {: RESULT = expr; :}
               |
               ;
 

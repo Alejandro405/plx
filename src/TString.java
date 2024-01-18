@@ -282,6 +282,6 @@ public class TString extends Tipo{
             PLXC.out.println("writec " + string_iterator.getNombre() + ";");
         }
 
-        PLXC.out.println("printc 0;");
+        PLXC.out.println("writec 10;");
     }
 }

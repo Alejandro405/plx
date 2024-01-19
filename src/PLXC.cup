@@ -67,7 +67,7 @@ terminal String CADENA;
 terminal Boolean FALSE, TRUE;
 terminal String MAS, MENOS, POR, DIV, EQ, NEQ, LT, GT, LE, GE, AND, OR, NOT, ASIGNA,IMPLICA;
 terminal String UNION, ADD, REM;
-terminal String IF, WHILE, FOR, FORALL, DO, PRINT, LENGTH;
+terminal String IF, WHILE, FOR, FORALL, DO, PRINT, LENGTH, FROM, TO, STEP;
 terminal String ELSE, ELSEIF;
 terminal String CASE, SWITCH, DEFAULT, BREAK, RETURN;
 
@@ -676,7 +676,64 @@ sent_forall ::= FORALL:label ID:id {:
 
                 RESULT = (Instancia) res;
 
-:};
+:}
+                | FORALL:label ID:id FROM valor:inic TO valor:limit {:
+
+                Instancia res = new Instancia("forall_res_" + label, TBool.getTBool(), TablaSimbolos.bloqueActual, false);
+                PLXC.tablaSimbolos.putObj(res);
+
+                PLXC.out.println(res.getNombre() + " = 1;");
+                PLXC.out.println(id + " = " + inic.getNombre() +";");
+                PLXC.out.println("goto cond_forall_" + label + ";");
+                PLXC.out.println("incr_forall_" + label + ":");
+                PLXC.out.println(id + " = " + id + " + 1;");
+                PLXC.out.println("if (" + id + " == " + limit.getNombre() + ") goto end_forall" + label + ";");
+                PLXC.out.println("if (" + limit.getNombre() + " < " + id + ") goto end_forall" + label + ";");
+                PLXC.out.println("cond_forall_" + label + ":");
+:}
+                COMA expr:condicion {:
+                if (!(condicion instanceof Instancia))
+                    Objeto.errorYPara("[ERROR]\tLa condicion del forall no es una instancia", new Vector<>(List.of(condicion)));
+
+                Objeto res = PLXC.tablaSimbolos.getObj("forall_res_" + label);
+                if (! (res instanceof Instancia))
+                    Objeto.errorYPara("[ERROR]\tLa variable de resultado del forall no es una instancia", new Vector<>(List.of(res)));
+
+                PLXC.out.println("if (" + condicion.getNombre() + " == 1) goto incr_forall_" + label + ";");
+                PLXC.out.println(res.getNombre() + " = 0;");
+                PLXC.out.println("end_forall" + label + ":");
+
+                RESULT = (Instancia) res;
+                :}
+                | FORALL:label ID:id FROM valor:inic TO valor:limit STEP valor:incr {:
+                Instancia res = new Instancia("forall_res_" + label, TBool.getTBool(), TablaSimbolos.bloqueActual, false);
+                PLXC.tablaSimbolos.putObj(res);
+
+                PLXC.out.println(res.getNombre() + " = " + inic.getNombre() + ";");
+                PLXC.out.println(id + " = 0;");
+                PLXC.out.println("goto cond_forall_" + label + ";");
+                PLXC.out.println("incr_forall_" + label + ":");
+                PLXC.out.println(id + " = " + id + " + " + incr.getNombre() + ";");
+                PLXC.out.println("if (" + id + " == " + limit.getNombre() + ") goto end_forall" + label + ";");
+                PLXC.out.println("if (" + limit.getNombre() + " < " + id + ") goto end_forall" + label + ";");
+                PLXC.out.println("cond_forall_" + label + ":");
+:}
+                COMA expr:condicion {:
+
+                if (!(condicion instanceof Instancia))
+                    Objeto.errorYPara("[ERROR]\tLa condicion del forall no es una instancia", new Vector<>(List.of(condicion)));
+
+                Objeto res = PLXC.tablaSimbolos.getObj("forall_res_" + label);
+                if (! (res instanceof Instancia))
+                    Objeto.errorYPara("[ERROR]\tLa variable de resultado del forall no es una instancia", new Vector<>(List.of(res)));
+
+                PLXC.out.println("if (" + condicion.getNombre() + " == 1) goto incr_forall_" + label + ";");
+                PLXC.out.println(res.getNombre() + " = 0;");
+                PLXC.out.println("end_forall" + label + ":");
+
+                RESULT = (Instancia) res;
+                :}
+                ;
 
 for_all_params ::= forall_expr:condicion COMA for_all_params:l {:
         l.add(condicion);

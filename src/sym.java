@@ -11,7 +11,7 @@ public class sym {
   public static final int POR = 29;
   public static final int CHAR = 15;
   public static final int GE = 36;
-  public static final int CASE = 54;
+  public static final int CASE = 57;
   public static final int REM = 44;
   public static final int INT = 13;
   public static final int IMPLICA = 41;
@@ -19,7 +19,7 @@ public class sym {
   public static final int CP = 5;
   public static final int NOT = 39;
   public static final int AND = 37;
-  public static final int ELSEIF = 53;
+  public static final int ELSEIF = 56;
   public static final int LT = 33;
   public static final int CARACTER = 23;
   public static final int OR = 38;
@@ -32,7 +32,7 @@ public class sym {
   public static final int LE = 35;
   public static final int EOF = 0;
   public static final int U_MINUS = 17;
-  public static final int RETURN = 58;
+  public static final int RETURN = 61;
   public static final int TRUE = 26;
   public static final int error = 1;
   public static final int COMA = 9;
@@ -40,17 +40,19 @@ public class sym {
   public static final int ADD = 43;
   public static final int MENOS = 28;
   public static final int NEQ = 32;
-  public static final int BREAK = 57;
+  public static final int BREAK = 60;
   public static final int VOID = 18;
   public static final int EQ = 31;
   public static final int CLL = 3;
-  public static final int SWITCH = 55;
+  public static final int SWITCH = 58;
+  public static final int FROM = 52;
   public static final int UNION = 42;
-  public static final int ELSE = 52;
+  public static final int ELSE = 55;
   public static final int NUM_REAL = 22;
   public static final int PUNTO = 10;
+  public static final int TO = 53;
   public static final int WHILE = 46;
-  public static final int DEFAULT = 56;
+  public static final int DEFAULT = 59;
   public static final int FLOAT = 14;
   public static final int NUM_ENTERO = 21;
   public static final int STRING = 16;
@@ -62,6 +64,7 @@ public class sym {
   public static final int LENGTH = 51;
   public static final int PRINT = 50;
   public static final int DO = 49;
+  public static final int STEP = 54;
   public static final int SET = 12;
   public static final int PYC = 8;
   public static final int MAS = 27;
@@ -118,6 +121,9 @@ public class sym {
   "DO",
   "PRINT",
   "LENGTH",
+  "FROM",
+  "TO",
+  "STEP",
   "ELSE",
   "ELSEIF",
   "CASE",

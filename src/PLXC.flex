@@ -85,7 +85,7 @@ unicode_char = \'(\\u[0-9a-fA-F]{4})\'
 
 "set"     {return symbol(sym.SET);}
 "length"  {return symbol(sym.LENGTH);}
-"bool"    {return symbol(sym.BOOL);}
+"boolean"    {return symbol(sym.BOOL);}
 "int"     { return symbol(sym.INT);}
 "float"   { return symbol(sym.FLOAT);}
 "char"    { return symbol(sym.CHAR);}

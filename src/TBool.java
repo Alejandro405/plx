@@ -4,7 +4,7 @@ import java.util.Vector;
 public class TBool extends Tipo{
 
     public static enum BOOL_METHODS {
-        AND, OR, NOT
+        AND, OR, NOT, PRINT
     }
 
     private static final TBool T_BOOL = new TBool();
@@ -44,9 +44,21 @@ public class TBool extends Tipo{
             return or(o, p.get(0));
         } else if (m.equals(BOOL_METHODS.NOT.toString())) {
             return not(o);
+        } else if (m.equals(BOOL_METHODS.PRINT.name())) {
+            Instancia targetInstancia = (Instancia) o;
+
+            printBoolean(targetInstancia);
         }
 
         return null;
+    }
+
+    private void printBoolean(Instancia targetInstancia) {
+            /*
+            if (1 < 2) goto L0;
+            goto L1;
+            writec 116;writec 114;writec 117;writec 101;writec 10;goto L2;L1:writec 102;writec 97;writec 108;writec 115;writec 101;writec 10;L2:
+             */
     }
 
     @Override

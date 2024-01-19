@@ -697,6 +697,18 @@ expr_array ::= ALL list_valor:l CLL       {:
 
 cond ::=  AP cond:a CP          {:  RESULT = a;     :}
         | NOT cond:a            {:  RESULT = a.metodos("NOT", new Vector());   :}
+        | valor:id              {:
+        // Variable booleana
+        Objeto obj = PLXC.tablaSimbolos.getObj(id.getNombre(), TablaSimbolos.bloqueActual);
+
+        if (!(obj instanceof Instancia) && ((Instancia) obj).getTipoInstancia() != TBool.getTBool()) {
+            Objeto.errorYPara("[ERROR]\tLa variable no es una instancia de tipo booleano", new Vector<>(List.of(obj)));
+        }
+
+
+        RESULT = (Instancia) obj;
+
+        :}
         | cond:a  AND              {:
         this.end_and = PLXC.tablaSimbolos.getNewEtiq();
         this.res_bool = new Instancia(TBool.getTBool());

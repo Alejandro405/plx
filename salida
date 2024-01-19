@@ -1,85 +1,55 @@
-a = 2;
-b = 3;
-c = 4;
-b = a;
-$T0 = 1;
-if (a < a) goto L1;
-$T0 = 0;
-L1:
-$T1 = $T0;
-if ($T0 == 1) goto L2;
-b = a;
-c = a;
-$T2 = 1;
-if (b < a) goto L3;
-$T2 = 0;
-L3:
-$T3 = 0;
-if ($T2 == 1) goto L4;
-$T3 = 1;
-L4:
-$T1 = $T3;
-L2:
-if ($T1 == 0) goto else_L0 ;
-a = 3;
+function pow:
+   base_2 = param 1;
+   exp_2 = param 2;
+   res_3 = 1;
+while_pow:
+   if (0 < exp_2) goto body_while_pow;
+   goto return_pow;
+body_while_pow:
+   $t0 = res_3 * base_2;
+   res_3 = $t0;
+   $t1 = exp_2 - 1;
+   exp_2 = $t1;
+   goto while_pow;
+return_pow:
+   pow = res_3;
+   return;
+end pow;
+
+function rightShift:
+   x_2 = param 1;
+   y_2 = param 2;
+   $t0 = x_2;
+   $t1 = 1;
+while_shift:
+   if (y_2 < $t1) goto return_shift;
+   $t0 = $t0 / 2;
+   $t1 = $t1 + 1;
+   goto while_shift;
+return_shift:
+   res_3 = $t0;
+   rightShift = res_3;
+   return;
+end rightShift;
+function leftShift:
+   x_2 = param 1;
+   y_2 = param 2;
+   $t0 = x_2;
+   $t1 = 1;
+while_lefthshift:
+   if (y_2 < $t1) goto return_lefthshift;
+   $t0 = $t0 + $t0;
+   $t1 = $t1 + 1;
+   goto while_lefthshift;
+return_lefthshift:
+   res_3 = $t0;
+   leftShift = res_3;
+   return;
+end leftShift;
+if (b == 0) goto else_L0 ;
 print 1 ;
 goto end_L0 ;
 else_L0:
-end_L0:
-$T4 = 1;
-if (a < b) goto L6;
-$T4 = 0;
-L6:
-$T5 = $T4;
-if ($T4 == 1) goto L7;
-$T6 = 1;
-if (b < c) goto L8;
-$T6 = 0;
-L8:
-$T7 = 0;
-if ($T6 == 1) goto L9;
-$T7 = 1;
-L9:
-$T8 = $T7;
-if ($T7 == 0) goto L10;
-$T9 = 1;
-if (c < a) goto L11;
-$T9 = 0;
-L11:
-$T8 = $T9;
-L10:
-$T8 = $T8;
-L7:
-$T10 = $T8;
-if ($T8 == 1) goto L12;
-$T11 = 1;
-if (c < a) goto L13;
-$T11 = 0;
-L13:
-$T12 = $T11;
-if ($T11 == 0) goto L14;
-$T13 = 1;
-if (c < b) goto L15;
-$T13 = 0;
-L15:
-$T12 = $T13;
-L14:
-$T14 = $T12;
-if ($T12 == 0) goto L16;
-$T15 = 1;
-if (b < a) goto L17;
-$T15 = 0;
-L17:
-$T14 = $T15;
-L16:
-$T14 = $T14;
-L12:
-if ($T14 == 0) goto else_L5 ;
-a = 4;
 print 2 ;
-goto end_L5 ;
-else_L5:
-end_L5:
-$T16 =a * b ;
-$T17 =$T16 * c ;
-print $T17 ;
+end_L0:
+print 3 ;

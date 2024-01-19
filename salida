@@ -40,26 +40,24 @@ $T7 = 0;
 if ($T6 == 1) goto L9;
 $T7 = 1;
 L9:
-$T5 = $T7;
-L7:
-$T8 = $T5;
-if ($T5 == 0) goto L10;
+$T8 = $T7;
+if ($T7 == 0) goto L10;
 $T9 = 1;
 if (c < a) goto L11;
 $T9 = 0;
 L11:
-$T10 = $T9;
-if ($T9 == 1) goto L12;
+$T8 = $T9;
+L10:
+$T8 = $T8;
+L7:
+$T10 = $T8;
+if ($T8 == 1) goto L12;
 $T11 = 1;
 if (c < a) goto L13;
 $T11 = 0;
 L13:
-$T10 = $T11;
-L12:
-$T10 = $T10;
-L10:
-$T12 = $T10;
-if ($T10 == 0) goto L14;
+$T12 = $T11;
+if ($T11 == 0) goto L14;
 $T13 = 1;
 if (c < b) goto L15;
 $T13 = 0;
@@ -74,6 +72,8 @@ $T15 = 0;
 L17:
 $T14 = $T15;
 L16:
+$T14 = $T14;
+L12:
 if ($T14 == 0) goto else_L5 ;
 a = 4;
 print 2 ;

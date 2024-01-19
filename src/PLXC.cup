@@ -58,7 +58,7 @@ parser code {:
 :}
 
 terminal String ALL, CLL, AP, CP, AC, CC, PYC, COMA, PUNTO, DP, SET;
-terminal Tipo INT, FLOAT, CHAR, STRING, U_MINUS, VOID;
+terminal Tipo INT, FLOAT, CHAR, STRING, U_MINUS, VOID, BOOL;
 terminal String ID;
 terminal Integer NUM_ENTERO;
 terminal Float NUM_REAL;
@@ -85,23 +85,19 @@ nonterminal List<Instancia> list_valor, set_value;
 nonterminal Tipo tipo, declr, declr_conj, tipo_primit;
 nonterminal Objeto asig, expr, expr_array, array_length, expr_arit, valor, inic;
 
-precedence  nonassoc    IF, ELSE;
-precedence  left        DO, WHILE, FOR, PRINT;
+precedence  left        IF, ELSE, DO, WHILE, FOR, PRINT;
+precedence  right       ASIGNA;
 precedence  left        MAS, MENOS;
 precedence  left        POR, DIV;
-precedence  left        U_MINUS;
-
-precedence  left        AND;
-precedence  left        OR;
-precedence  right       NOT;
-
 precedence  left        EQ, LE, GE;
 precedence  left        NEQ, LT, GT;
-
+precedence  left        OR;
+precedence  left        AND;
+precedence  left        NOT;
 precedence  left        ID, NUM_ENTERO, NUM_REAL;
 precedence  left        FALSE, TRUE, CARACTER, CADENA;
 precedence  left        ELSEIF;
-
+precedence  nonassoc    U_MINUS;
 precedence  nonassoc    AP, CP;
 precedence  nonassoc    AC, CC;
 precedence  nonassoc    ALL, CLL;
@@ -761,6 +757,7 @@ tipo_primit ::= INT:t                          {:    RESULT = TInt.getTInt();   
             | CHAR:t                        {:    RESULT = TChar.getTChar();          :}
             | STRING:t                      {:    RESULT = TString.getInstance();     :}
             | VOID:t                        {:    RESULT = TVoid.getTVoid();          :}
+            | BOOL:t                        {:    RESULT = TBool.getTBool();:}
             ;
 
 array_length ::= expr:expr   {: RESULT = expr; :}

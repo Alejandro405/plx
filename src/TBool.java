@@ -206,6 +206,27 @@ public class TBool extends Tipo{
         return res;
     }
 
+    public static Instancia calcForAll(List<Objeto> kb, String label) {
+        Instancia res = null;
+        // Nos aseguramos de que todos los elementos de la base de conocimeieto (kb) sean instancias de la clase Instancia.java y cuyo tipo sea T_BOOL
+        // Para ello usaremos  programación funcional de java
+        if (kb.stream().anyMatch(o -> !(o instanceof Instancia) || ((Instancia) o).getTipoInstancia() != T_BOOL)) {
+            errorYPara("[ERROR]\tTodos los elementos de la base de conocimiento deben ser de tipo booleano", new Vector<>(kb));
+        } else {
+            res = new Instancia(Objeto.newNombreObjeto(), T_BOOL, TablaSimbolos.bloqueActual, false);
+            PLXC.out.println(res.getNombre() + " = 0;");
+            for (Objeto x : kb) {
+                Instancia kbElem = (Instancia) x;
+                PLXC.out.println("if (" + x.getNombre() + " == 0) goto end_forall_" + label + ";");
+            }
+            PLXC.out.println("end_forall_" + label + ":");
+        }
+
+
+
+        return res;
+    }
+
     public static TBool getTBool(){
         return T_BOOL;
     }

@@ -80,6 +80,7 @@ unicode_char = \'(\\u[0-9a-fA-F]{4})\'
 "default" {return symbol(sym.DEFAULT);}
 "while"   {return symbol(sym.WHILE, PLXC.tablaSimbolos.getNewEtiq());}
 "for"     {return symbol(sym.FOR, PLXC.tablaSimbolos.getNewEtiq());}
+"forall"  {return symbol(sym.FORALL, PLXC.tablaSimbolos.getNewEtiq());}
 "do"      {return symbol(sym.DO, PLXC.tablaSimbolos.getNewEtiq());}
 
 "true"    {return symbol(sym.TRUE);}

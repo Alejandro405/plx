@@ -67,16 +67,19 @@ terminal String CADENA;
 terminal Boolean FALSE, TRUE;
 terminal String MAS, MENOS, POR, DIV, EQ, NEQ, LT, GT, LE, GE, AND, OR, NOT, ASIGNA,IMPLICA;
 terminal String UNION, ADD, REM;
-terminal String IF, WHILE, FOR, DO, PRINT, LENGTH;
+terminal String IF, WHILE, FOR, FORALL, DO, PRINT, LENGTH;
 terminal String ELSE, ELSEIF;
 terminal String CASE, SWITCH, DEFAULT, BREAK, RETURN;
 
 nonterminal program, lista_sent, sent, sent_comp, sent_simpl, sent_if, sent_while, op_else , sent_do_while, sent_for, for_expr, sent_foreach, sent_switch, list_case, op_default, case_oper, list_sent_simpl, declr_func, impl_func,impl_procedure;
+nonterminal Instancia sent_forall;
+nonterminal Objeto forall_expr;
 nonterminal Set<Instancia> list_param, params;
 nonterminal Instancia param;
 nonterminal Funcion func_id;
 nonterminal String and_end, or_end, else_if;
 nonterminal Objeto cond, Get_BoolInstance;
+nonterminal List<Objeto> for_all_params;
 nonterminal Integer Init_Bloque;
 nonterminal List<String> list_id;
 nonterminal List<Integer> list_int, list_char;
@@ -91,10 +94,10 @@ precedence  left        MAS, MENOS;
 precedence  left        POR, DIV;
 precedence  left        EQ, LE, GE;
 precedence  left        NEQ, LT, GT;
+precedence  right       IMPLICA;
 precedence  left        OR;
 precedence  left        AND;
 precedence  left        NOT;
-precedence  left        IMPLICA;
 precedence  left        ID, NUM_ENTERO, NUM_REAL;
 precedence  left        FALSE, TRUE, CARACTER, CADENA;
 precedence  left        ELSEIF;
@@ -633,6 +636,7 @@ cond ::=  AP expr:a CP          {:  RESULT = a;     :}
 
         RESULT = p.metodos(TBool.BOOL_METHODS.IMPLICA.name(), new Vector<>(List.of(q)));
 :}
+        | sent_forall:res        {:  RESULT = res;:}
         | valor:a GT valor:b      {:  RESULT = a.metodos("MAYOR", new Vector(List.of(b)));          :}
         | valor:a LT valor:b      {:  RESULT = a.metodos("MENOR", new Vector(List.of(b)));          :}
         | valor:a GE valor:b      {:  RESULT = a.metodos("MAYOR_IGUAL", new Vector(List.of(b)));    :}
@@ -642,6 +646,29 @@ cond ::=  AP expr:a CP          {:  RESULT = a;     :}
         | FALSE                 {:  RESULT = new Instancia("0", TBool.getTBool(), TablaSimbolos.bloqueActual, false);   :}
         | TRUE                  {:  RESULT = new Instancia("1", TBool.getTBool(), TablaSimbolos.bloqueActual, false);    :}
         ;
+
+sent_forall ::= FORALL:label for_all_params:condiciones {:
+
+                        // El resultado de la operacion sera true sii todos los elementos de la lista cumplen la condicion, es decir, si todos están a true;
+                        Instancia res = TBool.calcForAll(condiciones, label);
+
+                        RESULT = res;
+                        :};
+
+for_all_params ::= forall_expr:condicion COMA for_all_params:l {:
+        l.add(condicion);
+        RESULT = l;
+        :}
+                |  {:
+                List<Objeto> start = new ArrayList<>();
+
+                //start.add(condicion);
+
+                RESULT = start;
+:}
+                ;
+
+forall_expr ::= expr:expr {: RESULT = expr;:};
 
 tipo ::= tipo_primit:t                  {:
         RESULT = t;

@@ -22,7 +22,7 @@ public class PLXC {
                 out = new PrintStream(new FileOutputStream(args[1]));
             }
 
-            //CTDTools.deplotTools();
+            CTDTools.deplotTools();
 
             parser p = new parser(new Lexer(in));
             Object result = p.parse().value;

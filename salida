@@ -1,179 +1,61 @@
-$T0 = 1;
-if (1 < 2) goto L1;
-$T0 = 0;
-L1:
-if ($T0 == 0) goto else_L0 ;
+forall_res_L1 = 1;
+p = 0;
+goto cond_forall_L1;
+incr_forall_L1:
+p = p + 1;
+if (p == 2) goto end_forallL1;
+if (2 < p) goto end_forallL1;
+cond_forall_L1:
+if (p == 1) goto incr_forall_L1;
+forall_res_L1 = 0;
+end_forallL1:
+if (forall_res_L1 == 0) goto else_L0 ;
 print 1 ;
 goto end_L0 ;
 else_L0:
 end_L0:
-$T1 = 1;
-if (1 < 2) goto L3;
-$T1 = 0;
-L3:
-$T2 = 1;
-if (2 < 3) goto L4;
-$T2 = 0;
+forall_res_L3 = 1;
+p = 0;
+goto cond_forall_L3;
+incr_forall_L3:
+p = p + 1;
+if (p == 2) goto end_forallL3;
+if (2 < p) goto end_forallL3;
+cond_forall_L3:
+$T0 = 0;
+if (p == 1) goto L4;
+$T0 = 1;
 L4:
-$T3 = 1;
-if ( $T1 == 0) goto end_L5;
-if ( $T2 == 1) goto end_L5;
-$T3 = 0;
-end_L5:
-if ($T3 == 0) goto else_L2 ;
+if ($T0 == 1) goto incr_forall_L3;
+forall_res_L3 = 0;
+end_forallL3:
+if (forall_res_L3 == 0) goto else_L2 ;
 print 2 ;
 goto end_L2 ;
 else_L2:
 end_L2:
-$T4 = 1;
-if (1 < 2) goto L7;
-$T4 = 0;
-L7:
-$T5 = 1;
-if (2 < 3) goto L8;
-$T5 = 0;
+forall_res_L6 = 1;
+p = 0;
+goto cond_forall_L6;
+incr_forall_L6:
+p = p + 1;
+if (p == 2) goto end_forallL6;
+if (2 < p) goto end_forallL6;
+cond_forall_L6:
+$T1 = p;
+if (p == 1) goto L7;
+$T2 = 0;
+if (p == 1) goto L8;
+$T2 = 1;
 L8:
-$T6 = 1;
-if (3 < 4) goto L9;
-$T6 = 0;
-L9:
-$T7 = 1;
-if ( $T5 == 0) goto end_L10;
-if ( $T6 == 1) goto end_L10;
-$T7 = 0;
-end_L10:
-$T8 = 1;
-if ( $T4 == 0) goto end_L11;
-if ( $T7 == 1) goto end_L11;
-$T8 = 0;
-end_L11:
-if ($T8 == 0) goto else_L6 ;
+$T1 = $T2;
+L7:
+if ($T1 == 1) goto incr_forall_L6;
+forall_res_L6 = 0;
+end_forallL6:
+if (forall_res_L6 == 0) goto else_L5 ;
 print 3 ;
-goto end_L6 ;
-else_L6:
-end_L6:
-$T9 = 1;
-if (1 < 2) goto L13;
-$T9 = 0;
-L13:
-$T10 = 1;
-if (2 < 3) goto L14;
-$T10 = 0;
-L14:
-$T11 = 1;
-if (3 < 4) goto L15;
-$T11 = 0;
-L15:
-$T12 = $T11;
-if ($T11 == 1) goto L16;
-$T13 = 1;
-if (4 < 5) goto L17;
-$T13 = 0;
-L17:
-$T12 = $T13;
-L16:
-$T14 = 1;
-if ( $T10 == 0) goto end_L18;
-if ( $T12 == 1) goto end_L18;
-$T14 = 0;
-end_L18:
-$T15 = 1;
-if ( $T9 == 0) goto end_L19;
-if ( $T14 == 1) goto end_L19;
-$T15 = 0;
-end_L19:
-if ($T15 == 0) goto else_L12 ;
-print 4 ;
-goto end_L12 ;
-else_L12:
-end_L12:
-$T16 = 1;
-if (2 < 1) goto L21;
-$T16 = 0;
-L21:
-if ($T16 == 0) goto else_L20 ;
-print 5 ;
-goto end_L20 ;
-else_L20:
-end_L20:
-$T17 = 1;
-if (2 < 1) goto L23;
-$T17 = 0;
-L23:
-$T18 = 1;
-if (3 < 2) goto L24;
-$T18 = 0;
-L24:
-$T19 = 1;
-if ( $T17 == 0) goto end_L25;
-if ( $T18 == 1) goto end_L25;
-$T19 = 0;
-end_L25:
-if ($T19 == 0) goto else_L22 ;
-print 6 ;
-goto end_L22 ;
-else_L22:
-end_L22:
-$T20 = 1;
-if (2 < 1) goto L27;
-$T20 = 0;
-L27:
-$T21 = 1;
-if (3 < 2) goto L28;
-$T21 = 0;
-L28:
-$T22 = 1;
-if (4 < 3) goto L29;
-$T22 = 0;
-L29:
-$T23 = 1;
-if ( $T21 == 0) goto end_L30;
-if ( $T22 == 1) goto end_L30;
-$T23 = 0;
-end_L30:
-$T24 = 1;
-if ( $T20 == 0) goto end_L31;
-if ( $T23 == 1) goto end_L31;
-$T24 = 0;
-end_L31:
-if ($T24 == 0) goto else_L26 ;
-print 7 ;
-goto end_L26 ;
-else_L26:
-end_L26:
-$T25 = 1;
-if (2 < 1) goto L33;
-$T25 = 0;
-L33:
-$T26 = 1;
-if (3 < 2) goto L34;
-$T26 = 0;
-L34:
-$T27 = 1;
-if (4 < 3) goto L35;
-$T27 = 0;
-L35:
-$T28 = $T27;
-if ($T27 == 0) goto L36;
-$T29 = 1;
-if (5 < 4) goto L37;
-$T29 = 0;
-L37:
-$T28 = $T29;
-L36:
-$T30 = 1;
-if ( $T26 == 0) goto end_L38;
-if ( $T28 == 1) goto end_L38;
-$T30 = 0;
-end_L38:
-$T31 = 1;
-if ( $T25 == 0) goto end_L39;
-if ( $T30 == 1) goto end_L39;
-$T31 = 0;
-end_L39:
-if ($T31 == 0) goto else_L32 ;
-print 8 ;
-goto end_L32 ;
-else_L32:
-end_L32:
+goto end_L5 ;
+else_L5:
+end_L5:
 print 0 ;

@@ -206,21 +206,22 @@ public class TBool extends Tipo{
         return res;
     }
 
-    public static Instancia calcForAll(List<Objeto> kb, String label) {
+    public static Instancia calcForAll(Objeto expr, Objeto var, String label) {
         Instancia res = null;
-        // Nos aseguramos de que todos los elementos de la base de conocimeieto (kb) sean instancias de la clase Instancia.java y cuyo tipo sea T_BOOL
-        // Para ello usaremos  programación funcional de java
-        if (kb.stream().anyMatch(o -> !(o instanceof Instancia) || ((Instancia) o).getTipoInstancia() != T_BOOL)) {
-            errorYPara("[ERROR]\tTodos los elementos de la base de conocimiento deben ser de tipo booleano", new Vector<>(kb));
-        } else {
-            res = new Instancia(Objeto.newNombreObjeto(), T_BOOL, TablaSimbolos.bloqueActual, false);
-            PLXC.out.println(res.getNombre() + " = 0;");
-            for (Objeto x : kb) {
-                Instancia kbElem = (Instancia) x;
-                PLXC.out.println("if (" + x.getNombre() + " == 0) goto end_forall_" + label + ";");
-            }
-            PLXC.out.println("end_forall_" + label + ":");
+
+        // Comprobar que tanto expr y var son intancias de la clase Instancia.java y cuyos tipos son T_BOOL
+        if (!(expr instanceof Instancia) || !(var instanceof Instancia)) {
+            errorYPara("[ERROR]\tLos parámetros de la operación forall deben ser de tipo booleano", new Vector<>(List.of(expr, var)));
         }
+
+        if (((Instancia) expr).getTipoInstancia() != T_BOOL || ((Instancia) var).getTipoInstancia() != T_BOOL) {
+            errorYPara("[ERROR]\tLos parámetros de la operación forall deben ser de tipo booleano", new Vector<>(List.of(expr, var)));
+        }
+
+        Instancia exprInstancia = (Instancia) expr;
+        Instancia varInstancia = (Instancia) var;
+        Instancia backUp = new Instancia(Objeto.newNombreObjeto(), T_BOOL, TablaSimbolos.bloqueActual, true);
+        PLXC.out.println(backUp.getNombre() + " = " + exprInstancia.getNombre() + ";");
 
 
 

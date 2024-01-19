@@ -95,6 +95,7 @@ precedence  left        POR, DIV;
 precedence  left        EQ, LE, GE;
 precedence  left        NEQ, LT, GT;
 precedence  right       IMPLICA;
+precedence  right       FORALL;
 precedence  left        OR;
 precedence  left        AND;
 precedence  left        NOT;
@@ -647,13 +648,35 @@ cond ::=  AP expr:a CP          {:  RESULT = a;     :}
         | TRUE                  {:  RESULT = new Instancia("1", TBool.getTBool(), TablaSimbolos.bloqueActual, false);    :}
         ;
 
-sent_forall ::= FORALL:label for_all_params:condiciones {:
+sent_forall ::= FORALL:label ID:id {:
+                Instancia res = new Instancia("forall_res_" + label, TBool.getTBool(), TablaSimbolos.bloqueActual, false);
+                PLXC.tablaSimbolos.putObj(res);
 
-                        // El resultado de la operacion sera true sii todos los elementos de la lista cumplen la condicion, es decir, si todos están a true;
-                        Instancia res = TBool.calcForAll(condiciones, label);
+                PLXC.out.println(res.getNombre() + " = 1;");
+                PLXC.out.println(id + " = 0;");
+                PLXC.out.println("goto cond_forall_" + label + ";");
+                PLXC.out.println("incr_forall_" + label + ":");
+                PLXC.out.println(id + " = " + id + " + 1;");
+                PLXC.out.println("if (" + id + " == " + 2 + ") goto end_forall" + label + ";");
+                PLXC.out.println("if (" + 2 + " < " + id + ") goto end_forall" + label + ";");
+                PLXC.out.println("cond_forall_" + label + ":");
+:}
+                COMA expr:condicion {:
 
-                        RESULT = res;
-                        :};
+                if (!(condicion instanceof Instancia))
+                    Objeto.errorYPara("[ERROR]\tLa condicion del forall no es una instancia", new Vector<>(List.of(condicion)));
+
+                Objeto res = PLXC.tablaSimbolos.getObj("forall_res_" + label);
+                if (! (res instanceof Instancia))
+                    Objeto.errorYPara("[ERROR]\tLa variable de resultado del forall no es una instancia", new Vector<>(List.of(res)));
+
+                PLXC.out.println("if (" + condicion.getNombre() + " == 1) goto incr_forall_" + label + ";");
+                PLXC.out.println(res.getNombre() + " = 0;");
+                PLXC.out.println("end_forall" + label + ":");
+
+                RESULT = (Instancia) res;
+
+:};
 
 for_all_params ::= forall_expr:condicion COMA for_all_params:l {:
         l.add(condicion);

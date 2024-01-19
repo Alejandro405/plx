@@ -4,7 +4,7 @@ import java.util.Vector;
 public class TBool extends Tipo{
 
     public static enum BOOL_METHODS {
-        AND, OR, NOT, PRINT
+        AND, OR, NOT, PRINT, IMPLICA, ASIGNA
     }
 
     private static final TBool T_BOOL = new TBool();
@@ -36,7 +36,19 @@ public class TBool extends Tipo{
         if (((Instancia) o).getTipoInstancia() != T_BOOL)
             errorYPara("[ERROR]\tSolo es posible ejecutar" + m + " sobre una instancia de tipo booleano", p);
 
-        if (m.equals(BOOL_METHODS.AND.toString())) {
+        if (m.equals(BOOL_METHODS.ASIGNA.name())) {
+            if (p.size() != 1 && !(p.firstElement() instanceof Instancia))
+                errorYPara("[ERROR]\tEl método " + m + " sobre el tipo bool solo acepta una única instancia como parámetro de tipo booleano", p);
+
+            Instancia valor = (Instancia) p.firstElement();
+            Instancia targetInstancia = (Instancia) o;
+
+            if (valor.getTipoInstancia() != T_BOOL)
+                errorYPara("[ERROR]\tEl método " + m + " sobre el tipo bool solo acepta una única instancia como parámetro de tipo booleano", p);
+
+            PLXC.out.println(targetInstancia.getNombre() + " = " + valor.getNombre() + ";");
+
+        } else if (m.equals(BOOL_METHODS.AND.toString())) {
             checkBinBoolOper(m, p);
             return and(o, p.get(0));
         } else if (m.equals(BOOL_METHODS.OR.toString())) {
@@ -48,17 +60,35 @@ public class TBool extends Tipo{
             Instancia targetInstancia = (Instancia) o;
 
             printBoolean(targetInstancia);
+        } else if (m.equals(BOOL_METHODS.IMPLICA.name())) {
+
+        }  {
+
         }
 
         return null;
     }
 
     private void printBoolean(Instancia targetInstancia) {
-            /*
-            if (1 < 2) goto L0;
-            goto L1;
-            writec 116;writec 114;writec 117;writec 101;writec 10;goto L2;L1:writec 102;writec 97;writec 108;writec 115;writec 101;writec 10;L2:
-             */
+        String printLabel = PLXC.tablaSimbolos.getNewEtiq();
+
+        PLXC.out.println("if (" + targetInstancia.getNombre() + " == 1) goto TRUE_" + printLabel + ";");
+        PLXC.out.println("writec 102;");
+        PLXC.out.println("writec 97;");
+        PLXC.out.println("writec 108;");
+        PLXC.out.println("writec 115;");
+        PLXC.out.println("writec 101;");
+        PLXC.out.println("writec 10;");
+        PLXC.out.println("goto END_" + printLabel + ";");
+        PLXC.out.println("TRUE_" + printLabel + ":");
+        PLXC.out.println("writec 116;");
+        PLXC.out.println("writec 114;");
+        PLXC.out.println("writec 117;");
+        PLXC.out.println("writec 101;");
+        PLXC.out.println("writec 10;");
+        PLXC.out.println("END_" + printLabel + ":");
+
+
     }
 
     @Override

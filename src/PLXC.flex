@@ -67,6 +67,8 @@ unicode_char = \'(\\u[0-9a-fA-F]{4})\'
 "<=="     {return symbol(sym.ADD);}
 "==>"     {return symbol(sym.REM);}
 
+"-->"     {return symbol(sym.IMPLICA);}
+
 "if"      {return symbol(sym.IF, PLXC.tablaSimbolos.getNewEtiq());}
 "else"    {return symbol(sym.ELSE);}
 "else if" {return symbol(sym.ELSEIF, PLXC.tablaSimbolos.getNewEtiq());}

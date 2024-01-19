@@ -65,7 +65,7 @@ terminal Float NUM_REAL;
 terminal Integer CARACTER;
 terminal String CADENA;
 terminal Boolean FALSE, TRUE;
-terminal String MAS, MENOS, POR, DIV, EQ, NEQ, LT, GT, LE, GE, AND, OR, NOT, ASIGNA;
+terminal String MAS, MENOS, POR, DIV, EQ, NEQ, LT, GT, LE, GE, AND, OR, NOT, ASIGNA,IMPLICA;
 terminal String UNION, ADD, REM;
 terminal String IF, WHILE, FOR, DO, PRINT, LENGTH;
 terminal String ELSE, ELSEIF;
@@ -94,6 +94,7 @@ precedence  left        NEQ, LT, GT;
 precedence  left        OR;
 precedence  left        AND;
 precedence  left        NOT;
+precedence  left        IMPLICA;
 precedence  left        ID, NUM_ENTERO, NUM_REAL;
 precedence  left        FALSE, TRUE, CARACTER, CADENA;
 precedence  left        ELSEIF;
@@ -551,6 +552,7 @@ expr ::= valor:expr                 {:  RESULT = expr;  :}
         | expr_array:expr           {:
         RESULT = expr;
         :}
+        | cond:cond                 {:  RESULT = cond;       :}
         ;
 
 func_id ::= ID:id      {:
@@ -697,18 +699,6 @@ expr_array ::= ALL list_valor:l CLL       {:
 
 cond ::=  AP cond:a CP          {:  RESULT = a;     :}
         | NOT cond:a            {:  RESULT = a.metodos("NOT", new Vector());   :}
-        | valor:id              {:
-        // Variable booleana
-        Objeto obj = PLXC.tablaSimbolos.getObj(id.getNombre(), TablaSimbolos.bloqueActual);
-
-        if (!(obj instanceof Instancia) && ((Instancia) obj).getTipoInstancia() != TBool.getTBool()) {
-            Objeto.errorYPara("[ERROR]\tLa variable no es una instancia de tipo booleano", new Vector<>(List.of(obj)));
-        }
-
-
-        RESULT = (Instancia) obj;
-
-        :}
         | cond:a  AND              {:
         this.end_and = PLXC.tablaSimbolos.getNewEtiq();
         this.res_bool = new Instancia(TBool.getTBool());
@@ -730,6 +720,10 @@ cond ::=  AP cond:a CP          {:  RESULT = a;     :}
             PLXC.out.println(res_bool.getNombre() + " = " + b.getNombre() + ";");
             PLXC.out.println(this.end_or + ":");
             RESULT = res_bool;
+:}
+        | cond:p IMPLICA cond:q  {:
+
+
 :}
         | valor:a GT valor:b      {:  RESULT = a.metodos("MAYOR", new Vector(List.of(b)));          :}
         | valor:a LT valor:b      {:  RESULT = a.metodos("MENOR", new Vector(List.of(b)));          :}

@@ -118,94 +118,6 @@ sent ::= sent_comp
         | impl_func
         ;
 
-param ::= tipo:tipo ID:idParam     {:
-        // Crear una entrada para el diccionario que almacena los parámetros <Tipo, Instancia>
-        Instancia res = null;
-
-        if (tipo == TString.getInstance()) {
-            res = new StringInstancia(idParam);
-        } else if (tipo instanceof TArray) {
-            //generar otro parámetro extra que añadirá el compilador, el tamaño del array
-        }else {
-            res = new Instancia(idParam, tipo, 0, true);
-        }
-
-        RESULT = res;
-:}
-        ;
-
-list_param ::= param:p COMA list_param:s    {:
-            s.add(p);
-
-            RESULT = s;
-:}
-            | param:p                       {:
-            Set<Instancia> start = new HashSet();
-
-            start.add(p);
-
-            RESULT = start;
-:}
-            ;
-
-params ::= list_param:l     {:RESULT = l;:}
-        |                   {:RESULT = new HashSet<>();:}
-        ;
-
-declr_func ::= tipo:tipoRet ID:id AP params:params CP PYC {:
-            Funcion f = new Funcion(id, tipoRet, params);
-
-            f.setImplemented(false);
-
-            PLXC.tablaSimbolos.putFunction(f);
-:}
-            ;
-
-impl_procedure ::= VOID ID:id AP params:params CP ALL {:
-                Procedure proced = null;
-
-                if (!PLXC.tablaSimbolos.containsFunction(TVoid.getTVoid(), id)) {
-                    proced = new Procedure(id, params);
-                    PLXC.tablaSimbolos.putFunction(proced);
-                } else {
-                    proced = (Procedure) PLXC.tablaSimbolos.getFunction(TVoid.getTVoid(), id);
-                }
-
-                PLXC.out.println();
-                PLXC.out.println("goto " + proced.getEndFuncition() + ";");
-                PLXC.out.println(proced.getInicFuncition() + ":");
-                proced.initCallParams(new ArrayList<>(params));
-:}
-                list_sent_simpl
-                CLL
-                ;
-
-impl_func ::= tipo:tipo ID:id AP params:params CP ALL {:
-            Funcion f = null;
-            if (!PLXC.tablaSimbolos.containsFunction(tipo, id)) {
-                f = new Funcion(id, tipo, params);
-                PLXC.tablaSimbolos.putFunction(f);
-            } else {
-                f = PLXC.tablaSimbolos.getFunction(tipo, id);
-            }
-
-            PLXC.out.println();
-            PLXC.out.println("goto " + f.getEndFuncition() + ";");
-            PLXC.out.println(f.getInicFuncition() + ":");
-            f.initCallParams(new ArrayList<>(params));
-:}
-            list_sent_simpl
-            RETURN expr:expr PYC {:
-            if (!(expr instanceof Instancia) && ((Instancia) expr).getTipoInstancia() != tipo) {
-                Objeto.errorYPara("[ERROR]\tLa expresin de retorno no casa con el tipo de la función", new Vector<>(List.of(expr, tipo)));
-            }
-
-            Funcion f = PLXC.tablaSimbolos.getFunction(tipo, id);
-            f.retornaResultado((Instancia) expr);
-            f.setImplemented(true);
-:}
-            CLL;
-
 sent_comp ::= ALL Init_Bloque:bloquePrevio lista_sent CLL {:
                   PLXC.tablaSimbolos.delBlock();
                   TablaSimbolos.bloqueActual = bloquePrevio;
@@ -214,7 +126,8 @@ sent_comp ::= ALL Init_Bloque:bloquePrevio lista_sent CLL {:
 sent_simpl ::= valor PYC
         | declr PYC
         | declr_conj PYC
-        | PRINT AP expr:valor CP PYC        {:  if (valor != null) RESULT = valor.metodos("PRINT", new Vector());   :}
+        | PRINT AP valor:valor CP PYC        {:  if (valor != null) RESULT = valor.metodos("PRINT", new Vector());   :}
+        | PRINT AP cond:valor CP PYC        {:  if (valor != null) RESULT = valor.metodos("PRINT", new Vector());   :}
         | sent_if
         | sent_while
         | sent_do_while
@@ -297,7 +210,7 @@ sent_for ::= FOR:forTag AP for_expr:inic
             // FOR_END:
             ;
 
-sent_if ::= IF:ifTag AP cond:c CP       {:
+sent_if ::= IF:ifTag AP expr:c CP       {:
     this.if_tags.push(ifTag);
     PLXC.out.println("if (" + c.getNombre() + " == 0) goto else_" + ifTag + " ;");
 :}
@@ -310,7 +223,7 @@ sent_if ::= IF:ifTag AP cond:c CP       {:
             this.if_tags.pop();
 :};
 
-else_if ::= ELSEIF:elseIfTag AP cond:c CP           {:
+else_if ::= ELSEIF:elseIfTag AP expr:c CP           {:
     PLXC.out.println(" if (" + c.getNombre() + " == 0) goto else_" + elseIfTag + ";");
 :}
                 sent                                {:
@@ -555,19 +468,6 @@ expr ::= valor:expr                 {:  RESULT = expr;  :}
         | cond:cond                 {:  RESULT = cond;       :}
         ;
 
-func_id ::= ID:id      {:
-        Objeto aux = PLXC.tablaSimbolos.getObj(id, 0);
-        Funcion f = null;
-        if (!(aux instanceof Funcion)) {
-            Objeto.errorYPara("[ERROR]\tLa funcion con id <" + "id" + "> no se encuentra ni declarada ni implementada", new Vector<>());
-        } else {
-            f = (Funcion) aux;
-
-        }
-
-        RESULT = f;
-:}
-;
 
 valor ::= ID:id PUNTO LENGTH                {:
             checkVariable(id);
@@ -697,31 +597,31 @@ expr_array ::= ALL list_valor:l CLL       {:
 :};
 
 
-cond ::=  AP cond:a CP          {:  RESULT = a;     :}
-        | NOT cond:a            {:  RESULT = a.metodos("NOT", new Vector());   :}
-        | cond:a  AND              {:
+cond ::=  AP expr:a CP          {:  RESULT = a;     :}
+        | NOT expr:a            {:  RESULT = a.metodos("NOT", new Vector());   :}
+        | expr:a  AND              {:
         this.end_and = PLXC.tablaSimbolos.getNewEtiq();
         this.res_bool = new Instancia(TBool.getTBool());
         PLXC.out.println(res_bool.getNombre() + " = " + a.getNombre() + ";");
         PLXC.out.println("if (" + a.getNombre() + " == 0) goto " + end_and + ";");
 :}
-            cond:b          {:
+            expr:b          {:
             PLXC.out.println(res_bool.getNombre() + " = " + b.getNombre() + ";");
             PLXC.out.println(this.end_and + ":");
             RESULT = res_bool;
 :}
-        | cond:a  OR               {:
+        | expr:a  OR               {:
         this.end_or = PLXC.tablaSimbolos.getNewEtiq();
         this.res_bool = new Instancia(TBool.getTBool());
         PLXC.out.println(res_bool.getNombre() + " = " + a.getNombre() + ";");
         PLXC.out.println("if (" + a.getNombre() + " == 1) goto " + end_or + ";");
 :}
-            cond:b           {:
+            expr:b           {:
             PLXC.out.println(res_bool.getNombre() + " = " + b.getNombre() + ";");
             PLXC.out.println(this.end_or + ":");
             RESULT = res_bool;
 :}
-        | cond:p IMPLICA cond:q  {:
+        | expr:p IMPLICA expr:q  {:
 
 
 :}

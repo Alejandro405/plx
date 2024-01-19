@@ -31,10 +31,15 @@ public class TBool extends Tipo{
 
     @Override
     public Objeto metodosInstancia(Objeto o, String m, Vector<Objeto> p) {
-        if (!(o instanceof Instancia))
+        if (!(o instanceof Instancia)) {
             errorYPara("[ERROR]\tSolo es posible ejecutar" + m + " sobre una instancia", p);
-        if (((Instancia) o).getTipoInstancia() != T_BOOL)
+            return null;
+        }
+
+        if (((Instancia) o).getTipoInstancia() != T_BOOL) {
             errorYPara("[ERROR]\tSolo es posible ejecutar" + m + " sobre una instancia de tipo booleano", p);
+            return null;
+        }
 
         if (m.equals(BOOL_METHODS.ASIGNA.name())) {
             if (p.size() != 1 && !(p.firstElement() instanceof Instancia))
@@ -61,12 +66,31 @@ public class TBool extends Tipo{
 
             printBoolean(targetInstancia);
         } else if (m.equals(BOOL_METHODS.IMPLICA.name())) {
+            if (p.size() != 1 && !(p.firstElement() instanceof Instancia)) {
+                errorYPara("[ERROR]\tEl método " + m + " solo acepta un único parámetro de tipo booleano", p);
+                return null;
+            }
 
-        }  {
+            Instancia valor = (Instancia) p.firstElement();
+            Instancia targetInstancia = (Instancia) o;
 
+            return implica(targetInstancia, valor);
         }
 
         return null;
+    }
+
+    private Instancia implica(Instancia p, Instancia q) {
+        Instancia res = new Instancia(Objeto.newNombreObjeto(), T_BOOL, TablaSimbolos.bloqueActual, false);
+        String implicaTag = PLXC.tablaSimbolos.getNewEtiq();
+
+        PLXC.out.println(res.getNombre() + " = 1;" );
+        PLXC.out.println("if ( " + p.getNombre() + " == 0) goto end_"+ implicaTag + ";" );
+        PLXC.out.println("if ( " + q.getNombre() + " == 1) goto end_"+ implicaTag + ";" );
+        PLXC.out.println(res.getNombre() + " = 0;" );
+        PLXC.out.println("end_"+ implicaTag + ":" );
+
+        return res;
     }
 
     private void printBoolean(Instancia targetInstancia) {

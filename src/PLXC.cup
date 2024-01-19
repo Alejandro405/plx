@@ -182,7 +182,7 @@ sent_for ::= FOR:forTag AP for_expr:inic
             {:
                 PLXC.out.println(forTag + ":");
             :}
-            PYC cond:c
+            PYC expr:c
             // if (c == 0) goto FOR_END ;
             // goto FOR_BODY ;
             // FOR_ACT:
@@ -623,7 +623,15 @@ cond ::=  AP expr:a CP          {:  RESULT = a;     :}
 :}
         | expr:p IMPLICA expr:q  {:
 
+        if (!(p instanceof Instancia) && !(q instanceof Instancia)) {
+            Objeto.errorYPara("[ERROR]\tLa operación implica necesita de instancias", new Vector<>(List.of(p, q)));
+        }
 
+        if (((Instancia) p).getTipoInstancia() != TBool.getTBool() || ((Instancia) q).getTipoInstancia() != TBool.getTBool()) {
+            Objeto.errorYPara("[ERROR]\tLa operación implica necesita de instancias de tipo booleano", new Vector<>(List.of(p, q)));
+        }
+
+        RESULT = p.metodos(TBool.BOOL_METHODS.IMPLICA.name(), new Vector<>(List.of(q)));
 :}
         | valor:a GT valor:b      {:  RESULT = a.metodos("MAYOR", new Vector(List.of(b)));          :}
         | valor:a LT valor:b      {:  RESULT = a.metodos("MENOR", new Vector(List.of(b)));          :}

@@ -1,16 +1,32 @@
-i = 0;
-p = 1;
-L0:
 $T0 = 1;
-if (i < 3) goto L1;
+if ( p == 0) goto end_L1;
+if ( q == 1) goto end_L1;
 $T0 = 0;
-L1:
-if ($T0 == 0) goto end_L0;
-goto body_L0;
-act_L0:
-$T1 = i + 1;
-i = $T1;
-goto L0;
-body_L0:
-q = 1;
-L2:
+end_L1:
+$T1 = 1;
+if ( $T0 == 0) goto end_L2;
+if ( q == 1) goto end_L2;
+$T1 = 0;
+end_L2:
+if ($T1 == 0) goto else_L0 ;
+print 1 ;
+p = 1;
+$T2 = 1;
+if ( p == 0) goto end_L4;
+if ( q == 1) goto end_L4;
+$T2 = 0;
+end_L4:
+$T3 = 1;
+if ( $T2 == 0) goto end_L5;
+if ( q == 1) goto end_L5;
+$T3 = 0;
+end_L5:
+if ($T3 == 0) goto else_L3 ;
+print 2 ;
+goto end_L3 ;
+else_L3:
+end_L3:
+goto end_L0 ;
+else_L0:
+end_L0:
+print 0 ;

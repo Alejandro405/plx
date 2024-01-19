@@ -508,7 +508,7 @@ public class parser extends java_cup.runtime.lr_parser {
     "\040\107\001\002\000\004\012\uffe4\001\002\000\004\012" +
     "\321\001\002\000\030\004\061\006\066\026\024\027\043" +
     "\030\037\031\015\032\026\033\071\034\064\036\027\051" +
-    "\062\001\002\000\012\012\uffe3\047\uffba\050\uffba\053\uffba" +
+    "\062\001\002\000\012\012\uffe3\047\126\050\131\053\127" +
     "\001\002\000\004\012\324\001\002\000\022\006\051\007" +
     "\uffe5\026\024\027\043\030\037\031\015\032\026\036\027" +
     "\001\002\000\004\007\uffe2\001\002\000\004\007\327\001" +
@@ -681,7 +681,7 @@ public class parser extends java_cup.runtime.lr_parser {
     "\001\000\016\014\316\031\043\046\314\051\035\056\034" +
     "\057\315\001\001\000\002\001\001\000\002\001\001\000" +
     "\004\064\317\001\001\000\002\001\001\000\016\031\043" +
-    "\035\321\053\162\054\067\056\034\057\064\001\001\000" +
+    "\035\066\053\321\054\067\056\034\057\064\001\001\000" +
     "\004\065\322\001\001\000\002\001\001\000\012\014\324" +
     "\031\043\056\034\057\315\001\001\000\004\066\325\001" +
     "\001\000\002\001\001\000\004\067\327\001\001\000\046" +
@@ -1219,7 +1219,7 @@ class CUP$parser$actions {
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 33: // sent_for ::= FOR AP for_expr NT$3 PYC cond NT$4 PYC for_expr NT$5 CP NT$6 sent 
+          case 33: // sent_for ::= FOR AP for_expr NT$3 PYC expr NT$4 PYC for_expr NT$5 CP NT$6 sent 
             {
               Object RESULT =null;
               // propagate RESULT from NT$6
@@ -2496,7 +2496,15 @@ class CUP$parser$actions {
 		Objeto q = (Objeto)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
 
+        if (!(p instanceof Instancia) && !(q instanceof Instancia)) {
+            Objeto.errorYPara("[ERROR]\tLa operación implica necesita de instancias", new Vector<>(List.of(p, q)));
+        }
 
+        if (((Instancia) p).getTipoInstancia() != TBool.getTBool() || ((Instancia) q).getTipoInstancia() != TBool.getTBool()) {
+            Objeto.errorYPara("[ERROR]\tLa operación implica necesita de instancias de tipo booleano", new Vector<>(List.of(p, q)));
+        }
+
+        RESULT = p.metodos(TBool.BOOL_METHODS.IMPLICA.name(), new Vector<>(List.of(q)));
 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("cond",27, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
